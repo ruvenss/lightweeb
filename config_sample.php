@@ -30,4 +30,6 @@ $g_calendar_key	   = "";
 // Internalisation i18
 $language		   = "en_GB";
 $languages		   = ["en","fr"];
+// Search Parameters
+$searchfooter      = "";
 ?>
