@@ -1,6 +1,7 @@
 <?php
 // Main and General
 $underconstruction = true;
+$ecommerce		     = false;
 $draftsite         = ".sigma.ink";
 $publicsite        = "";
 $maintitle         = "";
