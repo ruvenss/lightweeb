@@ -247,15 +247,15 @@ function rebuildsearch($myDBKey,$dbkey,$publicsite,$maintitle){
 			$siterorbody="<title>ROR Sitemap for $publicsite</title>\n<link>$publicsite</link>";
 			foreach (glob("webpages/*.html") as $filename) {
 				switch ($filename) {
-					case 'header.html':
-					case 'footer.html':
-					case 'search.html':
 					case stristr($filename,'google'):
 					case stristr($filename,'mywot'):
 					case stristr($filename,'bing'):
 					case stristr($filename,'yandex'):
 					case stristr($filename,'profile_'):
-					case '404.html':
+					case 'webpages/404.html':
+					case 'webpages/header.html':
+					case 'webpages/footer.html':
+					case 'webpages/search.html':
 						break;
 					default:
 						if (filesize($filename)>0) {
