@@ -885,13 +885,28 @@ if (isset($_REQUEST['a'])) {
 	}
 	switch ($page_language) {
 		case 'fr':
-			//die("Language loaded fr");
-			break;
 		case 'en':
+		case 'de':
+		case 'es':
+		case 'nl':
+		case 'it':
+		case 'pt':
+		case 'gb':
+		case 'ru':
+		case 'cn':
+		case 'dk':
+		case 'fi':
+		case 'ar':
 			//die("Language loaded en");
 			break;
 		default:
-			$page_language=$browser_lang;
+			
+			if (strlen($languages[0])) {
+				$page_language=$languages[0];
+			} else {
+				$page_language=$browser_lang;
+			}
+			//die ("$page_language=$browser_lang;");
 			$pagefile=$page_language;
 			break;
 	}
