@@ -117,8 +117,6 @@ function slackhook($slacktext,$slack_webhook){
     }
 }
 function slackMessage($slacktext,$channel){
-	//curl -X POST -H 'Authorization: Bearer xoxp-71322161601-71322161633-223579264343-2d36d2f920d772fad42bb2dd8993dbea' -H 'Content-type: application/json' --data '{"channel":"C2394TTPS","text":"Test"}' https://slack.com/api/chat.postMessage
-	//curl -X POST -H 'Authorization: Bearer xoxp-71322161601-71322161633-223579264343-2d36d2f920d772fad42bb2dd8993dbea' -H 'Content-type: application/json' --data '{"channel":"D239E5RAT","text": "Would you like to play a game?"}' https://slack.com/api/chat.postMessage
     if(isset($slacktext)) {
         $slack_webhook="https://slack.com/api/chat.postMessage";
         if (strlen($slack_webhook)>0) {
@@ -903,6 +901,7 @@ if (isset($_REQUEST['a'])) {
 		case 'jp':
 		case 'in':
 		case 'ca':
+		case 'ro':
 			//die("Language loaded en");
 			break;
 		default:
@@ -944,7 +943,7 @@ if (isset($_REQUEST['a'])) {
 		if ($pagefile=="" && strlen($rootpage)>0) {
 			$pagefile=str_replace("/", "", $rootpage);
 		}
-		if ($pagefile=="fr"||$pagefile=="de"||$pagefile=="en"||$pagefile=="es"||$pagefile=="nl"||$pagefile=="it"||$pagefile=="tr"||$pagefile=="cn"||$pagefile=="gr"||$pagefile=="el"||$pagefile=="fi"||$pagefile=="tr"||$pagefile=="in"||$pagefile=="jp"||$pagefile=="ca"){
+		if ($pagefile=="fr"||$pagefile=="de"||$pagefile=="en"||$pagefile=="es"||$pagefile=="nl"||$pagefile=="it"||$pagefile=="tr"||$pagefile=="cn"||$pagefile=="gr"||$pagefile=="el"||$pagefile=="fi"||$pagefile=="tr"||$pagefile=="in"||$pagefile=="jp"||$pagefile=="ca"||$pagefile=="ro"){
 			$pagefile="";
 		}
 
