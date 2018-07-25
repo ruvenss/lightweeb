@@ -943,7 +943,7 @@ if (isset($_REQUEST['a'])) {
 		if ($pagefile=="" && strlen($rootpage)>0) {
 			$pagefile=str_replace("/", "", $rootpage);
 		}
-		if ($pagefile=="fr"||$pagefile=="de"||$pagefile=="en"||$pagefile=="es"||$pagefile=="nl"||$pagefile=="it"||$pagefile=="tr"||$pagefile=="cn"||$pagefile=="gr"||$pagefile=="el"||$pagefile=="fi"||$pagefile=="tr"||$pagefile=="in"||$pagefile=="jp"||$pagefile=="ca"||$pagefile=="ro"){
+		if ($pagefile=="fr"||$pagefile=="de"||$pagefile=="en"||$pagefile=="es"||$pagefile=="nl"||$pagefile=="it"||$pagefile=="pt"||$pagefile=="tr"||$pagefile=="cn"||$pagefile=="gr"||$pagefile=="el"||$pagefile=="fi"||$pagefile=="tr"||$pagefile=="in"||$pagefile=="jp"||$pagefile=="ca"||$pagefile=="ro"){
 			$pagefile="";
 		}
 
