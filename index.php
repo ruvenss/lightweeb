@@ -820,9 +820,11 @@ strong{
 		exec("cd ".getcwd()."/$published_path;rm -R header;rm -R footer;rm -R webpages;");
 		$r="rsync -av /home/$draftsite/published/ /home/$publicsite/";
 		$e="cd ".getcwd()."/$published_path;tar -zcvf /home/".$publicsite_path.".tar.gz *";
-		echo "<br>\n $e \n<br>";
+		$s="rm -R /home/$draftsite/published/*;rm -r /home/$draftsite/published;cd ".getcwd().";tar -zcvf /home/".$draftsite.".tar.gz *";
+		echo "<br>\n $e <br> \n<br>$s";
 		exec($e);
 		exec($r);
+		exec($s);
 	} else {
 		die("You can't publish.");
 	}
