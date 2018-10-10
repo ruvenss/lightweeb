@@ -988,17 +988,6 @@ if (isset($_REQUEST['a'])) {
 			}
 			echo $content;
 		}
-		/*
-		print_r("pagefile=".$pagefile);
-		print_r("\n <br>");
-		print_r($rootpage);
-		print_r("\n <br>");
-		print_r("browser_lang=".$browser_lang);
-		print_r("\n <br>");
-		print_r($_GET);
-		die ();
-		*/
-		
 	} else {
 		if (isset($_GET['s'])) {
 			$docheader = setheader($docheader,"search",$page_language,$translations);
@@ -1014,7 +1003,6 @@ if (isset($_REQUEST['a'])) {
 			echo $content;
 		}
 	}
-
 	$docfooter="";
 	while(!feof($footer)) {
 		$docfooter.=fgets($footer) . "";
@@ -1025,5 +1013,4 @@ if (isset($_REQUEST['a'])) {
 		$docfooter=str_replace("{{".$key."}}", $value, $docfooter);
 	}
 	echo $docfooter;
-	//die("Language loaded $lang_file [$page_language] page:".$_GET['p']." pagefile=".$pagefile." s=".$_GET['s']);
 }
