@@ -3,7 +3,13 @@
 // Data Base is SQLite
 // Use the Config file to setup the website
 ini_set("error_reporting", E_ALL);
-include_once('config.php');
+// check if config.php else go to setup
+if (file_exists('config.php')) {
+	include_once('config.php');
+} else {
+	header("Location: /install/"); /* Redirect browser */
+exit();
+}
 $qtyslash   = substr_count($_SERVER['REQUEST_URI'], '/');
 /* if ($_SERVER["SERVER_PORT"] != 443) {
 	if ($_SERVER['HTTP_HOST']!=$draftsite){
@@ -445,6 +451,7 @@ function getFileConfig($pagefile,$page_language) {
 		case 'header':
 		case 'footer':
 		case 'index':
+		case 'install':
 		case 'search':
 			$configdata=array("","","");
 			break;
@@ -846,6 +853,7 @@ if (isset($_REQUEST['a'])) {
 	$action=trim($_REQUEST['a']);
 	if (strlen($action)>0) {
 		switch($action) {
+
 			case "newsletter":
 				if (isset($_REQUEST['e']) && isset($_REQUEST['fn']) && isset($_REQUEST['ln'])) {
 					newsletterdb($dbkey,$_REQUEST['e'],$_REQUEST['fn'],$_REQUEST['ln']);
@@ -988,6 +996,17 @@ if (isset($_REQUEST['a'])) {
 			}
 			echo $content;
 		}
+		/*
+		print_r("pagefile=".$pagefile);
+		print_r("\n <br>");
+		print_r($rootpage);
+		print_r("\n <br>");
+		print_r("browser_lang=".$browser_lang);
+		print_r("\n <br>");
+		print_r($_GET);
+		die ();
+		*/
+		
 	} else {
 		if (isset($_GET['s'])) {
 			$docheader = setheader($docheader,"search",$page_language,$translations);
@@ -1003,6 +1022,7 @@ if (isset($_REQUEST['a'])) {
 			echo $content;
 		}
 	}
+
 	$docfooter="";
 	while(!feof($footer)) {
 		$docfooter.=fgets($footer) . "";
@@ -1013,4 +1033,5 @@ if (isset($_REQUEST['a'])) {
 		$docfooter=str_replace("{{".$key."}}", $value, $docfooter);
 	}
 	echo $docfooter;
+	//die("Language loaded $lang_file [$page_language] page:".$_GET['p']." pagefile=".$pagefile." s=".$_GET['s']);
 }
