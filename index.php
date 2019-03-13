@@ -343,26 +343,6 @@ function rebuildsearch($myDBKey,$dbkey,$publicsite,$maintitle){
 			}
 			$sitemap=$sitemapheader."\n".$sitemapbody."\n".$sitemapfooter;
 			$sitemapror=$siterorheader."\n".$siterorbody."\n".$siterorfooter;
-			$manifest='{
-				"short_name": "'.$maintitle.'",
-				"name": "'.$maintitle.'",
-				"icons": [{
-					"src": "/img/icon-96.png",
-					"sizes": "96x96",
-					"type": "image/png"
-				},{
-					"src": "/img/icon-144.png",
-					"sizes": "144x144",
-					"type": "image/png"
-				},{
-					"src": "/img/icon-192.png",
-					"sizes": "192x192",
-					"type": "image/png"
-				}],
-				"start_url": "/",
-				"display": "fullscreen",
-				"orientation": "portrait"
-			}';
 			//echo "\r\n<br>Creating Sitemaps...<br>";
 			//echo "<hr>".$sitemap;
 			file_put_contents("sitemap.xml", $sitemap);
