@@ -8,7 +8,7 @@ $maintitle         = "";
 // sqlite config 
 $dbkey             = "p3gf31dk-st04-rp41-u0ca-s9321a0f4vmt";
 // MariaDB Config
-$dbhost			   = "127.0.0.1";
+$dbhost			   = "db.rgwit.be";
 $dbuser			   = "";
 $dbpswd            = "";
 $dbname            = "";
@@ -33,6 +33,7 @@ $language		   = "en_GB";
 $languages		   = ["en","fr"];
 // Search Parameters
 $searchfooter      = "";
+// PWA
 $manifest         = '{
   "name": "Appname",
   "short_name": "Appname",
@@ -41,6 +42,19 @@ $manifest         = '{
   "display": "fullscreen",
   "orientation": "portrait",
   "scope": "/",
-  "start_url": "/"
+  "start_url": "/",
+  "icons": [{
+					"src": "/img/icon-96.png",
+					"sizes": "96x96",
+					"type": "image/png"
+				},{
+					"src": "/img/icon-144.png",
+					"sizes": "144x144",
+					"type": "image/png"
+				},{
+					"src": "/img/icon-192.png",
+					"sizes": "192x192",
+					"type": "image/png"
+	}]
 }';
 ?>
