@@ -33,4 +33,14 @@ $language		   = "en_GB";
 $languages		   = ["en","fr"];
 // Search Parameters
 $searchfooter      = "";
+$manifest         = '{
+  "name": "Appname",
+  "short_name": "Appname",
+  "theme_color": "#2196f3",
+  "background_color": "#2196f3",
+  "display": "fullscreen",
+  "orientation": "portrait",
+  "scope": "/",
+  "start_url": "/"
+}';
 ?>
