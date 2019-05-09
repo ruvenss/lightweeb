@@ -66,90 +66,6 @@ function replace_between($str, $needle_start, $needle_end, $replacement) {
  
     return substr_replace($str,$replacement,  $start, $end - $start);
 }
-function slack($slacktext,$slack_channel,$slack_webhook){
-    if(isset($slacktext) && isset($slack_channel)) {
-        
-        if (strlen($slack_webhook)>0) {
-            include("config.php");
-            $slacktext="$slacktext";
-            if (strlen($slack_webhook)>0){
-                $ch = curl_init( $slack_webhook );
-                $payload = json_encode( array( "channel"=> "#".$slack_channel,"username"=>"Marvin","text"=>$slacktext,"mrkdwn"=>true) );
-                curl_setopt( $ch, CURLOPT_POSTFIELDS, $payload );
-                curl_setopt( $ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
-                # Return response instead of printing.
-                curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-                # Send request.
-                $result = curl_exec($ch);
-                curl_close($ch);
-                # Print response.
-                //echo $result;
-            } else {
-                die(__LINE__.__FUNCTION__."($slacktext,$slack_channel)");
-            }
-        } else {
-            die(__LINE__.__FUNCTION__."($slacktext,$slack_channel)");
-        }
-    } else {
-        die(__LINE__.__FUNCTION__."(missing slacktext,missing slack_channel)");
-    }
-}
-function slackhook($slacktext,$slack_webhook){
-    if(isset($slacktext)) {
-        
-        if (strlen($slack_webhook)>0) {
-            include("config.php");
-            $slacktext="$slacktext";
-            if (strlen($slack_webhook)>0){
-                $ch = curl_init( $slack_webhook );
-                $payload = json_encode( array("username"=>"Marvin","text"=>$slacktext,"mrkdwn"=>true) );
-                curl_setopt( $ch, CURLOPT_POSTFIELDS, $payload );
-                curl_setopt( $ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
-                # Return response instead of printing.
-                curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-                # Send request.
-                $result = curl_exec($ch);
-                curl_close($ch);
-                # Print response.
-                //echo $result;
-            } else {
-                die(__LINE__.__FUNCTION__."($slacktext,$slack_channel)");
-            }
-        } else {
-            die(__LINE__.__FUNCTION__."($slacktext,$slack_channel)");
-        }
-    } else {
-        die(__LINE__.__FUNCTION__."(missing slacktext,missing slack_channel)");
-    }
-}
-function slackMessage($slacktext,$channel){
-    if(isset($slacktext)) {
-        $slack_webhook="https://slack.com/api/chat.postMessage";
-        if (strlen($slack_webhook)>0) {
-            include("config.php");
-            $slacktext="$slacktext";
-            if (strlen($slack_webhook)>0){
-                $ch = curl_init( $slack_webhook );
-                $payload = json_encode( array("channel"=>$channel,"text"=>$slacktext,"mrkdwn"=>true) );
-                curl_setopt( $ch, CURLOPT_POSTFIELDS, $payload );
-                curl_setopt( $ch, CURLOPT_HTTPHEADER, array('Authorization: Bearer xoxp-71322161601-71322161633-223579264343-2d36d2f920d772fad42bb2dd8993dbea','Content-Type:application/json'));
-                # Return response instead of printing.
-                curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-                # Send request.
-                $result = curl_exec($ch);
-                curl_close($ch);
-                # Print response.
-                //echo $result;
-            } else {
-                die(__LINE__.__FUNCTION__."($slacktext,$slack_channel)");
-            }
-        } else {
-            die(__LINE__.__FUNCTION__."($slacktext,$slack_channel)");
-        }
-    } else {
-        die(__LINE__.__FUNCTION__."(missing slacktext,missing slack_channel)");
-    }
-}
 function search($query,$dbkey) {
 	$query=cleanget($query);
 	$searchrawdata="";
@@ -271,7 +187,6 @@ function rebuildsearch($myDBKey,$dbkey,$publicsite,$maintitle){
 							exec($x);
 							$pagefile=str_replace(".html", "", $filename);
 							$configdata = getFileConfig(str_replace("webpages/", "", $pagefile),$languages[0]);
-							//echo "Config data file <b>$pagefile .config</b> title: ".$configdata[0]." <br>\n";
 							$pagecontent = getSiteDump($sd,"en");
 							$db->query('CREATE TABLE IF NOT EXISTS "pages" ( `id` INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, `htmlfile` TEXT NOT NULL, `descfile` TEXT NOT NULL, `lang` TEXT NOT NULL DEFAULT "en", `keywords` TEXT, `title` TEXT )');
 							$results = $db->query('SELECT id FROM pages WHERE htmlfile="'.$filename.'"');
@@ -280,16 +195,16 @@ function rebuildsearch($myDBKey,$dbkey,$publicsite,$maintitle){
 							    $fileid=$row['id'];
 							}
 							if ($fileid>0) {
-							    $query='UPDATE pages SET title="'.str_replace("webpages/", "", $pagefile).'",descfile="'.$configdata[0].'",keywords="'.$pagecontent.'" WHERE id='.$fileid;
+							    $query='UPDATE pages SET title="'.str_replace("webpages/", "", $pagefile).'",descfile="'.$configdata['title'].'",keywords="'.$pagecontent.'" WHERE id='.$fileid;
 									
 							} else {
-								$query='INSERT INTO pages(htmlfile,title,descfile,keywords) VALUES("'.$filename.'","'.str_replace("webpages/", "", $pagefile).'","'.$configdata[0].'","'.$pagecontent.'")';
+								$query='INSERT INTO pages(htmlfile,title,descfile,keywords) VALUES("'.$filename.'","'.str_replace("webpages/", "", $pagefile).'","'.$configdata['title'].'","'.$pagecontent.'")';
 							}
 							$sitemapbody.='<url>';
 							$siterorbody.='<item>';
 								$siterorbody.="\n".'<link>'."\n\t".'https://'.$publicsite.'/'.str_replace("webpages/", "", $pagefile)."</link>\n";
-								$siterorbody.='<title>'.$configdata[0]."</title>\n";
-								$siterorbody.='<description>'.$configdata[0]."</description>\n";
+								$siterorbody.='<title>'.$configdata['title']."</title>\n";
+								$siterorbody.='<description>'.$configdata['description']."</description>\n";
 								$siterorbody.='<ror:updatePeriod>monthly</ror:updatePeriod>';
 								$siterorbody.='<ror:sortOrder>'.$i.'</ror:sortOrder>';
 								$siterorbody.='<ror:resourceOf>sitemap</ror:resourceOf>';
@@ -317,18 +232,18 @@ function rebuildsearch($myDBKey,$dbkey,$publicsite,$maintitle){
 								}
 								//echo "<br>\n Translation sqlite fileid=<strong>$fileid</strong><br>\n";
 								if ($fileid>0) {
-								    $query='UPDATE pages SET title="'.str_replace("webpages/", "", $pagefile).'",descfile="'.$configdata[0].'",keywords="'.$pagecontent.'" WHERE id='.$fileid;
+								    $query='UPDATE pages SET title="'.str_replace("webpages/", "", $pagefile).'",descfile="'.$configdata['title'].'",keywords="'.$pagecontent.'" WHERE id='.$fileid;
 										
 								} else {
-									$query='INSERT INTO pages(htmlfile,title,descfile,keywords,lang) VALUES("'.$filename.'","'.str_replace("webpages/", "", $pagefile).'","'.$configdata[0].'","'.$pagecontent.'","'.$languages[$i].'")';
+									$query='INSERT INTO pages(htmlfile,title,descfile,keywords,lang) VALUES("'.$filename.'","'.str_replace("webpages/", "", $pagefile).'","'.$configdata['title'].'","'.$pagecontent.'","'.$languages[$i].'")';
 								}
 								//echo "// SQLite3 Translation:\n<br>$query<br>//<br>";
 								$db->query($query);
 								$sitemapbody.='<url>';
 								$siterorbody.='<item>';
 									$siterorbody.="\n".'<link>'."\n\t".'https://'.$publicsite.'/'.$languages[$i].'/'.str_replace("webpages/", "", $pagefile)."</link>\n";
-									$siterorbody.='<title>'.$configdata[0]."</title>\n";
-									$siterorbody.='<description>'.$configdata[0]."</description>\n";
+									$siterorbody.='<title>'.$configdata['title']."</title>\n";
+									$siterorbody.='<description>'.$configdata['description']."</description>\n";
 									$siterorbody.='<ror:updatePeriod>monthly</ror:updatePeriod>';
 									$siterorbody.='<ror:sortOrder>'.$i.'</ror:sortOrder>';
 									$siterorbody.='<ror:resourceOf>sitemap</ror:resourceOf>';
@@ -433,45 +348,54 @@ function getFileConfig($pagefile,$page_language) {
 		case 'index':
 		case 'install':
 		case 'search':
-			$configdata=array("","","");
+			$configdata=array("description"=>"","title"=>"","keywords"=>"","type"=>"");
 			break;
-		
 		default:
 			$configfile="webpages/".$page_language.$pagefile.".config";
-			//echo "<br>\n getFileConfig[$configfile] Page Language: <strong>".$page_language."</strong><br>";
-			//$configrawdata="";
 			if (!$configrawdata=file_get_contents($configfile)){
-				file_put_contents($configfile, "||");
-				$configdata=array("","","");
+
+				file_put_contents($configfile, '{"description":"","title":"","keywords":"","type":"article"}');
+				$configdata=array("description"=>"","title"=>"","keywords"=>"","type"=>"");
 			} else{
-				$configdata=explode("|", $configrawdata);
+
+				$rawdata = json_decode($configrawdata,true);
+				$configdata=array("description"=>$rawdata['description'],"title"=>$rawdata['title'],"keywords"=>$rawdata['keywords'],"type"=>$rawdata['type']);
 			}
 			break;
 	}
-	
+
 	return($configdata);
 }
-function setheader($docheader,$pagefile,$page_language,$translations){
+function setheader($version,$docheader,$pagefile,$page_language,$translations){
 	$myDate=date("Y-m-d", filemtime("webpages/".$pagefile.".html"));
 	$myDate.="T".date("H:i:s", filemtime("webpages/".$pagefile.".html"))."+02:00";
 	$configdata = getFileConfig($pagefile,$page_language);
-	$description=ucfirst($configdata[0]);
-	$keywords=$configdata[1];
-	$shortlink=$configdata[2];
-	$title=ucfirst(str_replace("_", " ", $pagefile));
+	$description=ucfirst($configdata['description']);
+	$keywords=$configdata['keywords'];
+	$shortlink=$pagefile;
+	$title=ucfirst($configdata['title']);
 	$description=str_replace('"', "", $description);
 	if (strlen($page_language) && $page_language!="en") {
 		$pagefile=$page_language."/".$pagefile;
 	}
+	include 'config.php';
 	$docheader = str_replace("{{page_language}}",$page_language,$docheader);
-	$docheader = str_replace("{{title}}",$title." | ".$description,$docheader);
+	$docheader = str_replace("{{title}}",$title,$docheader);
+	$docheader = str_replace("{{publicsite}}",$publicsite,$docheader);
 	$docheader = str_replace("{{description}}",$description,$docheader);
 	$docheader = str_replace("{{keywords}}",$keywords,$docheader);
-	$docheader = str_replace("{{shortlink}}",$pagefile,$docheader);
+	
 	$docheader = str_replace("{{timestamp}}",$myDate,$docheader);
+	$docheader = str_replace(".css'",".css?v=$version'",$docheader);
+	$docheader = str_replace(".js'",".js?v=$version'",$docheader);
+	$docheader = str_replace('.css"','.css?v=$version"',$docheader);
+	$docheader = str_replace('.js"','.js?v=$version"',$docheader);
 	$docheader = str_replace("{{mnu_$pagefile}}","dropdown active highlight",$docheader);
 	foreach ($translations as $key => $value) {
 		$docheader=str_replace("{{".$key."}}", $value, $docheader);
+	}
+	if (!$pagefile=="home") {	$docheader = str_replace("{{shortlink}}",$pagefile,$docheader); } else {
+		$docheader = str_replace("{{shortlink}}","",$docheader);
 	}
 	return($docheader);
 }
@@ -519,7 +443,7 @@ strong{
 			exec("rm -r published");
 		}
 		exec("cp -r ".getcwd()."/*.* ".getcwd()."/$published_path/");
-		exec("cp -r ".getcwd()."/.htaccess ".getcwd()."/$published_path/.htaccess");
+		exec("cp -r ".getcwd()."/htaccess_publish ".getcwd()."/$published_path/.htaccess");
 		$dirs = array_filter(glob('*'), 'is_dir');
 		foreach ($dirs as $subfolder) {
 			exec("cp -r ".getcwd()."/$subfolder ".getcwd()."/$published_path/");
@@ -563,9 +487,7 @@ strong{
 		$contentfooter = str_replace(">  <", "><", $contentfooter);
 		$contentfooter = str_replace("> <", "><", $contentfooter);
 		if (sizeof($languages)>0) {
-
 			$header_languages=array();
-
 			for ($i=0; $i < sizeof($languages); $i++) {
 				$header_languages[$i]="";
 				$translations = NULL;
@@ -580,7 +502,6 @@ strong{
 			        foreach ($translations as $key => $value) {
 						$header_languages[$i]=str_replace("{{".$key."}}", $value, $header_languages[$i]);
 					}
-					//echo "$i -- $lang_file: ".$header_languages[$i];
 			    }
 			}
 		} else {
@@ -613,13 +534,14 @@ strong{
 				    	if (sizeof($languages)>0) {
 				    		for ($i=0; $i < sizeof($languages); $i++) {
 				    			$lang_dir="published/".$languages[$i]."/".$basefilename;
-				    			
 				    			if (!file_exists("published/images/index.html")){
 				    				touch("published/images/index.html");
 				    			}
 				    			if (!file_exists("published/images/og/index.html")){
 				    				touch("published/images/og/index.html");
 				    			}
+				    			if (!file_exists("published/images/og/".$languages[$i]."/index.html")){ touch("published/images/og/".$languages[$i]."/index.html"); }
+
 				    			if (!file_exists("published/images/partners/index.html")){
 				    				touch("published/images/partners/index.html");
 				    			}
@@ -652,7 +574,7 @@ strong{
 								        $translations = json_decode($lang_file_content, true);
 								    }
 								    echo "<p><b> Setting Header for :</b> $basefilename in $languages[$i] file:$lang_file</p>\n";
-								    $contentheader=setheader($header_languages[$i],$basefilename,$languages[$i],$translations);
+								    $contentheader=setheader($version,$header_languages[$i],$basefilename,$languages[$i],$translations);
 								    //echo "<p style='font-family:courier'>".$contentheader."</p>";
 								    $webpage_content=file_get_contents($filenamehtml);
 								    //$webpage_content_arr=explode("\n", $webpage_content);
@@ -718,7 +640,7 @@ strong{
 			    if (strlen($filename)) {
 			    	$e="minify -o ".getcwd()."/published/".$filename." ".getcwd()."/".$filename;
 			    	//echo "<br>\n $e";
-			    	exec ($e);
+			    	//exec ($e);
 			    }
 			}
 			foreach (glob("images/*.png") as $filename) {
@@ -773,6 +695,42 @@ strong{
 				    }
 				}
 			}
+			if (file_exists("images/partners")) {
+				foreach (glob("images/partners/*.png") as $filename) {
+				    if (strlen($filename)) {
+				    	$e="optipng -o7 -quiet ".getcwd()."/".$filename." ".getcwd()."/published/".$filename;
+				    	//echo "<br>\n $e";
+				    	exec ($e);
+				    }
+				}
+			}
+			if (file_exists("images/team")) {
+				foreach (glob("images/team/*.png") as $filename) {
+				    if (strlen($filename)) {
+				    	$e="optipng -o7 -quiet ".getcwd()."/".$filename." ".getcwd()."/published/".$filename;
+				    	//echo "<br>\n $e";
+				    	exec ($e);
+				    }
+				}
+			}
+			if (file_exists("images/services")) {
+				foreach (glob("images/services/*.png") as $filename) {
+				    if (strlen($filename)) {
+				    	$e="optipng -o7 -quiet ".getcwd()."/".$filename." ".getcwd()."/published/".$filename;
+				    	//echo "<br>\n $e";
+				    	exec ($e);
+				    }
+				}
+			}
+			if (file_exists("images/icons")) {
+				foreach (glob("images/icons/*.png") as $filename) {
+				    if (strlen($filename)) {
+				    	$e="optipng -o7 -quiet ".getcwd()."/".$filename." ".getcwd()."/published/".$filename;
+				    	//echo "<br>\n $e";
+				    	exec ($e);
+				    }
+				}
+			}
 			foreach (glob("images/og/*.png") as $filename) {
 			    if (strlen($filename)) {
 			    	$e="optipng -o7 -quiet ".getcwd()."/".$filename." ".getcwd()."/published".$filename;
@@ -784,7 +742,7 @@ strong{
 			    if (strlen($filename)) {
 			    	$e="minify -o ".getcwd()."/published/".$filename." ".getcwd()."/".$filename;
 			    	//echo "<br>\n $e";
-			    	exec ($e);
+			    	//exec ($e);
 			    }
 			}
 		}
@@ -799,6 +757,7 @@ strong{
 		exec("cd ".getcwd().";cp $dbkey $published_path");
 		exec("cd ".getcwd().";cp sitemap* $published_path");
 		exec("cd ".getcwd().";cp manifest* $published_path");
+		exec("cd ".getcwd().";cp favicon* $published_path");
 		if (sizeof($languages)>0) {
 			for ($i=0; $i < sizeof($languages); $i++) {
 				exec("cd ".getcwd()."/published;cp ".$languages[$i]."/home/index.html ".$languages[$i]."/index.html");
@@ -891,9 +850,9 @@ if (isset($_REQUEST['a'])) {
 		case 'jp':
 		case 'in':
 		case 'ca':
-		case 'ro':
-		case 'cz':
 		case 'pl':
+		case 'ro':
+		case 'cs':
 			//die("Language loaded en");
 			break;
 		default:
@@ -907,7 +866,7 @@ if (isset($_REQUEST['a'])) {
 			$pagefile=$page_language;
 			break;
 	}
-	$pagefile = "Home | $maintitle";
+	$pagefile = $maintitle;
 	$docheader = "";
 	$description = "";
 	$keywords = "";
@@ -930,28 +889,22 @@ if (isset($_REQUEST['a'])) {
 	//die("Language loaded $lang_file page:".$_GET['p']);
 	if (isset($_GET['p'])) {
 		$pagefile=cleanget($_GET['p']);
-		
 		if ($pagefile=="" && strlen($rootpage)>0) {
 			$pagefile=str_replace("/", "", $rootpage);
 		}
-		if ($pagefile=="fr"||$pagefile=="de"||$pagefile=="en"||$pagefile=="es"||$pagefile=="nl"||$pagefile=="it"||$pagefile=="pt"||$pagefile=="tr"||$pagefile=="cn"||$pagefile=="gr"||$pagefile=="el"||$pagefile=="fi"||$pagefile=="tr"||$pagefile=="in"||$pagefile=="jp"||$pagefile=="ca"||$pagefile=="ro"||$pagefile=="cz"||$pagefile=="pl"){
+		if ($pagefile=="fr"||$pagefile=="de"||$pagefile=="en"||$pagefile=="es"||$pagefile=="nl"||$pagefile=="it"||$pagefile=="pt"||$pagefile=="tr"||$pagefile=="cn"||$pagefile=="gr"||$pagefile=="el"||$pagefile=="fi"||$pagefile=="tr"||$pagefile=="in"||$pagefile=="jp"||$pagefile=="ca"||$pagefile=="ro"||$pagefile=="pl"||$pagefile=="cs"){
 			$pagefile="";
 		}
-
 		if ($pagefile!="") {
-
 			if (file_exists("webpages/".$pagefile.".html")) {
-				$docheader=setheader($docheader,$pagefile,$page_language,$translations);
+				$docheader=setheader($version,$docheader,$pagefile,$page_language,$translations);
 				echo $docheader;
 				if (file_exists("webpages/".$page_language."_".$pagefile.".html")) {
-					
 					echo file_get_contents("webpages/".$pagefile.".html");
 				} else {
-
 					// Draft Status, just translate in real time.
 					$content=file_get_contents("webpages/".$pagefile.".html");
 					//print_r($translations);
-					
 					foreach ($translations as $key => $value) {
 						$content=str_replace("{{".$key."}}", $value, $content);
 						//print_r("{{".$key."}}".$value);
@@ -962,14 +915,13 @@ if (isset($_REQUEST['a'])) {
 			} else {
 				//die($pagefile);
 				$pagefile=str_replace("/", "", $rootpage);
-				$docheader=setheader($docheader,"404",$page_language,$translations);
+				$docheader=setheader($version,$docheader,"404",$page_language,$translations);
 				echo $docheader;
 				$content=file_get_contents("webpages/404.html");
 				echo $content;
 			}
 		} else {
-
-			$docheader=setheader($docheader,"home",$page_language,$translations,$description,$keywords);
+			$docheader=setheader($version,$docheader,"home",$page_language,$translations,$description,$keywords);
 			echo $docheader;
 			$content=file_get_contents("webpages/home.html");
 			foreach ($translations as $key => $value) {
@@ -987,14 +939,13 @@ if (isset($_REQUEST['a'])) {
 		print_r($_GET);
 		die ();
 		*/
-		
 	} else {
 		if (isset($_GET['s'])) {
-			$docheader = setheader($docheader,"search",$page_language,$translations);
+			$docheader = setheader($version,$docheader,"search",$page_language,$translations);
 			echo $docheader;
 			search($_GET['s'],$dbkey);
 		} else {
-			$docheader=setheader($docheader,"home",$page_language,$translations,$description,$keywords);
+			$docheader=setheader($version,$docheader,"home",$page_language,$translations,$description,$keywords);
 			echo $docheader;
 			$content=file_get_contents("webpages/home.html");
 			foreach ($translations as $key => $value) {

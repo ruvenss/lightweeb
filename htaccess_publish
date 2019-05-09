@@ -1,0 +1,8 @@
+RewriteEngine On
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+RewriteBase /
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI}  ^/([^/]+)/?([^/]*)?/?([^/]*)?/?([^/]*)?/?   [NC]
+RewriteRule .*    index.php?page=%{REQUEST_URI}&lang=%1&p=%2&key3=%3&key4=%4  [L]
