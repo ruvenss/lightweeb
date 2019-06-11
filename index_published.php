@@ -14,32 +14,85 @@ function replace_between($str, $needle_start, $needle_end, $replacement) {
     $end = $start === false ? strlen($str) : $pos;
     return substr_replace($str,$replacement,  $start, $end - $start);
 }
-function slack($slacktext,$slack_channel,$slack_webhook){
-    if(isset($slacktext) && isset($slack_channel)) {
-        if (strlen($slack_webhook)>0) {
-            include("config.php");
-            $slacktext="$slacktext";
-            if (strlen($slack_webhook)>0){
-                $ch = curl_init( $slack_webhook );
-                $payload = json_encode( array( "channel"=> "#".$slack_channel,"username"=>"Marvin","text"=>$slacktext,"mrkdwn"=>true) );
-                curl_setopt( $ch, CURLOPT_POSTFIELDS, $payload );
-                curl_setopt( $ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
-                # Return response instead of printing.
-                curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-                # Send request.
-                $result = curl_exec($ch);
-                curl_close($ch);
-                # Print response.
-                //echo $result;
-            } else {
-                die(__LINE__.__FUNCTION__."($slacktext,$slack_channel)");
-            }
-        } else {
-            die(__LINE__.__FUNCTION__."($slacktext,$slack_channel)");
-        }
-    } else {
-        die(__LINE__.__FUNCTION__."(missing slacktext,missing slack_channel)");
-    }
+function contactForm(){
+	if (isset($_REQUEST['name']) && isset($_REQUEST['email']) && isset($_REQUEST['countryCode']) && isset($_REQUEST['mobile']) && isset($_REQUEST['subject']) && isset($_REQUEST['message'])) {
+		$contact_name=trim($_REQUEST['name']);
+		$contact_email=trim($_REQUEST['email']);
+		$contact_countryCode=trim($_REQUEST['countryCode']);
+		$contact_mobile=trim($_REQUEST['mobile']);
+		$contact_subject=trim($_REQUEST['subject']);
+		$contact_message=trim($_REQUEST['message']);
+		$contact_mobile=str_replace(" ", "", $contact_mobile);
+		$contact_mobile=str_replace("/", "", $contact_mobile);
+		$contact_mobile=str_replace("-", "", $contact_mobile);
+		$contact_mobile=str_replace(".", "", $contact_mobile);
+		$contact_mobile=str_replace(",", "", $contact_mobile);
+		$contact_mobile=str_replace("=", "", $contact_mobile);
+		$contact_mobile=str_replace("(", "", $contact_mobile);
+		$contact_mobile=str_replace(")", "", $contact_mobile);
+		$contact_countryCode=str_replace("+", "", $contact_countryCode);
+		$contact_names=explode(" ", $contact_name);
+		$contact_firstname=$contact_names[0];
+		$contact_language=substr(trim($_REQUEST['Language']), 0,2);
+		include 'config.php';
+		if (filter_var($contact_email, FILTER_VALIDATE_EMAIL) && strlen($nizuapikey)>0 && $nizusenderid>0) {
+			$content="New message from $contact_name,<br><br><h4>Form:</h4><br><p><table><tr><td>Name</td><td>$contact_name</td></tr><tr><td>e-mail</td><td>$contact_email</td></tr><tr><td>Mobile</td><td>+$contact_countryCode$contact_mobile</td></tr><tr><td>Language</td><td>$contact_language</td></tr><tr><td>Subject</td><td>$contact_subject</td></tr><tr><td>Message</td><td>$contact_message</td></tr></table></p>";
+			$contentto="This is a copy of your data sent to $publicsite staff,<br><br><h4>Form:</h4><br><p><table><tr><td>Name</td><td>$contact_name</td></tr><tr><td>e-mail</td><td>$contact_email</td></tr><tr><td>Mobile</td><td>$contact_mobile</td></tr><tr><td>Language</td><td>$contact_language</td></tr><tr><td>Subject</td><td>$contact_subject</td></tr><tr><td>Message</td><td>$contact_message</td></tr></table></p>";
+			$to=$nizusendermail;
+			$subject='Message from '.$contact_name.' via your website';
+			exec('curl -d "a=sendMail" -d "key=zFaZdHVYiseUsRgmqnm9MerIPBC4T1Re" -d "sender_id=1" -d "html='.$content.'" -d "toReceivers[]='.$to.'" -d "subject='.$subject.'"  https://api.nizu.be/mail/');
+			$execemail='curl -d "a=sendMail" -d "key='.$nizuapikey.'" -d "sender_id='.$nizusenderid.'" -d "html='.$contentto.'" -d "toReceivers[]='.$contact_email.'" -d "subject='.$publicsite .' Message"  https://api.nizu.be/mail/';
+			exec($execemail);
+			// WhatsApp Notification
+			switch ($contact_language) {
+				case 'en':
+					$messagewhatsapp="Dear $contact_firstname, thank you for contacting $publicsite . We have received your message and our staff will get back to you ASAP.";
+					break;
+				case 'fr':
+					$messagewhatsapp="Cher $contact_firstname, merci d'avoir contacté $publicsite. Nous avons reçu votre message et notre personnel vous répondra dans les meilleurs délais.";
+					break;
+				case 'es':
+					$messagewhatsapp="Estimado(a) $contact_firstname, gracias por contactar $publicsite. Hemos recibido su mensaje y nuestro personal se pondrá en contacto con usted lo antes posible.";
+					break;
+				case 'nl':
+					$messagewhatsapp="Beste $contact_firstname, bedankt voor het contacteren van $publicsite. We hebben uw bericht ontvangen en onze medewerkers zullen zo snel mogelijk contact met u opnemen";
+					break;
+				default:
+					$messagewhatsapp="Dear $contact_firstname, thank you for contacting $publicsite . We have received your message and our staff will get back to you ASAP.";
+					break;
+			}
+			$execwhatsapp='curl -d "a=sendWhatsapp" -d "key='.$nizuapikey.'" -d "sender_id='.$nizusenderid.'" -d "message='.$messagewhatsapp.'" -d "receiver='.$contact_countryCode.$contact_mobile.'" https://api.nizu.be/whatsapp/';
+        	$e=exec($execwhatsapp);
+			header("Location: ".$contact_language."/message_sent/");
+		} else {
+			header("Location: ".$contact_language."/message_error/");
+		}
+	} else {
+		header("Location: ".$contact_language."/message_error/");
+	}
+}
+function validatephone(){
+	if (isset($_REQUEST['phone'])) {
+		$phone=trim($_REQUEST['phone']);
+		$phone=preg_replace("/[^0-9]/", "",$phone);
+		include 'config.php';
+		if (strlen($nizuapikey)>0 && $nizusenderid>0) {
+			$execvalidation='curl -d "a=phone" -d "key='.$nizuapikey.'" -d "sender_id='.$nizusenderid.'" -d "phone='.$phone.'" https://api.nizu.be/validator/';
+        	$e=exec($execvalidation);
+        	$ans=json_decode($e,true);
+        	if ($ans['data']['valid']) {
+        		if ($ans['data']['number_type']=="MOBILE") {
+        			die(json_encode(array("valid"=>true)));
+        		} else {
+        			die(json_encode(array("valid"=>"false")));
+        		}
+        	} else {
+        		die(json_encode(array("valid"=>"false")));
+        	}
+    	} else {
+    		die(json_encode(array("valid"=>"false")));
+    	}
+	}
 }
 function cleanget($page) {
 	$page=str_replace(".", "", $page);
@@ -106,6 +159,11 @@ if (isset($_REQUEST['a'])) {
 	$action=trim($_REQUEST['a']);
 	if (strlen($action)>0) {
 		switch($action) {
+			case "validatephone":
+				validatephone();
+			case "contactform":
+				contactForm();
+				break;
 			case "whoiam":
 				break;
 			default:

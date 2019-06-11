@@ -172,10 +172,15 @@ function rebuildsearch($myDBKey,$dbkey,$publicsite,$maintitle){
 					case stristr($filename,'bing'):
 					case stristr($filename,'yandex'):
 					case stristr($filename,'profile_'):
+					case stristr($filename,'message_sent'):
+					case stristr($filename,'message_error'):
 					case 'webpages/404.html':
 					case 'webpages/header.html':
 					case 'webpages/footer.html':
 					case 'webpages/search.html':
+					case 'webpages/message_sent.html':
+					case 'webpages/message_error.html':
+					case 'webpages/home.html':
 						break;
 					default:
 						if (filesize($filename)>0) {
@@ -375,7 +380,7 @@ function setheader($version,$docheader,$pagefile,$page_language,$translations){
 	$shortlink=$pagefile;
 	$title=ucfirst($configdata['title']);
 	$description=str_replace('"', "", $description);
-	if (strlen($page_language) && $page_language!="en") {
+	if (strlen($page_language)) {
 		$pagefile=$page_language."/".$pagefile;
 	}
 	include 'config.php';
@@ -384,19 +389,24 @@ function setheader($version,$docheader,$pagefile,$page_language,$translations){
 	$docheader = str_replace("{{publicsite}}",$publicsite,$docheader);
 	$docheader = str_replace("{{description}}",$description,$docheader);
 	$docheader = str_replace("{{keywords}}",$keywords,$docheader);
-	
 	$docheader = str_replace("{{timestamp}}",$myDate,$docheader);
-	$docheader = str_replace(".css'",".css?v=$version'",$docheader);
-	$docheader = str_replace(".js'",".js?v=$version'",$docheader);
-	$docheader = str_replace('.css"','.css?v=$version"',$docheader);
-	$docheader = str_replace('.js"','.js?v=$version"',$docheader);
+	$docheader = str_replace("{{maintitle}}",$maintitle,$docheader);
+	$docheader = str_replace(".css'",".css?v=".$version."'",$docheader);
+	$docheader = str_replace(".js'",".js?v=".$version."'",$docheader);
+	$docheader = str_replace('.css"','.css?v='.$version.'"',$docheader);
+	$docheader = str_replace('.js"','.js?v='.$version.'"',$docheader);
 	$docheader = str_replace("{{mnu_$pagefile}}","dropdown active highlight",$docheader);
 	foreach ($translations as $key => $value) {
 		$docheader=str_replace("{{".$key."}}", $value, $docheader);
 	}
-	if (!$pagefile=="home") {	$docheader = str_replace("{{shortlink}}",$pagefile,$docheader); } else {
+	if ($pagefile == "home") {
 		$docheader = str_replace("{{shortlink}}","",$docheader);
+		
+	} else {
+		//$docheader = str_replace("{{shortlink}}","",$docheader);
+		$docheader = str_replace("{{shortlink}}",$pagefile,$docheader); 
 	}
+
 	return($docheader);
 }
 function publish($myDBKey,$dbkey,$publicsite){
@@ -437,13 +447,22 @@ strong{
 	echo '<center>Publishing '.$publicsite.'</center><br>';
 	if ($myDBKey==$dbkey AND strlen($publicsite)>0) {
 		$published_path="published";
+		echo '<center>Publishing in temp folder /'.$published_path.'/</center><br>';
 		if (!file_exists($published_path)) {
 		    mkdir($published_path, 0777, true);
+		    echo 'mkdir folder '.$published_path.'<br>';
 		} else {
 			exec("rm -r published");
 		}
-		exec("cp -r ".getcwd()."/*.* ".getcwd()."/$published_path/");
-		exec("cp -r ".getcwd()."/htaccess_publish ".getcwd()."/$published_path/.htaccess");
+
+		$e=exec("cp -r ".getcwd()."/*.* ".getcwd()."/$published_path/");
+		echo '<table><tr>';
+		echo "<td>Copy of full structure result:  <strong>$e</strong></td>";
+		echo '</tr></table>';
+		$e=exec("cp -r ".getcwd()."/htaccess_publish ".getcwd()."/$published_path/.htaccess");
+		echo '<table><tr>';
+		echo "<td>Copy of hidden htaccess result:  <strong>$e</strong></td>";
+		echo '</tr></table>';
 		$dirs = array_filter(glob('*'), 'is_dir');
 		foreach ($dirs as $subfolder) {
 			exec("cp -r ".getcwd()."/$subfolder ".getcwd()."/$published_path/");
@@ -481,8 +500,14 @@ strong{
 		$contentfooter = str_replace("  ", " ", $contentfooter);
 		$contentfooter = str_replace("   ", " ", $contentfooter);
 		$contentfooter = str_replace("    ", " ", $contentfooter);
+		$contentfooter = str_replace("     ", " ", $contentfooter);
+		$contentfooter = str_replace("    ", " ", $contentfooter);
 		$contentfooter = str_replace("   ", " ", $contentfooter);
 		$contentfooter = str_replace("  ", " ", $contentfooter);
+		$contentfooter = str_replace(">        <", "><", $contentfooter);
+		$contentfooter = str_replace(">       <", "><", $contentfooter);
+		$contentfooter = str_replace(">      <", "><", $contentfooter);
+		$contentfooter = str_replace(">    <", "><", $contentfooter);
 		$contentfooter = str_replace(">   <", "><", $contentfooter);
 		$contentfooter = str_replace(">  <", "><", $contentfooter);
 		$contentfooter = str_replace("> <", "><", $contentfooter);
@@ -518,6 +543,8 @@ strong{
 					case stristr($filenamehtml,'bing'):
 					case stristr($filenamehtml,'yandex'):
 					case stristr($filenamehtml,'profile_'):
+					case stristr($filenamehtml,'message_sent'):
+					case stristr($filenamehtml,'message_error'):
 						$content = file_get_contents($filenamehtml);
 						$new_content=str_replace("\n", " ", $content);
 						$new_content=str_replace("\r", " ", $new_content);
@@ -574,6 +601,7 @@ strong{
 								        $translations = json_decode($lang_file_content, true);
 								    }
 								    echo "<p><b> Setting Header for :</b> $basefilename in $languages[$i] file:$lang_file</p>\n";
+								    
 								    $contentheader=setheader($version,$header_languages[$i],$basefilename,$languages[$i],$translations);
 								    //echo "<p style='font-family:courier'>".$contentheader."</p>";
 								    $webpage_content=file_get_contents($filenamehtml);
@@ -763,7 +791,11 @@ strong{
 				exec("cd ".getcwd()."/published;cp ".$languages[$i]."/home/index.html ".$languages[$i]."/index.html");
 			}
 		}
-		exec("cd ".getcwd()."/$published_path;rm -R header;rm -R footer;rm -R webpages;");
+		$deleteheaders="cd ".getcwd()."/$published_path;rm -R header;rm -R footer;rm -R webpages;";
+		$eresult=exec($deleteheaders);
+		echo '<table><tr>';
+		echo "<td>Exec deleteheaders result:  </td><td><strong>$eresult</strong></td>";
+		echo '</tr></table>';
 		$r="rsync -av /home/$draftsite/published/ /home/$publicsite/";
 		$e="cd ".getcwd()."/$published_path;tar -zcvf /home/".$publicsite_path.".tar.gz *";
 		$s="rm -R /home/$draftsite/published/*;rm -r /home/$draftsite/published;cd ".getcwd().";tar -zcvf /home/".$draftsite.".tar.gz *";
@@ -773,6 +805,86 @@ strong{
 		exec($s);
 	} else {
 		die("You can't publish.");
+	}
+}
+function contactForm(){
+	if (isset($_REQUEST['name']) && isset($_REQUEST['email']) && isset($_REQUEST['countryCode']) && isset($_REQUEST['mobile']) && isset($_REQUEST['subject']) && isset($_REQUEST['message'])) {
+		$contact_name=trim($_REQUEST['name']);
+		$contact_email=trim($_REQUEST['email']);
+		$contact_countryCode=trim($_REQUEST['countryCode']);
+		$contact_mobile=trim($_REQUEST['mobile']);
+		$contact_subject=trim($_REQUEST['subject']);
+		$contact_message=trim($_REQUEST['message']);
+		$contact_mobile=str_replace(" ", "", $contact_mobile);
+		$contact_mobile=str_replace("/", "", $contact_mobile);
+		$contact_mobile=str_replace("-", "", $contact_mobile);
+		$contact_mobile=str_replace(".", "", $contact_mobile);
+		$contact_mobile=str_replace(",", "", $contact_mobile);
+		$contact_mobile=str_replace("=", "", $contact_mobile);
+		$contact_mobile=str_replace("(", "", $contact_mobile);
+		$contact_mobile=str_replace(")", "", $contact_mobile);
+		$contact_countryCode=str_replace("+", "", $contact_countryCode);
+		$contact_names=explode(" ", $contact_name);
+		$contact_firstname=$contact_names[0];
+		$contact_language=substr(trim($_REQUEST['Language']), 0,2);
+		include 'config.php';
+		if (filter_var($contact_email, FILTER_VALIDATE_EMAIL) && strlen($nizuapikey)>0 && $nizusenderid>0) {
+			$content="New message from $contact_name,<br><br><h4>Form:</h4><br><p><table><tr><td>Name</td><td>$contact_name</td></tr><tr><td>e-mail</td><td>$contact_email</td></tr><tr><td>Mobile</td><td>+$contact_countryCode$contact_mobile</td></tr><tr><td>Language</td><td>$contact_language</td></tr><tr><td>Subject</td><td>$contact_subject</td></tr><tr><td>Message</td><td>$contact_message</td></tr></table></p>";
+			$contentto="This is a copy of your data sent to $publicsite staff,<br><br><h4>Form:</h4><br><p><table><tr><td>Name</td><td>$contact_name</td></tr><tr><td>e-mail</td><td>$contact_email</td></tr><tr><td>Mobile</td><td>$contact_mobile</td></tr><tr><td>Language</td><td>$contact_language</td></tr><tr><td>Subject</td><td>$contact_subject</td></tr><tr><td>Message</td><td>$contact_message</td></tr></table></p>";
+			$to=$nizusendermail;
+			$subject='Message from '.$contact_name.' via your website';
+			exec('curl -d "a=sendMail" -d "key=zFaZdHVYiseUsRgmqnm9MerIPBC4T1Re" -d "sender_id=1" -d "html='.$content.'" -d "toReceivers[]='.$to.'" -d "subject='.$subject.'"  https://api.nizu.be/mail/');
+			$execemail='curl -d "a=sendMail" -d "key='.$nizuapikey.'" -d "sender_id='.$nizusenderid.'" -d "html='.$contentto.'" -d "toReceivers[]='.$contact_email.'" -d "subject='.$publicsite .' Message"  https://api.nizu.be/mail/';
+			exec($execemail);
+			// WhatsApp Notification
+			switch ($contact_language) {
+				case 'en':
+					$messagewhatsapp="Dear $contact_firstname, thank you for contacting $publicsite . We have received your message and our staff will get back to you ASAP.";
+					break;
+				case 'fr':
+					$messagewhatsapp="Cher $contact_firstname, merci d'avoir contacté $publicsite. Nous avons reçu votre message et notre personnel vous répondra dans les meilleurs délais.";
+					break;
+				case 'es':
+					$messagewhatsapp="Estimado(a) $contact_firstname, gracias por contactar $publicsite. Hemos recibido su mensaje y nuestro personal se pondrá en contacto con usted lo antes posible.";
+					break;
+				case 'nl':
+					$messagewhatsapp="Beste $contact_firstname, bedankt voor het contacteren van $publicsite. We hebben uw bericht ontvangen en onze medewerkers zullen zo snel mogelijk contact met u opnemen";
+					break;
+				default:
+					$messagewhatsapp="Dear $contact_firstname, thank you for contacting $publicsite . We have received your message and our staff will get back to you ASAP.";
+					break;
+			}
+			$execwhatsapp='curl -d "a=sendWhatsapp" -d "key='.$nizuapikey.'" -d "sender_id='.$nizusenderid.'" -d "message='.$messagewhatsapp.'" -d "receiver='.$contact_countryCode.$contact_mobile.'" https://api.nizu.be/whatsapp/';
+        	$e=exec($execwhatsapp);
+			header("Location: ".$contact_language."/message_sent/");
+		} else {
+			header("Location: ".$contact_language."/message_error/");
+		}
+	} else {
+		header("Location: ".$contact_language."/message_error/");
+	}
+}
+function validatephone(){
+	if (isset($_REQUEST['phone'])) {
+		$phone=trim($_REQUEST['phone']);
+		$phone=preg_replace("/[^0-9]/", "",$phone);
+		include 'config.php';
+		if (strlen($nizuapikey)>0 && $nizusenderid>0) {
+			$execvalidation='curl -d "a=phone" -d "key='.$nizuapikey.'" -d "sender_id='.$nizusenderid.'" -d "phone='.$phone.'" https://api.nizu.be/validator/';
+        	$e=exec($execvalidation);
+        	$ans=json_decode($e,true);
+        	if ($ans['data']['valid']) {
+        		if ($ans['data']['number_type']=="MOBILE") {
+        			die(json_encode(array("valid"=>true)));
+        		} else {
+        			die(json_encode(array("valid"=>"false")));
+        		}
+        	} else {
+        		die(json_encode(array("valid"=>"false")));
+        	}
+    	} else {
+    		die(json_encode(array("valid"=>"false")));
+    	}
 	}
 }
 function content_vars($content){
@@ -792,7 +904,11 @@ if (isset($_REQUEST['a'])) {
 	$action=trim($_REQUEST['a']);
 	if (strlen($action)>0) {
 		switch($action) {
-
+			case "validatephone":
+				validatephone();
+			case "contactform":
+				contactForm();
+				break;
 			case "newsletter":
 				if (isset($_REQUEST['e']) && isset($_REQUEST['fn']) && isset($_REQUEST['ln'])) {
 					newsletterdb($dbkey,$_REQUEST['e'],$_REQUEST['fn'],$_REQUEST['ln']);
@@ -897,6 +1013,7 @@ if (isset($_REQUEST['a'])) {
 		}
 		if ($pagefile!="") {
 			if (file_exists("webpages/".$pagefile.".html")) {
+				//die($page_language);
 				$docheader=setheader($version,$docheader,$pagefile,$page_language,$translations);
 				echo $docheader;
 				if (file_exists("webpages/".$page_language."_".$pagefile.".html")) {
