@@ -1,10 +1,15 @@
 <?php
 // Main and General
+$version           = "1.0";
 $underconstruction = true;
 $ecommerce         = false;
 $draftsite         = ".sigma.ink";
 $publicsite        = "";
 $maintitle         = "";
+$nizuapikey        = "";
+$nizusenderid      = 0;
+$nizusendermail    = "";
+$nizusendergsm     = "";
 // sqlite config 
 $dbkey             = "p3gf31dk-st04-rp41-u0ca-s9321a0f4vmt";
 // MariaDB Config
