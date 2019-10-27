@@ -4,20 +4,94 @@
 // Use the Config file to setup the website
 ini_set("error_reporting", E_ALL);
 // check if config.php else go to setup
+$version = "1.0";
 if (file_exists('config.php')) {
 	include_once('config.php');
 } else {
 	header("Location: /install/"); /* Redirect browser */
 exit();
 }
-$qtyslash   = substr_count($_SERVER['REQUEST_URI'], '/');
-/* if ($_SERVER["SERVER_PORT"] != 443) {
-	if ($_SERVER['HTTP_HOST']!=$draftsite){
-		$redir = "Location: http://" . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'];
-		header($redir);
-		exit();
+$password_page = '<html>
+		<head>
+			<title>'.$maintitle .'</title>
+			<style>
+				body{
+					background-color:black;
+					color:#03A9F4;
+					font-family:sans,courier-new,tahoma;
+					font-size:medium;
+					
+				}
+				input {
+					border-color:#03A9F4;
+					border-width:2px;
+					border-style:solid;
+					border-radius:20px;
+					background-color:black;
+					font-size:large;
+					color:#03A9F4;
+					padding:5px;
+				}
+				.cardframe {
+					text-align:center;
+				}
+				.card {
+					border-color:#03A9F4;
+					border-width:2px;
+					border-style:solid;
+					border-radius:20px;
+					padding:15px;
+					width:400px;
+					position: absolute;
+				    top: 50%;
+				    left: 50%;
+				    margin-top: -100px;
+				    margin-left: -200px;
+				    height: 200px;
+				    text-align:center;
+				}
+				button{
+					margin-top:10px;
+					height:35px;
+					min-width:200px;
+					background-color:#03A9F4;
+					border-color:#03A9F4;
+					color:white;
+					font-size:larger;
+					border-radius:20px;
+				}
+			</style>
+		</head>
+		<body>
+			<p>
+				<div class="card">
+					<form action="/" method="post">
+						<input name="password" placeholder="Password" type="password"><br>
+						<hr>
+						<button>Login</button>
+					</form>
+				</div>
+			</p>
+		</body>
+		</html>';
+session_start();
+if (strlen($draftpassword)>0) {
+	if (!isset($_SESSION['dbkey'])) {
+		if (isset($_POST['password'])) {
+			if ($_POST['password']==$dbkey ) {
+				$_SESSION['dbkey']=$dbkey;
+				header("Location: /");
+			} else {
+				echo $password_page;
+			}			
+		} else {
+			echo $password_page;
+		}
+		
+		die();
 	}
-}*/
+}
+$qtyslash   = substr_count($_SERVER['REQUEST_URI'], '/');
 class MyDB extends SQLite3 {
 	function __construct() {
 		include("config.php");
@@ -815,6 +889,7 @@ function contactForm(){
 		$contact_mobile=trim($_REQUEST['mobile']);
 		$contact_subject=trim($_REQUEST['subject']);
 		$contact_message=trim($_REQUEST['message']);
+		$country = trim($_REQUEST['country']);
 		$contact_mobile=str_replace(" ", "", $contact_mobile);
 		$contact_mobile=str_replace("/", "", $contact_mobile);
 		$contact_mobile=str_replace("-", "", $contact_mobile);
@@ -823,39 +898,63 @@ function contactForm(){
 		$contact_mobile=str_replace("=", "", $contact_mobile);
 		$contact_mobile=str_replace("(", "", $contact_mobile);
 		$contact_mobile=str_replace(")", "", $contact_mobile);
+		$temp = str_split($contact_mobile);
+		$spaceArr = array(" ");
+		for ($i=100; $i > 0; $i--) { 
+			if(isset($temp[$i])){
+				if($temp[$i] !== " "){
+					if(isset($temp[$i+1])){
+						if($temp[$i+1] !== " "){
+							array_splice( $temp, $i, 0, $spaceArr );
+						}
+					}
+				}
+			}
+		}
+		$contact_mobile_string = implode("",$temp);
 		$contact_countryCode=str_replace("+", "", $contact_countryCode);
 		$contact_names=explode(" ", $contact_name);
 		$contact_firstname=$contact_names[0];
 		$contact_language=substr(trim($_REQUEST['Language']), 0,2);
+		if(strlen($contact_language)<2){
+			$contact_language = "en";
+		}
 		include 'config.php';
 		if (filter_var($contact_email, FILTER_VALIDATE_EMAIL) && strlen($nizuapikey)>0 && $nizusenderid>0) {
-			$content="New message from $contact_name,<br><br><h4>Form:</h4><br><p><table><tr><td>Name</td><td>$contact_name</td></tr><tr><td>e-mail</td><td>$contact_email</td></tr><tr><td>Mobile</td><td>+$contact_countryCode$contact_mobile</td></tr><tr><td>Language</td><td>$contact_language</td></tr><tr><td>Subject</td><td>$contact_subject</td></tr><tr><td>Message</td><td>$contact_message</td></tr></table></p>";
-			$contentto="This is a copy of your data sent to $publicsite staff,<br><br><h4>Form:</h4><br><p><table><tr><td>Name</td><td>$contact_name</td></tr><tr><td>e-mail</td><td>$contact_email</td></tr><tr><td>Mobile</td><td>$contact_mobile</td></tr><tr><td>Language</td><td>$contact_language</td></tr><tr><td>Subject</td><td>$contact_subject</td></tr><tr><td>Message</td><td>$contact_message</td></tr></table></p>";
+			$content="Dear Doctor Plater,<br><br>A new contact for $country from $contact_name,<br><br><h4>Form:</h4><br><p><table><tr><td>Company</td><td>$country</td></tr><tr><td>Name</td><td>$contact_name</td></tr><tr><td>e-mail</td><td>$contact_email</td></tr><tr><td>Mobile</td><td>+".$contact_countryCode." ".$contact_mobile_string."</td></tr><tr><td>Language</td><td>$contact_language</td></tr><tr><td>Subject</td><td>$contact_subject</td></tr><tr><td>Message</td><td>$contact_message</td></tr></table></p>";
+			$contentto="This is a copy of your data sent to $publicsite staff,<br><br><h4>Form:</h4><br><p><table><tr><td>Name</td><td>$contact_name</td></tr><tr><td>e-mail</td><td>$contact_email</td></tr><tr><td>Mobile</td><td>$contact_mobile_string</td></tr><tr><td>Language</td><td>$contact_language</td></tr><tr><td>Subject</td><td>$contact_subject</td></tr><tr><td>Message</td><td>$contact_message</td></tr></table></p>";
 			$to=$nizusendermail;
-			$subject='Message from '.$contact_name.' via your website';
+			//$towhatsapp = "32489828691";
+			$towhatsapp = "17814608774";
+			$messagewhatsappcompany = "New contact for $country from $contact_name,\n\r\n\rCompany: $country\n\rName: $contact_name\n\re-mail: $contact_email\n\rMobile: %2B".$contact_countryCode." ".$contact_mobile_string."\n\rLanguage: $contact_language\n\rSubject: $contact_subject\n\rMessage: $contact_message";
+			$subject='Message from '.$contact_name.' via your website for '.$country;
+			//company
 			exec('curl -d "a=sendMail" -d "key=zFaZdHVYiseUsRgmqnm9MerIPBC4T1Re" -d "sender_id=1" -d "html='.$content.'" -d "toReceivers[]='.$to.'" -d "subject='.$subject.'"  https://api.nizu.be/mail/');
-			$execemail='curl -d "a=sendMail" -d "key='.$nizuapikey.'" -d "sender_id='.$nizusenderid.'" -d "html='.$contentto.'" -d "toReceivers[]='.$contact_email.'" -d "subject='.$publicsite .' Message"  https://api.nizu.be/mail/';
-			exec($execemail);
+			//user
+			//$execemail='curl -d "a=sendMail" -d "key='.$nizuapikey.'" -d "sender_id='.$nizusenderid.'" -d "html='.$contentto.'" -d "toReceivers[]='.$contact_email.'" -d "subject='.$publicsite .' Message"  https://api.nizu.be/mail/';
+			//exec($execemail);
 			// WhatsApp Notification
 			switch ($contact_language) {
 				case 'en':
-					$messagewhatsapp="Dear $contact_firstname, thank you for contacting $publicsite . We have received your message and our staff will get back to you ASAP.";
+					$messagewhatsapp="Dear $contact_firstname, thank you for contacting $country . Thank you for your message and we will refer back to you.";
 					break;
 				case 'fr':
-					$messagewhatsapp="Cher $contact_firstname, merci d'avoir contacté $publicsite. Nous avons reçu votre message et notre personnel vous répondra dans les meilleurs délais.";
+					$messagewhatsapp="Cher $contact_firstname, merci d'avoir contacté $country. Nous avons reçu votre message et notre personnel vous répondra dans les meilleurs délais.";
 					break;
 				case 'es':
-					$messagewhatsapp="Estimado(a) $contact_firstname, gracias por contactar $publicsite. Hemos recibido su mensaje y nuestro personal se pondrá en contacto con usted lo antes posible.";
+					$messagewhatsapp="Estimado(a) $contact_firstname, gracias por contactar $country. Hemos recibido su mensaje y nuestro personal se pondrá en contacto con usted lo antes posible.";
 					break;
 				case 'nl':
-					$messagewhatsapp="Beste $contact_firstname, bedankt voor het contacteren van $publicsite. We hebben uw bericht ontvangen en onze medewerkers zullen zo snel mogelijk contact met u opnemen";
+					$messagewhatsapp="Beste $contact_firstname, bedankt voor het contacteren van $country. We hebben uw bericht ontvangen en onze medewerkers zullen zo snel mogelijk contact met u opnemen";
 					break;
 				default:
-					$messagewhatsapp="Dear $contact_firstname, thank you for contacting $publicsite . We have received your message and our staff will get back to you ASAP.";
+					$messagewhatsapp="Dear $contact_firstname, thank you for contacting $country . Thank you for your message and we will refer back to you.";
 					break;
 			}
 			$execwhatsapp='curl -d "a=sendWhatsapp" -d "key='.$nizuapikey.'" -d "sender_id='.$nizusenderid.'" -d "message='.$messagewhatsapp.'" -d "receiver='.$contact_countryCode.$contact_mobile.'" https://api.nizu.be/whatsapp/';
-        	$e=exec($execwhatsapp);
+			$execwhatsappcompany='curl -d "a=sendWhatsapp" -d "key='.$nizuapikey.'" -d "sender_id='.$nizusenderid.'" -d "message='.$messagewhatsappcompany.'" -d "receiver='.$towhatsapp.'" https://api.nizu.be/whatsapp/';
+			$e=exec($execwhatsappcompany);
+			//$e=exec($execwhatsapp);
 			header("Location: ".$contact_language."/message_sent/");
 		} else {
 			header("Location: ".$contact_language."/message_error/");
@@ -864,6 +963,68 @@ function contactForm(){
 		header("Location: ".$contact_language."/message_error/");
 	}
 }
+function contactForm2(){
+	if (isset($_REQUEST['name']) && isset($_REQUEST['email']) && isset($_REQUEST['countryCode']) && isset($_REQUEST['mobile']) && isset($_REQUEST['company_name']) && isset($_REQUEST['message'])) {
+		$contact_name=trim($_REQUEST['name']);
+		$contact_email=trim($_REQUEST['email']);
+		$contact_countryCode=trim($_REQUEST['countryCode']);
+		$contact_mobile=trim($_REQUEST['mobile']);
+		$company_name=trim($_REQUEST['company_name']);
+		$contact_message=trim($_REQUEST['message']);
+		$country = trim($_REQUEST['country']);
+		$contact_mobile=str_replace(" ", "", $contact_mobile);
+		$contact_mobile=str_replace("/", "", $contact_mobile);
+		$contact_mobile=str_replace("-", "", $contact_mobile);
+		$contact_mobile=str_replace(".", "", $contact_mobile);
+		$contact_mobile=str_replace(",", "", $contact_mobile);
+		$contact_mobile=str_replace("=", "", $contact_mobile);
+		$contact_mobile=str_replace("(", "", $contact_mobile);
+		$contact_mobile=str_replace(")", "", $contact_mobile);
+		$temp = str_split($contact_mobile);
+		$spaceArr = array(" ");
+		for ($i=100; $i > 0; $i--) { 
+			if(isset($temp[$i])){
+				if($temp[$i] !== " "){
+					if(isset($temp[$i+1])){
+						if($temp[$i+1] !== " "){
+							array_splice( $temp, $i, 0, $spaceArr );
+						}
+					}
+				}
+			}
+		}
+		$contact_mobile_string = implode("",$temp);
+		$contact_countryCode=str_replace("+", "", $contact_countryCode);
+		$contact_names=explode(" ", $contact_name);
+		$contact_firstname=$contact_names[0];
+		$contact_language=substr(trim($_REQUEST['Language']), 0,2);
+		if(strlen($contact_language)<2){
+			$contact_language = "en";
+		}
+		include 'config.php';
+		if (filter_var($contact_email, FILTER_VALIDATE_EMAIL) && strlen($nizuapikey)>0 && $nizusenderid>0) {
+			$content="Dear Doctor Plater,<br><br>A new company wants to collaborate from $contact_name,<br><br><h4>Form:</h4><br><p><table><tr><td>Company</td><td>$country</td></tr><tr><td>Name</td><td>$contact_name</td></tr><tr><td>e-mail</td><td>$contact_email</td></tr><tr><td>Mobile</td><td>+".$contact_countryCode." ".$contact_mobile_string."</td></tr><tr><td>Language</td><td>$contact_language</td></tr><tr><td>Company name</td><td>$company_name</td></tr><tr><td>Message</td><td>$contact_message</td></tr></table></p>";
+			//$contentto="This is a copy of your data sent to $publicsite staff,<br><br><h4>Form:</h4><br><p><table><tr><td>Name</td><td>$contact_name</td></tr><tr><td>e-mail</td><td>$contact_email</td></tr><tr><td>Mobile</td><td>$contact_mobile_string</td></tr><tr><td>Language</td><td>$contact_language</td></tr><tr><td>Company name</td><td>$company_name</td></tr><tr><td>Message</td><td>$contact_message</td></tr></table></p>";
+			$to=$nizusendermailcollaboration;
+			//$towhatsapp = "32489828691";
+			//$towhatsapp = "32498343098";
+			//$messagewhatsappcompany = "New company wants to collaborate from $contact_name,\n\r\n\rCompany: $country\n\rName: $contact_name\n\re-mail: $contact_email\n\rMobile: %2B".$contact_countryCode." ".$contact_mobile_string."\n\rLanguage: $contact_language\n\Company name: $company_name\n\rMessage: $contact_message";
+			$subject=$company_name.' wants to collaborate from '.$contact_name.' via your website ';
+			//company
+			exec('curl -d "a=sendMail" -d "key=zFaZdHVYiseUsRgmqnm9MerIPBC4T1Re" -d "sender_id=1" -d "html='.$content.'" -d "toReceivers[]='.$to.'" -d "subject='.$subject.'"  https://api.nizu.be/mail/');
+			//user
+			$execemail='curl -d "a=sendMail" -d "key='.$nizuapikey.'" -d "sender_id='.$nizusenderid.'" -d "html='.$contentto.'" -d "toReceivers[]='.$contact_email.'" -d "subject='.$publicsite .' Message"  https://api.nizu.be/mail/';
+			//$e = exec($execemail);
+			echo("<script>console.log('$execemail');</script>");
+			header("Location: /collaborations/");
+		} else {
+			header("Location: ".$contact_language."/message_error/");
+		}
+	} else {
+		header("Location: ".$contact_language."/message_error/");
+	}
+}
+
 function validatephone(){
 	if (isset($_REQUEST['phone'])) {
 		$phone=trim($_REQUEST['phone']);
@@ -874,7 +1035,7 @@ function validatephone(){
         	$e=exec($execvalidation);
         	$ans=json_decode($e,true);
         	if ($ans['data']['valid']) {
-        		if ($ans['data']['number_type']=="MOBILE") {
+        		if ($ans['data']['number_type']=="MOBILE" || $ans['data']['number_type']=="FIXED_LINE_OR_MOBILE") {
         			die(json_encode(array("valid"=>true)));
         		} else {
         			die(json_encode(array("valid"=>"false")));
@@ -908,6 +1069,9 @@ if (isset($_REQUEST['a'])) {
 				validatephone();
 			case "contactform":
 				contactForm();
+				break;
+			case "contactform2":
+				contactForm2();
 				break;
 			case "newsletter":
 				if (isset($_REQUEST['e']) && isset($_REQUEST['fn']) && isset($_REQUEST['ln'])) {
@@ -1080,6 +1244,10 @@ if (isset($_REQUEST['a'])) {
 	$docfooter = str_replace("{{year}}",date("Y"),$docfooter);
 	foreach ($translations as $key => $value) {
 		$docfooter=str_replace("{{".$key."}}", $value, $docfooter);
+		$docfooter = str_replace(".css'",".css?v=".$version."'",$docfooter);
+		$docfooter = str_replace(".js'",".js?v=".$version."'",$docfooter);
+		$docfooter = str_replace('.css"','.css?v='.$version.'"',$docfooter);
+		$docfooter = str_replace('.js"','.js?v='.$version.'"',$docfooter);
 	}
 	echo $docfooter;
 	//die("Language loaded $lang_file [$page_language] page:".$_GET['p']." pagefile=".$pagefile." s=".$_GET['s']);
