@@ -6,3 +6,22 @@ RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_URI}  ^/([^/]+)/?([^/]*)?/?([^/]*)?/?([^/]*)?/?   [NC]
 RewriteRule .*    index.php?page=%{REQUEST_URI}&lang=%1&p=%2&key3=%3&key4=%4  [L]
+Options -Indexes
+<IfModule mod_headers.c>
+  Header set X-Content-Type-Options: "nosniff"
+  Header set X-XSS-Protection: "1; mode=block"
+  Header set X-Frame-Options: "SAMEORIGIN"
+  Header set X-Powered-By: "RGW IT SERVICES"
+   <filesMatch "\.(ico|jpe?g|png|gif|swf)$">
+    Header set Cache-Control "max-age=2592000, public"
+  </filesMatch>
+  <filesMatch "\.(css)$">
+    Header set Cache-Control "max-age=604800, public"
+  </filesMatch>
+  <filesMatch "\.(js)$">
+    Header set Cache-Control "max-age=216000, private"
+  </filesMatch>
+  <filesMatch "\.(x?html?|php)$">
+    Header set Cache-Control "max-age=600, private, must-revalidate"
+  </filesMatch>
+</IfModule>
