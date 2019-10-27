@@ -10,8 +10,9 @@ $nizuapikey        = "";
 $nizusenderid      = 0;
 $nizusendermail    = "";
 $nizusendergsm     = "";
+$draftpassword     = "";
 // sqlite config 
-$dbkey             = "p3gf31dk-st04-rp41-u0ca-s9321a0f4vmt";
+$dbkey             = "13gf31dk-st04-rp41-u0ca-r9321a0f4vm0";
 // MariaDB Config
 $dbhost			   = "db.rgwit.be";
 $dbuser			   = "";
