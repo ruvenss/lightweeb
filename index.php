@@ -88,15 +88,19 @@ if (!file_exists($lw_pages.$page)) {
 			die();
 			break;
 		default:
-			create_lw_cms_page($lw_pages.$page,$page,$languages);
+			//create_lw_cms_page($lw_pages.$page,$page,$languages);
 			break;
 	}
 }
+$subpage=false;
+$subpages=array();
 // Building up sub pages
-if (strlen($_REQUEST['key3'])){$page.="/".$_REQUEST['key3']; if (!file_exists($lw_pages.$_REQUEST['key3']."/")){create_lw_cms_subpage($lw_pages.$_REQUEST['key3'],$_REQUEST['key3'],$languages);}}
-if (strlen($_REQUEST['key4'])){$page.="/".$_REQUEST['key4']; if (!file_exists($lw_pages.$_REQUEST['key3']."/".$_REQUEST['key4']."/")){create_lw_cms_subpage($lw_pages.$_REQUEST['key3']."/".$_REQUEST['key4'],$_REQUEST['key4'],$languages);}}
-if (strlen($_REQUEST['key5'])){$page.="/".$_REQUEST['key5']; if (!file_exists($lw_pages.$_REQUEST['key3']."/".$_REQUEST['key4']."/".$_REQUEST['key5']."/")){create_lw_cms_subpage($lw_pages.$_REQUEST['key3']."/".$_REQUEST['key4']."/".$_REQUEST['key5'],$_REQUEST['key5'],$languages);}}
-if (strlen($_REQUEST['key6'])){$page.="/".$_REQUEST['key6']; if (!file_exists($lw_pages.$_REQUEST['key3']."/".$_REQUEST['key4']."/".$_REQUEST['key5']."/".$_REQUEST['key6']."/")){create_lw_cms_subpage($lw_pages.$_REQUEST['key3']."/".$_REQUEST['key4']."/".$_REQUEST['key5']."/".$_REQUEST['key6'],$_REQUEST['key6'],$languages);}}
+//print_r($_REQUEST);
+//die();
+if (strlen($_REQUEST['key3'])){$page=$_REQUEST['key3']; if (!file_exists($lw_pages.$_REQUEST['key3']."/")){create_lw_cms_subpage($lw_pages.$_REQUEST['p']."/",$_REQUEST['key3'],$languages);} $subpage=true; $subpages=array($_REQUEST['p'],$_REQUEST['key3']);}
+if (strlen($_REQUEST['key4'])){$page=$_REQUEST['key4']; if (!file_exists($lw_pages.$_REQUEST['key3']."/".$_REQUEST['key4']."/")){create_lw_cms_subpage($lw_pages.$_REQUEST['p']."/".$_REQUEST['key3']."/".$_REQUEST['key4'],$_REQUEST['key4'],$languages);} $subpage=true; $subpages=array($_REQUEST['p'],$_REQUEST['key3'],$_REQUEST['key4']);}
+if (strlen($_REQUEST['key5'])){$page=$_REQUEST['key5']; if (!file_exists($lw_pages.$_REQUEST['key3']."/".$_REQUEST['key4']."/".$_REQUEST['key5']."/")){create_lw_cms_subpage($lw_pages.$_REQUEST['p']."/".$_REQUEST['key3']."/".$_REQUEST['key4']."/".$_REQUEST['key5'],$_REQUEST['key5'],$languages);} $subpage=true; $subpages=array($_REQUEST['p'],$_REQUEST['key3'],$_REQUEST['key4'],$_REQUEST['key5']);}
+if (strlen($_REQUEST['key6'])){$page=$_REQUEST['key6']; if (!file_exists($lw_pages.$_REQUEST['key3']."/".$_REQUEST['key4']."/".$_REQUEST['key5']."/".$_REQUEST['key6']."/")){create_lw_cms_subpage($lw_pages.$_REQUEST['p']."/".$_REQUEST['key3']."/".$_REQUEST['key4']."/".$_REQUEST['key5']."/".$_REQUEST['key6'],$_REQUEST['key6'],$languages);} $subpage=true; $subpages=array($_REQUEST['p'],$_REQUEST['key3'],$_REQUEST['key4'],$_REQUEST['key5'],$_REQUEST['key6']);}
 // Building up translations
 for ($i=0; $i < sizeof($languages) ; $i++) {
 	if (!file_exists($lw_locales.$languages[$i].".json")) {
@@ -104,23 +108,36 @@ for ($i=0; $i < sizeof($languages) ; $i++) {
 	}
 }
 // Display Page
-$pageconfig=getpageconfig($lw_pages,$browser_lang,$page);
+//die($lw_pages.$_REQUEST['p']."/".implode("/",$subpages)."<br>$subpage");
+if ($subpage) {
+	$pageconfig=getpageconfig($lw_pages."/".implode("/",$subpages)."/",$browser_lang,$page);
+} else {
+	if ($page=="home"){
+		//die($page);
+		$pageconfig=getpageconfig($lw_pages."home",$browser_lang,"");
+	} else {
+		$pageconfig=getpageconfig($lw_pages.$_REQUEST['p']."/",$browser_lang,$page);
+	}
+}
+//print_r($pageconfig);
+//die();
 // Check if this is a Progressive Web App
 if ($pwa) {
 	if (!file_exists($lw_path."manifest.json") || !file_exists($lw_path."pwabuilder-sw.js")) {
 		generatePWA();	
 	}
 }
+//die("Subpage:".$subpage." published:".$pageconfig['published']);
 if ($pageconfig['published']=="true") {
 	// Display Page
-	displayPage($lw_path,$lw_locales,$lw_pages,$lw_pages_headers,$lw_pages_footers,$page,$browser_lang,$pageconfig['header'],$pageconfig['footer'],$pageconfig['description'],$pageconfig['title'],$pageconfig['subtitle'],$pageconfig['keywords'],$pageconfig['summary'],$pageconfig['category'],$pageconfig['subject'],$pageconfig['topic'],$pageconfig['ogimage']);
+	echo displayPage($subpage,$subpages,$lw_path,$lw_locales,$lw_pages,$lw_pages_headers,$lw_pages_footers,$page,$browser_lang,$pageconfig['header'],$pageconfig['footer'],$pageconfig['description'],$pageconfig['title'],$pageconfig['subtitle'],$pageconfig['keywords'],$pageconfig['summary'],$pageconfig['category'],$pageconfig['subject'],$pageconfig['topic'],$pageconfig['ogimage']);
 } else {
 	// Do 404
-	$page="404";
-	if (!file_exists($lw_pages."404.html")) {
+	if (!file_exists($lw_pages."404/404.html")) {
 		create_lw_cms_404($lw_pages,$languages);
 	}
+
 	// Display 404
-	$pageconfig=getpageconfig($lw_pages,$browser_lang,$page);
-	displayPage($lw_path,$lw_locales,$lw_pages,$lw_pages_headers,$lw_pages_footers,"404",$browser_lang,$pageconfig['header'],$pageconfig['footer'],$pageconfig['description'],$pageconfig['title'],$pageconfig['subtitle'],$pageconfig['keywords'],$pageconfig['summary'],$pageconfig['category'],$pageconfig['subject'],$pageconfig['topic'],$pageconfig['ogimage']);
+	$pageconfig=getpageconfig($lw_pages."404/",$browser_lang,"404");
+	echo displayPage($subpage,$subpages,$lw_path,$lw_locales,$lw_pages,$lw_pages_headers,$lw_pages_footers,"404",$browser_lang,$pageconfig['header'],$pageconfig['footer'],$pageconfig['description'],$pageconfig['title'],$pageconfig['subtitle'],$pageconfig['keywords'],$pageconfig['summary'],$pageconfig['category'],$pageconfig['subject'],$pageconfig['topic'],$pageconfig['ogimage']);
 }
