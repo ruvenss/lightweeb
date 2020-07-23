@@ -1,20 +1,27 @@
 <?php
 function create_lw_cms_subpage($page_path,$page,$languages) {
+  	// die("create_lw_cms_subpage ".$page_path.$page);
   	// Check if its not file call
   	if (strpos($page, '.') !== false) {
 		// Do not create file only if exemptions 
 		// TODO Check exceptions file
   	} else {
-		mkdir($page_path); 
-		touch($page_path."/index.html"); 
-		$basicconfig='{"description":"","title":"","subtitle":"","subject":"","summary":"","category":"","topic":"","keywords":"","type":"","published":"true","publish_from":"","publish_until":"","header":"header.html","footer":"footer.html","minify":"true","sitemap":"true","ogimage":"/images/og/sub_'.$page.'.jpg"}';
-		for ($i = 0; $i < sizeof($languages); $i++) {
-			touch($page_path."/".$languages[$i]."_config.json");
-			file_put_contents($page_path."/".$languages[$i]."_config.json", $basicconfig);
-		}
+    	if (!file_exists($page_path)){
+			mkdir($page_path); 
+			touch($page_path."/index.html");
+			$basicconfig='{"description":"","title":"","subtitle":"","subject":"","summary":"","category":"","topic":"","keywords":"","type":"","published":"true","publish_from":"","publish_until":"","header":"header.html","footer":"footer.html","minify":"true","sitemap":"true","ogimage":"/images/og/sub_'.$page.'.jpg"}';
+			for ($i = 0; $i < sizeof($languages); $i++) {
+				touch($page_path."/".$page."_".$languages[$i]."_config.json");
+				file_put_contents($page_path."/".$page."_".$languages[$i]."_config.json", $basicconfig);
+			}
+        	//print_r($page_path);
+    		//die($page_path);
+        }
   	}
 }
 function create_lw_cms_page($page,$pagefilename,$languages) {
+
+	die("create_lw_cms_page ".$pagefilename);
     if (!file_exists($page)) {
         // If file has extension
         $ext = pathinfo($page, PATHINFO_EXTENSION);
@@ -37,14 +44,22 @@ function create_lw_cms_page($page,$pagefilename,$languages) {
     }
 }
 function create_lw_cms_404($lw_pages,$languages){
-    touch($lw_pages."404.html");
-    $basicconfig='{"description":"Missing Page","title":"404","subtitle":"Page not found","subject":"URL Error","summary":"This URL does not exist any more","category":"","topic":"","keywords":"404,page not found,page missing,not found,error url,wrong url","type":"","published":"true","publish_from":"","publish_until":"","header":"header.html","footer":"footer.html","minify":"true","sitemap":"false","ogimage":"/images/og/404.jpg"}';
-    for ($i = 0; $i < sizeof($languages); $i++) {
-		touch("404_".$languages[$i]."_config.json");
-		file_put_contents($lw_pages."404_".$languages[$i]."_config.json", $basicconfig);
+	//die("404");
+	if(!file_exists($lw_pages."404")){
+		mkdir($lw_pages."404");
 	}
+	if(!file_exists($lw_pages."404/404.html")){
+    	touch($lw_pages."404/404.html");
+    	$basicconfig='{"description":"Missing Page","title":"404","subtitle":"Page not found","subject":"URL Error","summary":"This URL does not exist any more","category":"","topic":"","keywords":"404,page not found,page missing,not found,error url,wrong url","type":"","published":"true","publish_from":"","publish_until":"","header":"header.html","footer":"footer.html","minify":"true","sitemap":"false","ogimage":"/images/og/404.jpg"}';
+	    for ($i = 0; $i < sizeof($languages); $i++) {
+			touch("404_".$languages[$i]."_config.json");
+			file_put_contents($lw_pages."404/404_".$languages[$i]."_config.json", $basicconfig);
+		}
+	}
+    
 }
 function create_lw_cms_locales($lw_locales,$language) {
+	die("locales $lw_locales");
     if (!file_exists($lw_locales.$language.".json")) {
 	touch($lw_locales.$language.".json");
 	$basiclocales='{
@@ -290,11 +305,50 @@ function create_lw_cms_locales($lw_locales,$language) {
     file_put_contents($lw_locales.$language.".json", $basiclocales);
 }
 }
-
+function sitemap_header(){
+	$sitemap='<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+';
+	return($sitemap);
+}
+function sitemap_footer(){
+	$sitemap='
+</urlset>';
+	return($sitemap);
+}
 function publish($configfile){
 	// Send output to nizu
 	// compress data
 	include $configfile;
+	$total_pages=0;
+	$approved_pages=0;
+	$lw_path=getcwd()."/lightweb"."/";
+	$lw_publish_version=$lw_path."publish_version/";
+	$lw_locales=$lw_path."locales/";
+	$lw_pages=$lw_path."webpages/";
+	$lw_pages_headers=$lw_path."headers/";
+	$lw_pages_footers=$lw_path	."footers/";
+	$phpexecutor_path=getcwd()."/cgi"."/";
+	$sitemap = sitemap_header();
+	$githubrepo="https://raw.githubusercontent.com/ruvenss/lightweb/master/";
+	$outputhtmlfile="index.html";
+	if (!file_exists($lw_publish_version)) {
+		mkdir($lw_publish_version);
+
+	}
+	// collection pages
+	if (file_exists("lightweb/webpages/home.html")){
+		$total_pages=1;
+		$page_settings=array();
+		for ($i=0; $i < sizeof($languages); $i++) {
+			$page_settings=getpageconfig($lw_pages."home",$languages[$i],"");
+			if ($page_settings['published']==="true") {
+				$approved_pages=1;
+			}
+		}
+	}
+
+	$sitemap.= sitemap_footer();
 	echo '
 <!DOCTYPE html>
 <html lang="eng" class="js">
@@ -344,6 +398,9 @@ content {
     margin-top: 20px;
     text-align:center;
 }
+.card-lg {
+	max-width: 450px !important;
+}
 td{
 	min-width: 200px;
 }
@@ -356,19 +413,31 @@ td{
 <content>
 	<table>
 		<tr>
-		<td>
-			<div class="card">
-				<h2>Pages</h2>
-				<p>0</p>
-			</div>
-		</td>
-		<td>
-			<div class="card">
-				<h2>Approved pages</h2>
-				<p>0</p>
-			</div>
-		</td>
-	</tr>
+			<td>
+				<div class="card card-lg">
+					<h2>CMS Path</h2>
+					<p>'.$lw_path.'</p>
+				</div>
+			</td>
+			<td>
+				<div class="card card-lg">
+					<h2>Pages Path</h2>
+					<p>'.$lw_pages.'</p>
+				</div>
+			</td>
+			<td>
+				<div class="card">
+					<h2>Pages</h2>
+					<p>0 / '.$total_pages.'</p>
+				</div>
+			</td>
+			<td>
+				<div class="card">
+					<h2>Approved pages</h2>
+					<p>0 / '.$approved_pages.'</p>
+				</div>
+			</td>
+		</tr>
 	</table>
 </content>
 <footer>
@@ -419,7 +488,8 @@ function right($str, $length) {
 }
 function getpageconfig($lw_pages,$browser_lang,$page){
     $configfile=$lw_pages.$page."_".$browser_lang."_config.json";
-    //die($configfile);
+   	//print_r("<br>".$configfile);
+   	//die();
     if (file_exists($configfile)){
         $rawfile=file_get_contents($configfile);
         return(json_decode($rawfile,true));
@@ -487,7 +557,7 @@ function generatemetas($title,$subtitle,$topic,$summary,$category,$keywords,$sub
     $opengraphtags='
 <meta name="og:title" content="'.$title.'">
 <meta name="og:type" content="website">
-<meta name="og:url" content="'.$publicsite.$pageurl.'">
+<meta name="og:url" content="'.$publicsite.'/'.$browser_lang.'/'.$pageurl.'/">
 <meta name="og:image" content="'.$publicsite.$ogimage.'">
 <meta name="og:site_name" content="'.$title.'">
 <meta name="og:description" content="'.$description.'">
@@ -770,13 +840,42 @@ if ("serviceWorker" in navigator) {
 file_put_contents(getcwd()."/pwabuilder-sw.js", $offlinesw);
 file_put_contents(getcwd()."/pwabuilder-sw-register.js", $registersw);
 }
-function footerscripts(){
+function getinttime($timestamp) {
+	$starthour=left($timestamp,2)*1;
+	$startmin=right($timestamp,2)*1;
+	$result=array($starthour,$startmin);
+	return($result);
+}
+function footerscripts($browser_lang){
 	$footerscripts="";
     include(getcwd()."/lightweb"."/config.php");
     // LightWeb basic functions JS
     $footerscripts='
-<script async src="https://rgwit.ams3.digitaloceanspaces.com/lightweb/nizu.min.js"></script>
+<script type="text/javascript">
+function getOS() {
+  var userAgent = window.navigator.userAgent,
+      platform = window.navigator.platform,
+      macosPlatforms = ["Macintosh", "MacIntel", "MacPPC", "Mac68K"],
+      windowsPlatforms = ["Win32", "Win64", "Windows", "WinCE"],
+      iosPlatforms = ["iPhone", "iPad", "iPod"],
+      os = null;
 
+  if (macosPlatforms.indexOf(platform) !== -1) {
+    os = "Mac OS";
+  } else if (iosPlatforms.indexOf(platform) !== -1) {
+    os = "iOS";
+  } else if (windowsPlatforms.indexOf(platform) !== -1) {
+    os = "Windows";
+  } else if (/Android/.test(userAgent)) {
+    os = "Android";
+  } else if (!os && /Linux/.test(platform)) {
+    os = "Linux";
+  }
+
+  return os;
+}
+</script>
+<script async src="https://rgwit.ams3.digitaloceanspaces.com/lightweb/nizu.min.js"></script>
 ';
     if (strlen($pwa_name)>0) {
         $footerscripts.='<script type="text/javascript">';
@@ -809,10 +908,152 @@ gtag("config", "'.$g_analitycs_id.'");
 ';
     }
     if (strlen($rc_host)>0) {
+    	$popupwhatsapp="";
+    	if (strlen($rc_whatsapp )) {
+    		$popuprocket=' else {
+    		if (getOS()=="iOS" || getOS()=="Android") { 
+    			DisplayWhatsApp();
+    		}
+    	}';
+    	}
         $footerscripts.='
+<style>
+.lightwebbadgemessage[data-badge]:after {content:attr(data-badge);border: 2px solid #fff;position:absolute;top:-5px;left:-5px;font-size:.7em;background:red;color:white;width:20px;height:20px;text-align:center;line-height:17px;border-radius:50%;box-shadow:0 0 1px #333;	}
+.about-avatar {
+    text-align: center;
+    border: 2px solid #fff;
+    width: 100px;
+    height: 100px;
+    -webkit-border-radius: 50%;
+    border-radius: 50%;
+	-webkit-box-shadow: 0px 0px 19px 0px rgba(50, 50, 50, 0.45);
+    -moz-box-shadow:    0px 0px 19px 0px rgba(50, 50, 50, 0.45);
+    box-shadow:         0px 0px 19px 0px rgba(50, 50, 50, 0.45);    
+}
+.lightwebball {
+  -webkit-transform: translate3d(0, 0, 0);
+  -moz-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+  -webkit-animation: bounce 1.2s;
+  -webkit-animation-delay: 0.5s;
+  -moz-animation: bounce 1.2s;
+  -moz-animation-delay: 0.5s;
+  animation: bounce 1.2s;
+  animation-delay: 0.5s;
+  animation: fadeIn 3s;
+  display:none;
+}
+.lightwebball:hover {
+  -webkit-animation: bounce 1.2s;
+  -moz-animation: bounce 1.2s;
+  animation: bounce 1.2s;
+}
+@-webkit-keyframes bounce {
+	0% {
+		-webkit-transform: translateY(0%);
+	}
+	20% {
+		-webkit-transform: translateY(-120%)                              rotate(20deg);
+	}
+	30% {
+		-webkit-transform: translateY(0%);
+	}
+	40% {
+		-webkit-transform: translateY(-25%);
+	}
+	50% {
+		-webkit-transform: translateY(0%);
+	}
+	60% {
+		-webkit-transform: translateY(-12%);
+	}
+	70% {
+		-webkit-transform: translateY(0%);
+	}
+	80% {
+		-webkit-transform: translateY(-6%);
+	}
+	100% {
+		-webkit-transform: translateY(0%);
+	}
+}
+
+@-moz-keyframes bounce {
+	0% {
+		-moz-transform: translateY(0%);
+	}
+	20% {
+		-moz-transform: translateY(-120%)                              rotate(20deg);
+	}
+	30% {
+		-moz-transform: translateY(0%);
+	}
+	40% {
+		-moz-transform: translateY(-25%);
+	}
+	50% {
+		-moz-transform: translateY(0%);
+	}
+	60% {
+		-moz-transform: translateY(-12%);
+	}
+	70% {
+		-moz-transform: translateY(0%);
+	}
+	80% {
+		-moz-transform: translateY(-6%);
+	}
+	100% {
+		-moz-transform: translateY(0%);
+	}
+}
+
+@keyframes bounce {
+	0% {
+		transform: translateY(0%);
+	}
+	20% {
+		transform: translateY(-120%)                              rotate(20deg);
+	}
+	30% {
+		transform: translateY(0%);
+	}
+	40% {
+		transform: translateY(-25%);
+	}
+	50% {
+		transform: translateY(0%);
+	}
+	60% {
+		transform: translateY(-12%);
+	}
+	70% {
+		transform: translateY(0%);
+	}
+	80% {
+		transform: translateY(-6%);
+	}
+	100% {
+		transform: translateY(0%);
+	}
+}
+</style>
 <!-- Start of Rocket.Chat Livechat Script -->
 <script type="text/javascript">
-(function(w, d, s, u) {
+function lightwebding() {
+  var audio = new Audio("/sounds/ding.mp3");
+  audio.play();
+}
+function DisplayWhatsApp(){
+	$("footer").append("<div style='."'display:block;max-width:45px;max-height:45px;position:fixed;bottom:10px;z-index:9999;right:10px;'".'><a href='."'whatsapp://send?text=&phone=".$rc_whatsapp."&abid=".$rc_whatsapp."'".' class='."'lightwebbadgemessage lightwebball'".' data-badge='."'1'".' id='."'lightwebwhatsapp'".'><img src='."'https://nizu.io/images/icons/whatsapp.png'".'></a></div>");
+	setTimeout(function(){
+	document.getElementById("lightwebwhatsapp").style.display = "block";
+	document.getElementById("lightwebwhatsapp").style.animation = "bounce 3.2s";
+	lightwebding();
+	},5000);
+}
+function DisplayRocket(){
+	(function(w, d, s, u) {
     w.RocketChat = function(c) { w.RocketChat._.push(c) }; w.RocketChat._ = []; w.RocketChat.url = u;
     var h = d.getElementsByTagName(s)[0], j = d.createElement(s);
     j.async = true; j.src = "https://'.$rc_host.'/livechat/rocketchat-livechat.min.js?_=201903270000";
@@ -820,7 +1061,93 @@ gtag("config", "'.$g_analitycs_id.'");
     RocketChat(function() {
         this.minimizeWidget();
     });
-})(window, document, "script", "https://'.$rc_host.'/livechat");
+	})(window, document, "script", "https://'.$rc_host.'/livechat");
+}
+var d = new Date();
+var n = d.getDay();
+var nh = d.getHours();
+var nm = d.getMinutes();
+switch(n) {
+	case 0:';
+		if ($weekdays_open[0]==1) {
+			$starttime=getinttime($weekdays_open_hrs['sun']['start']);
+			$endtime=getinttime($weekdays_open_hrs['sun']['end']);
+			$footerscripts.='
+		if (nh>='.$starttime[0].' && nh<='.$endtime[0].') {
+			DisplayRocket();
+		}'.$popuprocket;
+		}
+    $footerscripts.='
+    	break;
+    case 1:';
+		if ($weekdays_open[1]==1) {
+			$starttime=getinttime($weekdays_open_hrs['mon']['start']);
+			$endtime=getinttime($weekdays_open_hrs['mon']['end']);
+			$footerscripts.='
+		if (nh>='.$starttime[0].' && nh<='.$endtime[0].') {
+			DisplayRocket();
+		}'.$popuprocket;
+		}
+    $footerscripts.='
+    	break;
+    case 2:';
+		if ($weekdays_open[2]==1) {
+			$starttime=getinttime($weekdays_open_hrs['tue']['start']);
+			$endtime=getinttime($weekdays_open_hrs['tue']['end']);
+			$footerscripts.='
+		if (nh>='.$starttime[0].' && nh<='.$endtime[0].') {
+			DisplayRocket();
+		}'.$popuprocket;
+		}
+    $footerscripts.='
+    	break;
+    case 3:';
+		if ($weekdays_open[3]==1) {
+			$starttime=getinttime($weekdays_open_hrs['wed']['start']);
+			$endtime=getinttime($weekdays_open_hrs['wed']['end']);
+			$footerscripts.='
+		if (nh>='.$starttime[0].' && nh<='.$endtime[0].') {
+			DisplayRocket();
+		}'.$popuprocket;
+		}
+    $footerscripts.='
+    	break;
+    case 4:';
+		if ($weekdays_open[4]==1) {
+			$starttime=getinttime($weekdays_open_hrs['thu']['start']);
+			$endtime=getinttime($weekdays_open_hrs['thu']['end']);
+			$footerscripts.='
+		if (nh>='.$starttime[0].' && nh<='.$endtime[0].') {
+			DisplayRocket();
+		}'.$popuprocket;
+		}
+    $footerscripts.='
+    	break;
+    case 5:';
+		if ($weekdays_open[5]==1) {
+			$starttime=getinttime($weekdays_open_hrs['fri']['start']);
+			$endtime=getinttime($weekdays_open_hrs['fri']['end']);
+			$footerscripts.='
+		if (nh>='.$starttime[0].' && nh<='.$endtime[0].') {
+			DisplayRocket();
+		}'.$popuprocket;
+		}
+    $footerscripts.='
+    	break;
+    case 6:';
+		if ($weekdays_open[6]==1) {
+			$starttime=getinttime($weekdays_open_hrs['sat']['start']);
+			$endtime=getinttime($weekdays_open_hrs['sat']['end']);
+			$footerscripts.='
+		if (nh>='.$starttime[0].' && nh<='.$endtime[0].') {
+			DisplayRocket();
+		}'.$popuprocket;
+		}
+    $footerscripts.='
+    	break;
+    default:
+    // code block
+}
 </script>
 <!-- End of Rocket.Chat Livechat Script -->';
     }
@@ -844,15 +1171,28 @@ gtag("config", "'.$g_analitycs_id.'");
     return($footerscripts);
 }
 
-function displayPage($lw_path,$lw_locales,$lw_pages,$lw_pages_headers,$lw_pages_footers,$page,$browser_lang,$header,$footer,$description,$title,$subtitle,$keywords,$summary,$category,$subject,$topic,$ogimage){
-    $pagefile=$lw_pages.$page.".html";
+function displayPage($subpage,$subpages,$lw_path,$lw_locales,$lw_pages,$lw_pages_headers,$lw_pages_footers,$page,$browser_lang,$header,$footer,$description,$title,$subtitle,$keywords,$summary,$category,$subject,$topic,$ogimage){
+	if (!$subpage && sizeof($subpages)==0) {  
+		if ($page=="home") {
+			$pagefile=$lw_pages."home.html";
+		} else {
+			$pagefile=$lw_pages.$page."/".$page.".html";
+		}
+		
+	} else {
+    	$pagefile=$lw_pages."/".implode("/",$subpages)."/index.html";
+    }
     $nowversion=date("Ymdhsi");
     $sqldate=date("Y-m-d", filemtime($pagefile));
-    //die ($sqldate);
+    
 	$utcdate=$sqldate."T".date("H:i:s", filemtime($pagefile))."+02:00";
     $rawheader=file_get_contents($lw_pages_headers.$header);
     $rawpage=file_get_contents($pagefile);
     $rawfooter=file_get_contents($lw_pages_footers.$footer);
+    //print_r($rawpage);
+    //print_r($subpages);
+    //print_r("content: $rawpage");
+    //die ($lw_pages_headers.$header."<br>page:".$page."<br>subpage:".$subpage."<br>".$pagefile);
     //Metas
     $pageurl="/".$browser_lang."/".$page."/";
     $metas = generatemetas($title,$subtitle,$topic,$summary,$category,$keywords,$subject,$description,$browser_lang,$page,$sqldate,$utcdate,$ogimage);
@@ -869,14 +1209,15 @@ function displayPage($lw_path,$lw_locales,$lw_pages,$lw_pages_headers,$lw_pages_
     $footer=str_replace('.js"','.js?v='.$nowversion.'"',$footer);
     $footer=str_replace(".css'",".css?v=".$nowversion."'",$footer);
     $footer=str_replace(".js'",".js?v=".$nowversion."'",$footer);
-    $footer=str_replace("{{footer_scripts}}",footerscripts(),$footer);
+    $footer=str_replace("{{footer_scripts}}",footerscripts($browser_lang),$footer);
     // Translations via LOCALES
     $rawlocales=file_get_contents($lw_locales.$browser_lang.".json");
     $newheader=translate($rawlocales,$header);
     $newpage=translate($rawlocales,$rawpage);
     $newfooter=translate($rawlocales,$footer);
     //die($newheader);
-    echo $newheader;
-    echo $newpage;
-    echo $newfooter;
+    $htmlcontent = $newheader;
+    $htmlcontent.= $newpage;
+    $htmlcontent.= $newfooter;
+    return($htmlcontent);
 }
