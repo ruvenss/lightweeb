@@ -311,10 +311,52 @@ function sitemap_header(){
 ';
 	return($sitemap);
 }
+function sitemap_url($publicsite,$languages,$urlpath,$publishdate,$priority="0.3"){
+	$sitemap='  <url>
+    <loc>'.$publicsite.'/'.$languages[0].'/'.$urlpath.'</loc>';
+    for ($i=0; $i < sizeof($languages); $i++) { 
+    	$sitemap.='
+    	<xhtml:link 
+               rel="alternate"
+               hreflang="'.$languages[$i].'"
+               href="'.$publicsite.'/'.$languages[$i].'/'.$urlpath.'"/>';
+    }
+    $sitemap.='
+    	<lastmod>'.$publishdate.'</lastmod>
+    	<changefreq>monthly</changefreq>
+    	<priority>'.$priority.'</priority>';
+	$sitemap.='
+  </url>
+';
+  return($sitemap);
+}
 function sitemap_footer(){
 	$sitemap='
 </urlset>';
 	return($sitemap);
+}
+function minify($content) {
+
+	return($content);
+}
+function listFolders($dir){
+    $dh = scandir($dir);
+    $return = array();
+    foreach ($dh as $folder) {
+        if ($folder != '.' && $folder != '..' && $folder != 'img' && $folder != 'images' && $folder != 'css' && $folder != 'js') {
+            if (strpos($folder, '.html') == false && strpos($folder, '.json') == false && strlen($folder)>0) {
+	            if (is_dir($dir . '/' . $folder)) {
+	                $return[] = array($folder => listFolders($dir . '/' . $folder));
+	            } else {
+	                $return[] = array("folder"=>$folder);
+	            }
+	        }
+        }
+    }
+    return $return;
+}
+function level2() {
+
 }
 function publish($configfile){
 	// Send output to nizu
@@ -332,23 +374,211 @@ function publish($configfile){
 	$sitemap = sitemap_header();
 	$githubrepo="https://raw.githubusercontent.com/ruvenss/lightweb/master/";
 	$outputhtmlfile="index.html";
+	$subpages=array();
+	// Preparing basic structure for publishing
 	if (!file_exists($lw_publish_version)) {
 		mkdir($lw_publish_version);
-
+		$publised_index=file_get_contents($githubrepo."published_index.php");
+		file_put_contents($lw_publish_version."index.php", $publised_index);
+	}
+	for ($i=0; $i < sizeof($languages); $i++) {
+		if (!file_exists($lw_publish_version.$languages[$i])) { mkdir($lw_publish_version.$languages[$i]); }
 	}
 	// collection pages
+	// Home Page
 	if (file_exists("lightweb/webpages/home.html")){
 		$total_pages=1;
-		$page_settings=array();
+		$pageconfig=array();
 		for ($i=0; $i < sizeof($languages); $i++) {
-			$page_settings=getpageconfig($lw_pages."home",$languages[$i],"");
-			if ($page_settings['published']==="true") {
+			$pageconfig=getpageconfig($lw_pages."home",$languages[$i],"");
+			if ($pageconfig['published']==="true") {
 				$approved_pages=1;
+				$page="home";
+				$browser_lang=$languages[$i];
+				$homepage_content=displayPage(false,$subpages,$lw_path,$lw_locales,$lw_pages,$lw_pages_headers,$lw_pages_footers,$page,$browser_lang,$pageconfig['header'],$pageconfig['footer'],$pageconfig['description'],$pageconfig['title'],$pageconfig['subtitle'],$pageconfig['keywords'],$pageconfig['summary'],$pageconfig['category'],$pageconfig['subject'],$pageconfig['topic'],$pageconfig['ogimage']);
+				if ($pageconfig['minify']==="true") {
+					$homepage_content=minify($homepage_content);
+				}
+				$homepage_path=$lw_publish_version.$languages[$i]."/index.html";
+				if (sizeof($homepage_content)) {
+					file_put_contents($homepage_path, $homepage_content);
+				}
+			}
+		}
+		$LastUpdateDate=date("Y-m-d", filemtime("lightweb/webpages/home.html"));
+		$sitemap.= sitemap_url($publicsite,$languages,"",$LastUpdateDate,"1.0");
+	}
+	// Start tree structure
+	$foldertree=listFolders("lightweb/webpages");
+	if (sizeof($foldertree)){
+		// Level 1
+		for ($f1=0; $f1 < sizeof($foldertree); $f1++) { 
+			if (sizeof($foldertree[$f1])==1) {
+				$firstbranch=$foldertree[$f1];
+				foreach ($firstbranch as $key => $value) {
+					$foldername=$key;
+					// Creating first level Folder Structure
+					$total_pages=$total_pages+1;
+					for ($languages_folder=0; $languages_folder < sizeof($languages); $languages_folder++) {
+						if (!file_exists($lw_publish_version.$languages[$languages_folder]."/".$foldername)){
+							$levelpath0=$lw_publish_version.$languages[$languages_folder]."/".$foldername;
+							mkdir($levelpath0);
+							$browser_lang = $languages[$languages_folder];
+							$homepage_path = $levelpath0."/index.html";
+							$pageconfig=getpageconfig($lw_pages.$foldername."/",$languages[$languages_folder],$foldername);
+							if ($pageconfig['published']==="true") {
+								$LastUpdateDate=date("Y-m-d", filemtime("lightweb/webpages/".$foldername."/".$foldername.".html"));
+								$homepage_content=displayPage(false,$subpages,$lw_path,$lw_locales,$lw_pages,$lw_pages_headers,$lw_pages_footers,$foldername,$browser_lang,$pageconfig['header'],$pageconfig['footer'],$pageconfig['description'],$pageconfig['title'],$pageconfig['subtitle'],$pageconfig['keywords'],$pageconfig['summary'],$pageconfig['category'],$pageconfig['subject'],$pageconfig['topic'],$pageconfig['ogimage']);
+								if ($pageconfig['minify']==="true") {
+									$homepage_content=minify($homepage_content);
+								}
+								$homepage_path=$lw_publish_version.$languages[$languages_folder]."/".$foldername."/index.html";
+								if (sizeof($homepage_content)) {
+									file_put_contents($homepage_path, $homepage_content);
+								}
+							}
+						}
+					}
+					if ($pageconfig['published']==="true") {
+						if ($pageconfig['sitemap']==="true"){
+							$sitemap.= sitemap_url($publicsite,$languages,$foldername."/",$LastUpdateDate,"0.9");
+						}
+						$approved_pages=$approved_pages+1;
+					}
+					//
+					if (sizeof($value)) {
+						print_r($foldername."\r\n");
+						// Level 2
+						for ($f2=0; $f2 < sizeof($value); $f2++) {
+							if (sizeof($value[$f2])==1) {
+								$secondbranch=$value[$f2];
+								foreach ($secondbranch as $key2 => $value2) {
+									$foldername2=$key2;
+									$total_pages=$total_pages+1;
+									for ($languages_folder=0; $languages_folder < sizeof($languages); $languages_folder++) {
+										$secondbranch_folder=$lw_publish_version.$languages[$languages_folder]."/".$foldername."/".$foldername2;
+										if (!file_exists($secondbranch_folder)){
+											mkdir($secondbranch_folder);
+											$browser_lang = $languages[$languages_folder];
+											$homepage_path2 = $secondbranch_folder."/index.html";
+											$pageconfig=getpageconfig($lw_pages.$foldername."/".$foldername2."/",$languages[$languages_folder],$foldername2);
+											if ($pageconfig['published']==="true") {
+												$LastUpdateDate=date("Y-m-d", filemtime("lightweb/webpages/".$foldername."/".$foldername2."/index.html"));
+												$subpages=array($foldername,$foldername2);
+												$homepage_content="";
+												$homepage_content=displayPage(true,$subpages,$lw_path,$lw_locales,$lw_pages,$lw_pages_headers,$lw_pages_footers,$foldername2,$browser_lang,$pageconfig['header'],$pageconfig['footer'],$pageconfig['description'],$pageconfig['title'],$pageconfig['subtitle'],$pageconfig['keywords'],$pageconfig['summary'],$pageconfig['category'],$pageconfig['subject'],$pageconfig['topic'],$pageconfig['ogimage']);
+												if ($pageconfig['minify']==="true") {
+													$homepage_content=minify($homepage_content);
+												}
+												$homepage_path2=$lw_publish_version.$languages[$languages_folder]."/".$foldername."/".$foldername2."/index.html";
+												if (sizeof($homepage_content)) {
+													file_put_contents($homepage_path2, $homepage_content);
+												}
+											}
+										}
+										print_r("\t".$key2."\r\n");
+									}
+									if ($pageconfig['published']==="true") {
+										if ($pageconfig['sitemap']==="true"){
+											$sitemap.= sitemap_url($publicsite,$languages,$foldername."/".$foldername2."/",$LastUpdateDate,"0.8");
+										}
+										$approved_pages=$approved_pages+1;
+									}
+									// Third Level
+									if (sizeof($value2)) {
+										for ($f3=0; $f3 < sizeof($value2); $f3++) {
+											if (sizeof($value2[$f3])==1) {
+												$thirdbranch=$value2[$f3];
+												foreach ($thirdbranch as $key3 => $value3) {
+													$foldername3=$key3;
+													$total_pages=$total_pages+1;
+													for ($languages_folder=0; $languages_folder < sizeof($languages); $languages_folder++) {
+														$thirdbranch_folder=$lw_publish_version.$languages[$languages_folder]."/".$foldername."/".$foldername2."/".$foldername3;
+														if (!file_exists($thirdbranch_folder)){
+															mkdir($thirdbranch_folder);
+															$browser_lang = $languages[$languages_folder];
+															$homepage_path3 = $thirdbranch_folder."/index.html";
+															$pageconfig=getpageconfig($lw_pages.$foldername."/".$foldername2."/".$foldername3."/",$languages[$languages_folder],$foldername3);
+															if ($pageconfig['published']==="true") {
+																$LastUpdateDate=date("Y-m-d", filemtime("lightweb/webpages/".$foldername."/".$foldername2."/".$foldername3."/index.html"));
+																$subpages=array($foldername,$foldername2,$foldername3);
+																$homepage_content="";
+																$homepage_content=displayPage(true,$subpages,$lw_path,$lw_locales,$lw_pages,$lw_pages_headers,$lw_pages_footers,$foldername3,$browser_lang,$pageconfig['header'],$pageconfig['footer'],$pageconfig['description'],$pageconfig['title'],$pageconfig['subtitle'],$pageconfig['keywords'],$pageconfig['summary'],$pageconfig['category'],$pageconfig['subject'],$pageconfig['topic'],$pageconfig['ogimage']);
+																if ($pageconfig['minify']==="true") {
+																	$homepage_content=minify($homepage_content);
+																}
+																$homepage_path3=$lw_publish_version.$languages[$languages_folder]."/".$foldername."/".$foldername2."/".$foldername3."/index.html";
+																if (sizeof($homepage_content)) {
+																	file_put_contents($homepage_path3, $homepage_content);
+																}
+															}
+														}
+														if ($pageconfig['published']==="true") {
+															if ($pageconfig['sitemap']==="true"){
+																$sitemap.= sitemap_url($publicsite,$languages,$foldername."/".$foldername2."/".$foldername3."/",$LastUpdateDate,"0.7");
+															}
+															$approved_pages=$approved_pages+1;
+														}
+														if (sizeof($value3)) {
+															for ($f4=0; $f4 < sizeof($value3); $f4++) {
+																if (sizeof($value3[$f4])==1) {
+																	$forthbranch=$value3[$f4];
+																	foreach ($forthbranch as $key4 => $value4) {
+																		$foldername4=$key4;
+																		$total_pages=$total_pages+1;
+																		for ($languages_folder=0; $languages_folder < sizeof($languages); $languages_folder++) {
+																			$forthbranch_folder=$lw_publish_version.$languages[$languages_folder]."/".$foldername."/".$foldername2."/".$foldername3."/".$foldername4;
+																			if (!file_exists($forthbranch_folder)){
+																				mkdir($forthbranch_folder);
+																				$browser_lang = $languages[$languages_folder];
+																				$homepage_path4 = $forthbranch_folder."/index.html";
+																				$pageconfig=getpageconfig($lw_pages.$foldername."/".$foldername2."/".$foldername3."/".$foldername4."/",$languages[$languages_folder],$foldername4);
+																				if ($pageconfig['published']==="true") {
+																					$LastUpdateDate=date("Y-m-d", filemtime("lightweb/webpages/".$foldername."/".$foldername2."/".$foldername3."/".$foldername4."/index.html"));
+																					$subpages=array($foldername,$foldername2,$foldername3,$foldername4);
+																					$homepage_content="";
+																					$homepage_content=displayPage(true,$subpages,$lw_path,$lw_locales,$lw_pages,$lw_pages_headers,$lw_pages_footers,$foldername4,$browser_lang,$pageconfig['header'],$pageconfig['footer'],$pageconfig['description'],$pageconfig['title'],$pageconfig['subtitle'],$pageconfig['keywords'],$pageconfig['summary'],$pageconfig['category'],$pageconfig['subject'],$pageconfig['topic'],$pageconfig['ogimage']);
+																					if ($pageconfig['minify']==="true") {
+																						$homepage_content=minify($homepage_content);
+																					}
+																					$homepage_path4=$lw_publish_version.$languages[$languages_folder]."/".$foldername."/".$foldername2."/".$foldername3."/".$foldername4."/index.html";
+																					if (sizeof($homepage_content)) {
+																						file_put_contents($homepage_path4, $homepage_content);
+																					}
+																				}
+																			}
+																			if ($pageconfig['published']==="true") {
+																				if ($pageconfig['sitemap']==="true"){
+																					$sitemap.= sitemap_url($publicsite,$languages,$foldername."/".$foldername2."/".$foldername3."/",$LastUpdateDate,"0.7");
+																				}
+																				$approved_pages=$approved_pages+1;
+																			}
+																			
+																		}
+																		print_r("\t\t\t".$key4."\r\n");
+																	}
+																}
+															}
+														}
+													}
+													print_r("\t\t".$key3."\r\n");
+												}
+											}
+										}
+									}
+								}
+							}
+						}
+						
+					}
+				}
 			}
 		}
 	}
-
 	$sitemap.= sitemap_footer();
+	
+	file_put_contents($lw_publish_version."sitemap.xml", $sitemap);
+	die();
 	echo '
 <!DOCTYPE html>
 <html lang="eng" class="js">
@@ -428,13 +658,7 @@ td{
 			<td>
 				<div class="card">
 					<h2>Pages</h2>
-					<p>0 / '.$total_pages.'</p>
-				</div>
-			</td>
-			<td>
-				<div class="card">
-					<h2>Approved pages</h2>
-					<p>0 / '.$approved_pages.'</p>
+					<p>'.$approved_pages.' / '.$total_pages.'</p>
 				</div>
 			</td>
 		</tr>
@@ -488,7 +712,7 @@ function right($str, $length) {
 }
 function getpageconfig($lw_pages,$browser_lang,$page){
     $configfile=$lw_pages.$page."_".$browser_lang."_config.json";
-   	//print_r("<br>".$configfile);
+   	//print_r("\r\n<br>Config file path: ".$configfile."<br>\r\n");
    	//die();
     if (file_exists($configfile)){
         $rawfile=file_get_contents($configfile);
