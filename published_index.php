@@ -5,7 +5,6 @@ if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])){
 	$browser_lang = substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 2);
 } else {
 	$browser_lang = $languages[0];
-
 }
 if (isset($_REQUEST['lang'])) {
 	if (strlen($_REQUEST['lang'])==2) {
