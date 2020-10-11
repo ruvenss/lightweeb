@@ -312,22 +312,26 @@ function sitemap_header(){
 	return($sitemap);
 }
 function sitemap_url($publicsite,$languages,$urlpath,$publishdate,$priority="0.3"){
-	$sitemap='  <url>
-    <loc>'.$publicsite.'/'.$languages[0].'/'.$urlpath.'</loc>';
-    for ($i=0; $i < sizeof($languages); $i++) { 
-    	$sitemap.='
-    	<xhtml:link 
-               rel="alternate"
-               hreflang="'.$languages[$i].'"
-               href="'.$publicsite.'/'.$languages[$i].'/'.$urlpath.'"/>';
-    }
-    $sitemap.='
-    	<lastmod>'.$publishdate.'</lastmod>
-    	<changefreq>monthly</changefreq>
-    	<priority>'.$priority.'</priority>';
-	$sitemap.='
-  </url>
+	if ($urlpath=="404" || $urlpath=="images" || $urlpath=="gdpr" || $urlpath=="blog" || $urlpath=="success"||  $urlpath==".git") {
+
+	} else {
+		$sitemap='	<url>
+	    <loc>'.$publicsite.'/'.$languages[0].'/'.$urlpath.'</loc>';
+	    for ($i=0; $i < sizeof($languages); $i++) { 
+	    	$sitemap.='
+	    	<xhtml:link 
+	               rel="alternate"
+	               hreflang="'.$languages[$i].'"
+	               href="'.$publicsite.'/'.$languages[$i].'/'.$urlpath.'"/>';
+	    }
+	    $sitemap.='
+	    	<lastmod>'.$publishdate.'</lastmod>
+	    	<changefreq>monthly</changefreq>
+	    	<priority>'.$priority.'</priority>';
+		$sitemap.='
+	</url>
 ';
+	}
   return($sitemap);
 }
 function sitemap_footer(){
@@ -336,7 +340,6 @@ function sitemap_footer(){
 	return($sitemap);
 }
 function minify($content) {
-
 	return($content);
 }
 function listFolders($dir){
@@ -376,9 +379,24 @@ function publish($configfile){
 	$outputhtmlfile="index.html";
 	$subpages=array();
 	// Preparing basic structure for publishing
+	if (file_exists($lw_publish_version)) {
+		// Delete all content
+		$e="rm -rf ".$lw_publish_version;
+		exec($e);
+		//die($e);
+	}
 	if (!file_exists($lw_publish_version)) {
 		mkdir($lw_publish_version);
 		$publised_index=file_get_contents($githubrepo."published_index.php");
+		$published_index.='
+$languages=array("'.implode('","', $languages).'");
+if (isset($_SERVER["HTTP_ACCEPT_LANGUAGE"])){
+	$browser_lang = substr($_SERVER["HTTP_ACCEPT_LANGUAGE"], 0, 2);
+} else {
+	$browser_lang = $languages[0];
+}
+header("Location: '.$publicsite.'/".$browser_lang);
+';
 		file_put_contents($lw_publish_version."index.php", $publised_index);
 	}
 	for ($i=0; $i < sizeof($languages); $i++) {
@@ -408,177 +426,150 @@ function publish($configfile){
 		$LastUpdateDate=date("Y-m-d", filemtime("lightweb/webpages/home.html"));
 		$sitemap.= sitemap_url($publicsite,$languages,"",$LastUpdateDate,"1.0");
 	}
+	// Other Base Structure files and directories
+	$fileslevel0 = scandir(getcwd());
+	if (sizeof($fileslevel0)){
+		for ($i=0; $i < sizeof($fileslevel0); $i++) { 
+			switch ($fileslevel0[$i]) {
+				case '.':
+				case '..':
+				case 'index.php':
+				case 'cmsfunctions.php':
+				case '.htaccess':
+				case 'errorslog.log':
+				case 'errors.log':
+				case 'composer.json':
+				case 'composer.lock':
+				case 'lightweb':
+				case '.git':
+					# do nothing
+					break;
+				
+				default:
+					# Copy file and directory
+					if(is_link(getcwd().'/'.$fileslevel0[$i])) {
+						//echo "\r\n<br>".getcwd().'/'.$fileslevel0[$i]." IS SYMLINK";
+					} else {
+						$copyexec='cp -p -R '.getcwd().'/'.$fileslevel0[$i].' '.$lw_publish_version.$fileslevel0[$i];
+						//echo "\r\n<br>".$copyexec;
+					}
+					exec($copyexec);
+					break;
+			}
+		}
+		//print_r($fileslevel0);
+		//die();
+	}
 	// Start tree structure
 	$foldertree=listFolders("lightweb/webpages");
+	//print_r($foldertree);
+	//die();
 	if (sizeof($foldertree)){
-		// Level 1
 		for ($f1=0; $f1 < sizeof($foldertree); $f1++) { 
 			if (sizeof($foldertree[$f1])==1) {
-				$firstbranch=$foldertree[$f1];
+				$firstbranch = $foldertree[$f1];
 				foreach ($firstbranch as $key => $value) {
 					$foldername=$key;
 					// Creating first level Folder Structure
-					$total_pages=$total_pages+1;
-					for ($languages_folder=0; $languages_folder < sizeof($languages); $languages_folder++) {
-						if (!file_exists($lw_publish_version.$languages[$languages_folder]."/".$foldername)){
-							$levelpath0=$lw_publish_version.$languages[$languages_folder]."/".$foldername;
-							mkdir($levelpath0);
-							$browser_lang = $languages[$languages_folder];
-							$homepage_path = $levelpath0."/index.html";
-							$pageconfig=getpageconfig($lw_pages.$foldername."/",$languages[$languages_folder],$foldername);
-							if ($pageconfig['published']==="true") {
-								$LastUpdateDate=date("Y-m-d", filemtime("lightweb/webpages/".$foldername."/".$foldername.".html"));
-								$homepage_content=displayPage(false,$subpages,$lw_path,$lw_locales,$lw_pages,$lw_pages_headers,$lw_pages_footers,$foldername,$browser_lang,$pageconfig['header'],$pageconfig['footer'],$pageconfig['description'],$pageconfig['title'],$pageconfig['subtitle'],$pageconfig['keywords'],$pageconfig['summary'],$pageconfig['category'],$pageconfig['subject'],$pageconfig['topic'],$pageconfig['ogimage']);
-								if ($pageconfig['minify']==="true") {
-									$homepage_content=minify($homepage_content);
-								}
-								$homepage_path=$lw_publish_version.$languages[$languages_folder]."/".$foldername."/index.html";
-								if (sizeof($homepage_content)) {
-									file_put_contents($homepage_path, $homepage_content);
-								}
-							}
-						}
-					}
-					if ($pageconfig['published']==="true") {
-						if ($pageconfig['sitemap']==="true"){
-							$sitemap.= sitemap_url($publicsite,$languages,$foldername."/",$LastUpdateDate,"0.9");
-						}
-						$approved_pages=$approved_pages+1;
-					}
-					//
-					if (sizeof($value)) {
-						print_r($foldername."\r\n");
-						// Level 2
-						for ($f2=0; $f2 < sizeof($value); $f2++) {
-							if (sizeof($value[$f2])==1) {
-								$secondbranch=$value[$f2];
-								foreach ($secondbranch as $key2 => $value2) {
-									$foldername2=$key2;
-									$total_pages=$total_pages+1;
-									for ($languages_folder=0; $languages_folder < sizeof($languages); $languages_folder++) {
-										$secondbranch_folder=$lw_publish_version.$languages[$languages_folder]."/".$foldername."/".$foldername2;
-										if (!file_exists($secondbranch_folder)){
-											mkdir($secondbranch_folder);
-											$browser_lang = $languages[$languages_folder];
-											$homepage_path2 = $secondbranch_folder."/index.html";
-											$pageconfig=getpageconfig($lw_pages.$foldername."/".$foldername2."/",$languages[$languages_folder],$foldername2);
-											if ($pageconfig['published']==="true") {
-												$LastUpdateDate=date("Y-m-d", filemtime("lightweb/webpages/".$foldername."/".$foldername2."/index.html"));
-												$subpages=array($foldername,$foldername2);
-												$homepage_content="";
-												$homepage_content=displayPage(true,$subpages,$lw_path,$lw_locales,$lw_pages,$lw_pages_headers,$lw_pages_footers,$foldername2,$browser_lang,$pageconfig['header'],$pageconfig['footer'],$pageconfig['description'],$pageconfig['title'],$pageconfig['subtitle'],$pageconfig['keywords'],$pageconfig['summary'],$pageconfig['category'],$pageconfig['subject'],$pageconfig['topic'],$pageconfig['ogimage']);
-												if ($pageconfig['minify']==="true") {
-													$homepage_content=minify($homepage_content);
-												}
-												$homepage_path2=$lw_publish_version.$languages[$languages_folder]."/".$foldername."/".$foldername2."/index.html";
-												if (sizeof($homepage_content)) {
-													file_put_contents($homepage_path2, $homepage_content);
-												}
-											}
-										}
-										print_r("\t".$key2."\r\n");
-									}
+					//print_r($foldername);
+					switch ($foldername) {
+						case '.git':
+						case 'images':
+						case 'img':
+						case 'wp-login':
+						case 'wp-content':
+						case 'wp-admin':
+							# Do Nothing
+							break;
+						default:
+							$total_pages=$total_pages+1;
+							
+							// Level 1
+							for ($languages_folder=0; $languages_folder < sizeof($languages); $languages_folder++) {
+								if (!file_exists($lw_publish_version.$languages[$languages_folder]."/".$foldername)){
+									$levelpath0=$lw_publish_version.$languages[$languages_folder]."/".$foldername;
+									mkdir($levelpath0);
+									$browser_lang  = $languages[$languages_folder];
+									$homepage_path = $levelpath0."/index.html";
+									$pageconfig=getpageconfig($lw_pages.$foldername."/",$languages[$languages_folder],$foldername);
 									if ($pageconfig['published']==="true") {
-										if ($pageconfig['sitemap']==="true"){
-											$sitemap.= sitemap_url($publicsite,$languages,$foldername."/".$foldername2."/",$LastUpdateDate,"0.8");
+										$LastUpdateDate=date("Y-m-d", filemtime("lightweb/webpages/".$foldername."/".$foldername.".html"));
+										$homepage_content=displayPage(false,$subpages,$lw_path,$lw_locales,$lw_pages,$lw_pages_headers,$lw_pages_footers,$foldername,$browser_lang,$pageconfig['header'],$pageconfig['footer'],$pageconfig['description'],$pageconfig['title'],$pageconfig['subtitle'],$pageconfig['keywords'],$pageconfig['summary'],$pageconfig['category'],$pageconfig['subject'],$pageconfig['topic'],$pageconfig['ogimage']);
+										if ($pageconfig['minify']==="true") {
+											$homepage_content=minify($homepage_content);
 										}
-										$approved_pages=$approved_pages+1;
-									}
-									// Third Level
-									if (sizeof($value2)) {
-										for ($f3=0; $f3 < sizeof($value2); $f3++) {
-											if (sizeof($value2[$f3])==1) {
-												$thirdbranch=$value2[$f3];
-												foreach ($thirdbranch as $key3 => $value3) {
-													$foldername3=$key3;
-													$total_pages=$total_pages+1;
-													for ($languages_folder=0; $languages_folder < sizeof($languages); $languages_folder++) {
-														$thirdbranch_folder=$lw_publish_version.$languages[$languages_folder]."/".$foldername."/".$foldername2."/".$foldername3;
-														if (!file_exists($thirdbranch_folder)){
-															mkdir($thirdbranch_folder);
-															$browser_lang = $languages[$languages_folder];
-															$homepage_path3 = $thirdbranch_folder."/index.html";
-															$pageconfig=getpageconfig($lw_pages.$foldername."/".$foldername2."/".$foldername3."/",$languages[$languages_folder],$foldername3);
-															if ($pageconfig['published']==="true") {
-																$LastUpdateDate=date("Y-m-d", filemtime("lightweb/webpages/".$foldername."/".$foldername2."/".$foldername3."/index.html"));
-																$subpages=array($foldername,$foldername2,$foldername3);
-																$homepage_content="";
-																$homepage_content=displayPage(true,$subpages,$lw_path,$lw_locales,$lw_pages,$lw_pages_headers,$lw_pages_footers,$foldername3,$browser_lang,$pageconfig['header'],$pageconfig['footer'],$pageconfig['description'],$pageconfig['title'],$pageconfig['subtitle'],$pageconfig['keywords'],$pageconfig['summary'],$pageconfig['category'],$pageconfig['subject'],$pageconfig['topic'],$pageconfig['ogimage']);
-																if ($pageconfig['minify']==="true") {
-																	$homepage_content=minify($homepage_content);
-																}
-																$homepage_path3=$lw_publish_version.$languages[$languages_folder]."/".$foldername."/".$foldername2."/".$foldername3."/index.html";
-																if (sizeof($homepage_content)) {
-																	file_put_contents($homepage_path3, $homepage_content);
-																}
-															}
-														}
-														if ($pageconfig['published']==="true") {
-															if ($pageconfig['sitemap']==="true"){
-																$sitemap.= sitemap_url($publicsite,$languages,$foldername."/".$foldername2."/".$foldername3."/",$LastUpdateDate,"0.7");
-															}
-															$approved_pages=$approved_pages+1;
-														}
-														if (sizeof($value3)) {
-															for ($f4=0; $f4 < sizeof($value3); $f4++) {
-																if (sizeof($value3[$f4])==1) {
-																	$forthbranch=$value3[$f4];
-																	foreach ($forthbranch as $key4 => $value4) {
-																		$foldername4=$key4;
-																		$total_pages=$total_pages+1;
-																		for ($languages_folder=0; $languages_folder < sizeof($languages); $languages_folder++) {
-																			$forthbranch_folder=$lw_publish_version.$languages[$languages_folder]."/".$foldername."/".$foldername2."/".$foldername3."/".$foldername4;
-																			if (!file_exists($forthbranch_folder)){
-																				mkdir($forthbranch_folder);
-																				$browser_lang = $languages[$languages_folder];
-																				$homepage_path4 = $forthbranch_folder."/index.html";
-																				$pageconfig=getpageconfig($lw_pages.$foldername."/".$foldername2."/".$foldername3."/".$foldername4."/",$languages[$languages_folder],$foldername4);
-																				if ($pageconfig['published']==="true") {
-																					$LastUpdateDate=date("Y-m-d", filemtime("lightweb/webpages/".$foldername."/".$foldername2."/".$foldername3."/".$foldername4."/index.html"));
-																					$subpages=array($foldername,$foldername2,$foldername3,$foldername4);
-																					$homepage_content="";
-																					$homepage_content=displayPage(true,$subpages,$lw_path,$lw_locales,$lw_pages,$lw_pages_headers,$lw_pages_footers,$foldername4,$browser_lang,$pageconfig['header'],$pageconfig['footer'],$pageconfig['description'],$pageconfig['title'],$pageconfig['subtitle'],$pageconfig['keywords'],$pageconfig['summary'],$pageconfig['category'],$pageconfig['subject'],$pageconfig['topic'],$pageconfig['ogimage']);
-																					if ($pageconfig['minify']==="true") {
-																						$homepage_content=minify($homepage_content);
-																					}
-																					$homepage_path4=$lw_publish_version.$languages[$languages_folder]."/".$foldername."/".$foldername2."/".$foldername3."/".$foldername4."/index.html";
-																					if (sizeof($homepage_content)) {
-																						file_put_contents($homepage_path4, $homepage_content);
-																					}
-																				}
-																			}
-																			if ($pageconfig['published']==="true") {
-																				if ($pageconfig['sitemap']==="true"){
-																					$sitemap.= sitemap_url($publicsite,$languages,$foldername."/".$foldername2."/".$foldername3."/",$LastUpdateDate,"0.7");
-																				}
-																				$approved_pages=$approved_pages+1;
-																			}
-																			
-																		}
-																		print_r("\t\t\t".$key4."\r\n");
-																	}
-																}
-															}
-														}
-													}
-													print_r("\t\t".$key3."\r\n");
-												}
-											}
+										$homepage_path=$lw_publish_version.$languages[$languages_folder]."/".$foldername."/index.html";
+										if (sizeof($homepage_content)) {
+											file_put_contents($homepage_path, $homepage_content);
 										}
 									}
 								}
 							}
-						}
-						
+							if ($pageconfig['published']==="true") {
+								if ($pageconfig['sitemap']==="true"){
+									$sitemap.= sitemap_url($publicsite,$languages,$foldername."/",$LastUpdateDate,"0.9");
+								}
+								$approved_pages=$approved_pages+1;
+							}
+							print_r("\t".$key."\r\n");
+							if (sizeof($value)) {
+								echo "_____________________<br>\r\n";
+								print_r($value);
+								$secondbranch = $value;
+								for ($b2=0; $b2 < sizeof($secondbranch) ; $b2++) { 
+									$branchdata=$secondbranch[$b2];
+									print_r($branchdata);
+									foreach ($branchdata as $key2 => $value2) {
+										$foldername2=$key2;
+										for ($languages_folder=0; $languages_folder < sizeof($languages); $languages_folder++) {
+											if (!file_exists($lw_publish_version.$languages[$languages_folder]."/".$foldername."/".$foldername2)){
+												$levelpath1=$lw_publish_version.$languages[$languages_folder]."/".$foldername."/".$foldername2;
+												mkdir($levelpath1);
+												$browser_lang  = $languages[$languages_folder];
+												$pageconfig=getpageconfig($lw_pages.$foldername."/".$foldername2."/",$languages[$languages_folder],$foldername2);
+												print_r($pageconfig);
+												$homepage_path=$lw_publish_version.$languages[$languages_folder]."/".$foldername."/".$foldername2."/index.html";
+													
+												if ($pageconfig['published']==="true") {
+													$LastUpdateDate=date("Y-m-d", filemtime("lightweb/webpages/".$foldername."/".$foldername2."/index.html"));
+													$subpages=$foldername."/".$foldername2;
+													$homepage_content=displayPage(true,$subpages,$lw_path,$lw_locales,$lw_pages,$lw_pages_headers,$lw_pages_footers,$foldername2,$browser_lang,$pageconfig['header'],$pageconfig['footer'],$pageconfig['description'],$pageconfig['title'],$pageconfig['subtitle'],$pageconfig['keywords'],$pageconfig['summary'],$pageconfig['category'],$pageconfig['subject'],$pageconfig['topic'],$pageconfig['ogimage']);
+													if ($pageconfig['minify']==="true") {
+														$homepage_content=minify($homepage_content);
+													}
+													if (sizeof($homepage_content)) {
+														file_put_contents($homepage_path, $homepage_content);
+													}
+												}
+											}
+										}
+										if ($pageconfig['published']==="true") {
+											if ($pageconfig['sitemap']==="true"){
+												$sitemap.= sitemap_url($publicsite,$languages,$foldername."/".$foldername2."/",$LastUpdateDate,"0.8");
+											}
+											$approved_pages=$approved_pages+1;
+										}
+									}
+								}
+							}
+							break;
 					}
+					
 				}
+				
 			}
 		}
 	}
 	$sitemap.= sitemap_footer();
-	
 	file_put_contents($lw_publish_version."sitemap.xml", $sitemap);
+	// Zip the file
 	die();
+	$publicsite_directory = str_replace("https://", "", $publicsite);
+	$r="rsync -av ".$lw_publish_version." /home/$publicsite_directory/";
+	$s="rm -R ".$lw_publish_version."*;rm -r ".$lw_publish_version;
+	$e="cd ".$lw_path.";tar -zcvf ".$lw_path."publish_version.tar.gz *";
+	exec($e);
+	
 	echo '
 <!DOCTYPE html>
 <html lang="eng" class="js">
@@ -662,6 +653,26 @@ td{
 				</div>
 			</td>
 		</tr>
+		<tr>
+			<td>
+				<div class="card card-lg">
+					<h2>Rsync</h2>
+					<p>'.$r.'</p>
+				</div>
+			</td>
+			<td>
+				<div class="card card-lg">
+					<h2>Compression</h2>
+					<p>'.$e.'</p>
+				</div>
+			</td>
+			<td>
+				<div class="card">
+					<h2></h2>
+					<p></p>
+				</div>
+			</td>
+		</tr>
 	</table>
 </content>
 <footer>
@@ -718,6 +729,8 @@ function getpageconfig($lw_pages,$browser_lang,$page){
         $rawfile=file_get_contents($configfile);
         return(json_decode($rawfile,true));
     } else {
+   		//die($configfile);
+
         return(array());
     }
 }
@@ -729,7 +742,7 @@ function generatemetas($title,$subtitle,$topic,$summary,$category,$keywords,$sub
     if (strlen($title)==0) {
         $title=$maintitle;
     }
-    //die($sqldate);
+    //die($pageurl);
     $humandate=date("F j, Y, g:i a",strtotime($sqldate." 00:00:00"));
 //Basic HTML Meta Tags
     if ($pwa) {
@@ -781,7 +794,7 @@ function generatemetas($title,$subtitle,$topic,$summary,$category,$keywords,$sub
     $opengraphtags='
 <meta name="og:title" content="'.$title.'">
 <meta name="og:type" content="website">
-<meta name="og:url" content="'.$publicsite.'/'.$browser_lang.'/'.$pageurl.'/">
+<meta name="og:url" content="'.$publicsite.'/'.$browser_lang.'/'.$pageurl.'">
 <meta name="og:image" content="'.$publicsite.$ogimage.'">
 <meta name="og:site_name" content="'.$title.'">
 <meta name="og:description" content="'.$description.'">
@@ -864,14 +877,39 @@ if (strlen($g_captcha)) {
 	$headerscripts='
 <script src="https://www.google.com/recaptcha/api.js" async defer></script>';
 }
+$social_media_arr=array();
+if (strlen($twitter_url)>0) {array_push($social_media_arr, '"'.$twitter_url.'"');}
+if (strlen($facebook_url)>0) {array_push($social_media_arr, '"'.$facebook_url.'"');}
+if (strlen($dribbble_url)>0) {array_push($social_media_arr, '"'.$dribbble_url.'"');}
+if (strlen($linkedin_url)>0) {array_push($social_media_arr, '"'.$linkedin_url.'"');}
+if (strlen($yelp_url)>0) {array_push($social_media_arr, '"'.$yelp_url.'"');}
+if (strlen($foursquare_url)>0) {array_push($social_media_arr, '"'.$foursquare_url.'"');}
+if (strlen($youtube_url)>0) {array_push($social_media_arr, '"'.$youtube_url.'"');}
+if (strlen($instagram_url)>0) {array_push($social_media_arr, '"'.$instagram_url.'?hl='.$browser_lang.'"');}
+if (strlen($github_url)>0) {array_push($social_media_arr, '"'.$github_url.'"');}
+if (strlen($pinterest_url)>0) {array_push($social_media_arr, '"'.$pinterest_url.'"');}
+if (strlen($tumblr_url)>0) {array_push($social_media_arr, '"'.$tumblr_url.'"');}
+if (strlen($behance_url)>0) {array_push($social_media_arr, '"'.$behance_url.'"');}
+if (strlen($slideshare_url)>0) {array_push($social_media_arr, '"'.$slideshare_url.'"');}
 $structured_data='
 <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "Organization",
-        "url": "'.$publicsite.'",
-        "logo": "'.$publicsite.$logo.'"
-    }
+	{
+	 "@context" : "http://schema.org",
+	 "@type" : "Organization",
+	 "name" : "'.$owner.'",
+	 "url" : "'.$publicsite.'",
+	 "logo": "'.$publicsite.$logo.'",
+	 "sameAs" : [
+	   '.implode(",", $social_media_arr).'
+	   ],
+	  "address": {
+	    "@type": "PostalAddress",
+	    "streetAddress": "'.$street .'",
+	    "addressRegion": "'.$regionisocode.'",
+	    "postalCode": "'.$postalcode.'",
+	    "addressCountry": "'.$countrycode.'"
+	  }
+	}
 </script>
 ';
 switch ($topic) {
@@ -883,7 +921,7 @@ switch ($topic) {
         "@type": "NewsArticle",
         "mainEntityOfPage": {
         "@type": "WebPage",
-        "@id": "'.$publicsite.$pageurl.'"
+        "@id": "'.$publicsite.'/'.$browser_lang.'/'.$pageurl.'"
         },
         "headline": "'.$title.'",
         "image": [
@@ -1135,8 +1173,11 @@ gtag("config", "'.$g_analitycs_id.'");
     	$popupwhatsapp="";
     	if (strlen($rc_whatsapp )) {
     		$popuprocket=' else {
+
     		if (getOS()=="iOS" || getOS()=="Android") { 
     			DisplayWhatsApp();
+    		} else {
+    			DisplayRocket();
     		}
     	}';
     	}
@@ -1277,15 +1318,18 @@ function DisplayWhatsApp(){
 	},5000);
 }
 function DisplayRocket(){
-	(function(w, d, s, u) {
-    w.RocketChat = function(c) { w.RocketChat._.push(c) }; w.RocketChat._ = []; w.RocketChat.url = u;
-    var h = d.getElementsByTagName(s)[0], j = d.createElement(s);
-    j.async = true; j.src = "https://'.$rc_host.'/livechat/rocketchat-livechat.min.js?_=201903270000";
-    h.parentNode.insertBefore(j, h);
-    RocketChat(function() {
-        this.minimizeWidget();
-    });
-	})(window, document, "script", "https://'.$rc_host.'/livechat");
+	if (getOS()=="iOS" || getOS()=="Android") { 
+    	DisplayWhatsApp();
+    } else {
+		$.getScript("https://livechat.nizu.io/js/init.js", function(data, textStatus, jqxhr) {
+			console.log(data); //data returned
+			console.log(textStatus); //success
+			console.log(jqxhr.status); //200
+			console.log("Load was performed.");
+		});
+		var script = document.createElement("script");
+		script.src = "https://livechat.nizu.io/js/init.js";
+	}
 }
 var d = new Date();
 var n = d.getDay();
@@ -1385,7 +1429,7 @@ switch(n) {
   (function() {
     var u="https://matomo.nizu.io/";
     _paq.push(["setTrackerUrl", u+"matomo.php"]);
-    _paq.push(["setSiteId", "1"]);
+    _paq.push(["setSiteId", "'.$matomo_site_id.'"]);
     var d=document, g=d.createElement("script"), s=d.getElementsByTagName("script")[0];
     g.type="text/javascript"; g.async=true; g.defer=true; g.src=u+"matomo.js"; s.parentNode.insertBefore(g,s);
   })();
@@ -1396,19 +1440,19 @@ switch(n) {
 }
 
 function displayPage($subpage,$subpages,$lw_path,$lw_locales,$lw_pages,$lw_pages_headers,$lw_pages_footers,$page,$browser_lang,$header,$footer,$description,$title,$subtitle,$keywords,$summary,$category,$subject,$topic,$ogimage){
-	if (!$subpage && sizeof($subpages)==0) {  
+	if (!$subpage && sizeof($subpages)==0) {
 		if ($page=="home") {
 			$pagefile=$lw_pages."home.html";
 		} else {
 			$pagefile=$lw_pages.$page."/".$page.".html";
 		}
-		
+		$pageurl="/";
 	} else {
     	$pagefile=$lw_pages."/".implode("/",$subpages)."/index.html";
+    	$pageurl=implode("/",$subpages)."/";
     }
     $nowversion=date("Ymdhsi");
     $sqldate=date("Y-m-d", filemtime($pagefile));
-    
 	$utcdate=$sqldate."T".date("H:i:s", filemtime($pagefile))."+02:00";
     $rawheader=file_get_contents($lw_pages_headers.$header);
     $rawpage=file_get_contents($pagefile);
@@ -1418,8 +1462,7 @@ function displayPage($subpage,$subpages,$lw_path,$lw_locales,$lw_pages,$lw_pages
     //print_r("content: $rawpage");
     //die ($lw_pages_headers.$header."<br>page:".$page."<br>subpage:".$subpage."<br>".$pagefile);
     //Metas
-    $pageurl="/".$browser_lang."/".$page."/";
-    $metas = generatemetas($title,$subtitle,$topic,$summary,$category,$keywords,$subject,$description,$browser_lang,$page,$sqldate,$utcdate,$ogimage);
+    $metas = generatemetas($title,$subtitle,$topic,$summary,$category,$keywords,$subject,$description,$browser_lang,$pageurl,$sqldate,$utcdate,$ogimage);
     $header=str_replace("{{metas}}",$metas,$rawheader);
     $header=str_replace("{{page_language}}",$browser_lang,$header);
     $header=str_replace("{{title}}",$title,$header);
