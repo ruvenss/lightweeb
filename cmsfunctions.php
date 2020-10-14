@@ -358,8 +358,37 @@ function listFolders($dir){
     }
     return $return;
 }
-function level2() {
-
+function publishSubLevel($mas,$lw_pages,$lw_publish_version,$languages,$lw_path,$lw_locales,$lw_pages_headers,$lw_pages_footers,$foldernames=array()) {
+	$folders=implode("/",$foldernames);
+	$foldername=end($foldernames);
+	//print_r("\r\n folders: ".$folders."<br>\r\n");
+	for ($languages_folder=0; $languages_folder < sizeof($languages); $languages_folder++) {
+		if (!file_exists($lw_publish_version.$languages[$languages_folder]."/".$folders)){
+			$levelpath=$lw_publish_version.$languages[$languages_folder]."/".$folders;
+			mkdir($levelpath);
+			$browser_lang  = $languages[$languages_folder];
+			$homepage_path = $levelpath."/index.html";
+			$pageconfig=getpageconfig($lw_pages.$folders."/",$languages[$languages_folder],$foldername);
+			if ($pageconfig['published']==="true") {
+				//print_r($pageconfig);
+				$LastUpdateDate=date("Y-m-d", filemtime("lightweb/webpages/".$folders."/index.html"));
+				$homepage_content=displayPage(true,$foldernames,$lw_path,$lw_locales,$lw_pages,$lw_pages_headers,$lw_pages_footers,$foldername,$browser_lang,$pageconfig['header'],$pageconfig['footer'],$pageconfig['description'],$pageconfig['title'],$pageconfig['subtitle'],$pageconfig['keywords'],$pageconfig['summary'],$pageconfig['category'],$pageconfig['subject'],$pageconfig['topic'],$pageconfig['ogimage']);
+				if ($pageconfig['minify']==="true") {
+					$homepage_content=minify($homepage_content);
+				}
+				if (strlen($homepage_content)) {
+					$homepage_path=$lw_publish_version.$languages[$languages_folder]."/".$folders."/index.html";
+					//print_r($homepage_path."\r\n");
+					file_put_contents($homepage_path, $homepage_content);
+					//
+				} else {
+					echo "\r\n<br> Error, file $foldername is empty <br>\r\n";
+					//return(false);
+				}
+			}
+		}
+	}
+	return(true);
 }
 function publish($configfile){
 	// Send output to nizu
@@ -399,6 +428,10 @@ header("Location: '.$publicsite.'/".$browser_lang);
 ';
 		file_put_contents($lw_publish_version."index.php", $publised_index);
 	}
+	// htaccess
+	$htaccess='RewriteEngine Off
+Options -Indexes';
+	file_put_contents($lw_publish_version.".htaccess", $htaccess);
 	for ($i=0; $i < sizeof($languages); $i++) {
 		if (!file_exists($lw_publish_version.$languages[$i])) { mkdir($lw_publish_version.$languages[$i]); }
 	}
@@ -417,9 +450,11 @@ header("Location: '.$publicsite.'/".$browser_lang);
 				if ($pageconfig['minify']==="true") {
 					$homepage_content=minify($homepage_content);
 				}
-				$homepage_path=$lw_publish_version.$languages[$i]."/index.html";
-				if (sizeof($homepage_content)) {
-					file_put_contents($homepage_path, $homepage_content);
+				if (strlen($homepage_content)){
+					$homepage_path=$lw_publish_version.$languages[$i]."/index.html";
+					//if (sizeof($homepage_content)) {
+						file_put_contents($homepage_path, $homepage_content);
+					//}
 				}
 			}
 		}
@@ -483,7 +518,7 @@ header("Location: '.$publicsite.'/".$browser_lang);
 							break;
 						default:
 							$total_pages=$total_pages+1;
-							
+							//echo "|_LEVEL 1<br>\r\n";
 							// Level 1
 							for ($languages_folder=0; $languages_folder < sizeof($languages); $languages_folder++) {
 								if (!file_exists($lw_publish_version.$languages[$languages_folder]."/".$foldername)){
@@ -499,9 +534,9 @@ header("Location: '.$publicsite.'/".$browser_lang);
 											$homepage_content=minify($homepage_content);
 										}
 										$homepage_path=$lw_publish_version.$languages[$languages_folder]."/".$foldername."/index.html";
-										if (sizeof($homepage_content)) {
-											file_put_contents($homepage_path, $homepage_content);
-										}
+										//if (sizeof($homepage_content)) {
+										file_put_contents($homepage_path, $homepage_content);
+										//}
 									}
 								}
 							}
@@ -511,48 +546,77 @@ header("Location: '.$publicsite.'/".$browser_lang);
 								}
 								$approved_pages=$approved_pages+1;
 							}
-							print_r("\t".$key."\r\n");
+							//print_r("\t".$key."\r\n");
 							if (sizeof($value)) {
-								echo "_____________________<br>\r\n";
-								print_r($value);
+								//echo "|__LEVEL 2<br>\r\n";
 								$secondbranch = $value;
 								for ($b2=0; $b2 < sizeof($secondbranch) ; $b2++) { 
-									$branchdata=$secondbranch[$b2];
-									print_r($branchdata);
-									foreach ($branchdata as $key2 => $value2) {
+									$branchdata2=$secondbranch[$b2];
+									foreach ($branchdata2 as $key2 => $value2) {
 										$foldername2=$key2;
-										for ($languages_folder=0; $languages_folder < sizeof($languages); $languages_folder++) {
-											if (!file_exists($lw_publish_version.$languages[$languages_folder]."/".$foldername."/".$foldername2)){
-												$levelpath1=$lw_publish_version.$languages[$languages_folder]."/".$foldername."/".$foldername2;
-												mkdir($levelpath1);
-												$browser_lang  = $languages[$languages_folder];
-												$pageconfig=getpageconfig($lw_pages.$foldername."/".$foldername2."/",$languages[$languages_folder],$foldername2);
-												print_r($pageconfig);
-												$homepage_path=$lw_publish_version.$languages[$languages_folder]."/".$foldername."/".$foldername2."/index.html";
-													
-												if ($pageconfig['published']==="true") {
-													$LastUpdateDate=date("Y-m-d", filemtime("lightweb/webpages/".$foldername."/".$foldername2."/index.html"));
-													$subpages=$foldername."/".$foldername2;
-													$homepage_content=displayPage(true,$subpages,$lw_path,$lw_locales,$lw_pages,$lw_pages_headers,$lw_pages_footers,$foldername2,$browser_lang,$pageconfig['header'],$pageconfig['footer'],$pageconfig['description'],$pageconfig['title'],$pageconfig['subtitle'],$pageconfig['keywords'],$pageconfig['summary'],$pageconfig['category'],$pageconfig['subject'],$pageconfig['topic'],$pageconfig['ogimage']);
-													if ($pageconfig['minify']==="true") {
-														$homepage_content=minify($homepage_content);
-													}
-													if (sizeof($homepage_content)) {
-														file_put_contents($homepage_path, $homepage_content);
-													}
-												}
-											}
-										}
+										publishSubLevel($mas,$lw_pages,$lw_publish_version,$languages,$lw_path,$lw_locales,$lw_pages_headers,$lw_pages_footers,array($foldername,$foldername2));
 										if ($pageconfig['published']==="true") {
 											if ($pageconfig['sitemap']==="true"){
 												$sitemap.= sitemap_url($publicsite,$languages,$foldername."/".$foldername2."/",$LastUpdateDate,"0.8");
 											}
 											$approved_pages=$approved_pages+1;
 										}
+										if (sizeof($value2)) {
+											//echo "|___LEVEL 3<br>\r\n";
+											print_r($value2);
+											$branch = $value2;
+											for ($b3=0; $b3 < sizeof($value2) ; $b3++) { 
+												$branchdata3=$value2[$b3];
+												foreach ($branchdata3 as $key3 => $value3) {
+													$foldername3=$key3;
+													publishSubLevel($mas,$lw_pages,$lw_publish_version,$languages,$lw_path,$lw_locales,$lw_pages_headers,$lw_pages_footers,array($foldername,$foldername2,$foldername3));
+													if ($pageconfig['published']==="true") {
+														if ($pageconfig['sitemap']==="true"){
+															$sitemap.= sitemap_url($publicsite,$languages,$foldername."/".$foldername2."/".$foldername3."/",$LastUpdateDate,"0.7");
+														}
+														$approved_pages=$approved_pages+1;
+													}
+													if (sizeof($value3)) {
+														//echo "|____LEVEL 4<br>\r\n";
+														$branch = $value3;
+														for ($b4=0; $b4 < sizeof($value3) ; $b4++) { 
+															$branchdata4 = $value3[$b4];
+															foreach ($branchdata4 as $key4 => $value4) {
+																$foldername4=$key4;
+																publishSubLevel($mas,$lw_pages,$lw_publish_version,$languages,$lw_path,$lw_locales,$lw_pages_headers,$lw_pages_footers,array($foldername,$foldername2,$foldername3,$foldername4));
+																if ($pageconfig['published']==="true") {
+																	if ($pageconfig['sitemap']==="true"){
+																		$sitemap.= sitemap_url($publicsite,$languages,$foldername."/".$foldername2."/".$foldername3."/".$foldername4."/",$LastUpdateDate,"0.6");
+																	}
+																	$approved_pages=$approved_pages+1;
+																}
+																if (sizeof($value4)) {
+																	//echo "|_____LEVEL 5<br>\r\n";
+																	$branch = $value4;
+																	for ($b5=0; $b5 < sizeof($value4) ; $b5++) { 
+																		$branchdata5=$value4[$b5];
+																		foreach ($branchdata5 as $key5 => $value5) {
+																			$foldername5=$key5;
+																			publishSubLevel($mas,$lw_pages,$lw_publish_version,$languages,$lw_path,$lw_locales,$lw_pages_headers,$lw_pages_footers,array($foldername,$foldername2,$foldername3,$foldername4,$foldername5));
+																			if ($pageconfig['published']==="true") {
+																				if ($pageconfig['sitemap']==="true"){
+																					$sitemap.= sitemap_url($publicsite,$languages,$foldername."/".$foldername2."/".$foldername3."/".$foldername4."/".$foldername5."/",$LastUpdateDate,"0.5");
+																				}
+																				$approved_pages=$approved_pages+1;
+																			}
+																		}
+																	}
+																}
+															}
+														}
+													}
+												}
+											}
+										}
 									}
 								}
 							}
-							break;
+						break;
 					}
 					
 				}
@@ -563,13 +627,15 @@ header("Location: '.$publicsite.'/".$browser_lang);
 	$sitemap.= sitemap_footer();
 	file_put_contents($lw_publish_version."sitemap.xml", $sitemap);
 	// Zip the file
-	die();
+	//die();
 	$publicsite_directory = str_replace("https://", "", $publicsite);
 	$r="rsync -av ".$lw_publish_version." /home/$publicsite_directory/";
-	$s="rm -R ".$lw_publish_version."*;rm -r ".$lw_publish_version;
+	exec($r);
+	
 	$e="cd ".$lw_path.";tar -zcvf ".$lw_path."publish_version.tar.gz *";
 	exec($e);
-	
+	$s="rm -R ".$lw_publish_version."*;rm -r ".$lw_publish_version;
+	exec($s);
 	echo '
 <!DOCTYPE html>
 <html lang="eng" class="js">
@@ -734,7 +800,7 @@ function getpageconfig($lw_pages,$browser_lang,$page){
         return(array());
     }
 }
-function generatemetas($title,$subtitle,$topic,$summary,$category,$keywords,$subject,$description,$browser_lang,$pageurl,$sqldate,$utcdate,$ogimage){
+function generatemetas($title,$subtitle,$topic,$summary,$category,$keywords,$subject,$description,$browser_lang,$pageurl,$sqldate,$utcdate,$ogimage,$compress=false){
     include(getcwd()."/lightweb"."/config.php");
     if ($pageurl=="home") {
       $pageurl="";
@@ -855,6 +921,10 @@ function generatemetas($title,$subtitle,$topic,$summary,$category,$keywords,$sub
 <meta name="msapplication-tooltip" content="'.$description.'">
 <meta name="msvalidate.01" content="'.$msvalidate.'">
 <meta http-equiv="cleartype" content="on">';
+// Lightweb core CSS
+$headercss="";
+$headercss='<link rel="stylesheet" href="https://rgwit.ams3.digitaloceanspaces.com/css/lightweb2.min.css">
+';
 // HTML Link Tags
     $htmllinktags='
 <link rel="alternate" type="application/rss+xml" title="RSS" href="'.$publicsite.'/rss/">
@@ -965,7 +1035,17 @@ switch ($topic) {
         # code...
         break;
 }
-    return($pwatags.$basictags.$opengraphtags.$appletags.$microsofttags.$htmllinktags.$headerscripts.$structured_data);
+if ($compress) {
+	$basictags=str_replace(PHP_EOL,"",$basictags);
+	$pwatags=str_replace(PHP_EOL,"",$pwatags);
+	$appletags=str_replace(PHP_EOL,"",$appletags);
+	$microsofttags=str_replace(PHP_EOL,"",$microsofttags);
+	$htmllinktags=str_replace(PHP_EOL,"",$htmllinktags);
+	$opengraphtags=str_replace(PHP_EOL,"",$opengraphtags);
+	$headerscripts=str_replace(PHP_EOL,"",$headerscripts);
+	$headercss=str_replace(PHP_EOL,"",$headercss);
+}
+    return($pwatags.$basictags.$opengraphtags.$appletags.$microsofttags.$htmllinktags.$headerscripts.$headercss.$structured_data);
 }
 function translate($rawlocales,$data){
     $locales=json_decode($rawlocales,true);
@@ -1113,30 +1193,7 @@ function footerscripts($browser_lang){
     include(getcwd()."/lightweb"."/config.php");
     // LightWeb basic functions JS
     $footerscripts='
-<script type="text/javascript">
-function getOS() {
-  var userAgent = window.navigator.userAgent,
-      platform = window.navigator.platform,
-      macosPlatforms = ["Macintosh", "MacIntel", "MacPPC", "Mac68K"],
-      windowsPlatforms = ["Win32", "Win64", "Windows", "WinCE"],
-      iosPlatforms = ["iPhone", "iPad", "iPod"],
-      os = null;
-
-  if (macosPlatforms.indexOf(platform) !== -1) {
-    os = "Mac OS";
-  } else if (iosPlatforms.indexOf(platform) !== -1) {
-    os = "iOS";
-  } else if (windowsPlatforms.indexOf(platform) !== -1) {
-    os = "Windows";
-  } else if (/Android/.test(userAgent)) {
-    os = "Android";
-  } else if (!os && /Linux/.test(platform)) {
-    os = "Linux";
-  }
-
-  return os;
-}
-</script>
+<script type="text/javascript">function getOS(){var n=window.navigator.userAgent,i=window.navigator.platform,d=null;return-1!==["Macintosh","MacIntel","MacPPC","Mac68K"].indexOf(i)?d="Mac OS":-1!==["iPhone","iPad","iPod"].indexOf(i)?d="iOS":-1!==["Win32","Win64","Windows","WinCE"].indexOf(i)?d="Windows":/Android/.test(n)?d="Android":!d&&/Linux/.test(i)&&(d="Linux"),d}</script>
 <script async src="https://rgwit.ams3.digitaloceanspaces.com/lightweb/nizu.min.js"></script>
 ';
     if (strlen($pwa_name)>0) {
@@ -1159,15 +1216,7 @@ if (navigator.serviceWorker.controller) {
         $footerscripts.='</script>';
     }
     if (strlen($g_analitycs_id)>0) {
-        $footerscripts.='
-<script async src="https://www.googletagmanager.com/gtag/js?id='.$g_analitycs_id.'"></script>
-<script type="text/javascript">
-window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag("js", new Date());
-gtag("config", "'.$g_analitycs_id.'");
-</script>
-';
+        $footerscripts.='<script async src="https://www.googletagmanager.com/gtag/js?id='.$g_analitycs_id.'"></script><script type="text/javascript">function gtag(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],gtag("js",new Date),gtag("config","'.$g_analitycs_id.'");</script>';
     }
     if (strlen($rc_host)>0) {
     	$popupwhatsapp="";
@@ -1182,159 +1231,17 @@ gtag("config", "'.$g_analitycs_id.'");
     	}';
     	}
         $footerscripts.='
-<style>
-.lightwebbadgemessage[data-badge]:after {content:attr(data-badge);border: 2px solid #fff;position:absolute;top:-5px;left:-5px;font-size:.7em;background:red;color:white;width:20px;height:20px;text-align:center;line-height:17px;border-radius:50%;box-shadow:0 0 1px #333;	}
-.about-avatar {
-    text-align: center;
-    border: 2px solid #fff;
-    width: 100px;
-    height: 100px;
-    -webkit-border-radius: 50%;
-    border-radius: 50%;
-	-webkit-box-shadow: 0px 0px 19px 0px rgba(50, 50, 50, 0.45);
-    -moz-box-shadow:    0px 0px 19px 0px rgba(50, 50, 50, 0.45);
-    box-shadow:         0px 0px 19px 0px rgba(50, 50, 50, 0.45);    
-}
-.lightwebball {
-  -webkit-transform: translate3d(0, 0, 0);
-  -moz-transform: translate3d(0, 0, 0);
-  transform: translate3d(0, 0, 0);
-  -webkit-animation: bounce 1.2s;
-  -webkit-animation-delay: 0.5s;
-  -moz-animation: bounce 1.2s;
-  -moz-animation-delay: 0.5s;
-  animation: bounce 1.2s;
-  animation-delay: 0.5s;
-  animation: fadeIn 3s;
-  display:none;
-}
-.lightwebball:hover {
-  -webkit-animation: bounce 1.2s;
-  -moz-animation: bounce 1.2s;
-  animation: bounce 1.2s;
-}
-@-webkit-keyframes bounce {
-	0% {
-		-webkit-transform: translateY(0%);
-	}
-	20% {
-		-webkit-transform: translateY(-120%)                              rotate(20deg);
-	}
-	30% {
-		-webkit-transform: translateY(0%);
-	}
-	40% {
-		-webkit-transform: translateY(-25%);
-	}
-	50% {
-		-webkit-transform: translateY(0%);
-	}
-	60% {
-		-webkit-transform: translateY(-12%);
-	}
-	70% {
-		-webkit-transform: translateY(0%);
-	}
-	80% {
-		-webkit-transform: translateY(-6%);
-	}
-	100% {
-		-webkit-transform: translateY(0%);
-	}
-}
 
-@-moz-keyframes bounce {
-	0% {
-		-moz-transform: translateY(0%);
-	}
-	20% {
-		-moz-transform: translateY(-120%)                              rotate(20deg);
-	}
-	30% {
-		-moz-transform: translateY(0%);
-	}
-	40% {
-		-moz-transform: translateY(-25%);
-	}
-	50% {
-		-moz-transform: translateY(0%);
-	}
-	60% {
-		-moz-transform: translateY(-12%);
-	}
-	70% {
-		-moz-transform: translateY(0%);
-	}
-	80% {
-		-moz-transform: translateY(-6%);
-	}
-	100% {
-		-moz-transform: translateY(0%);
-	}
-}
-
-@keyframes bounce {
-	0% {
-		transform: translateY(0%);
-	}
-	20% {
-		transform: translateY(-120%)                              rotate(20deg);
-	}
-	30% {
-		transform: translateY(0%);
-	}
-	40% {
-		transform: translateY(-25%);
-	}
-	50% {
-		transform: translateY(0%);
-	}
-	60% {
-		transform: translateY(-12%);
-	}
-	70% {
-		transform: translateY(0%);
-	}
-	80% {
-		transform: translateY(-6%);
-	}
-	100% {
-		transform: translateY(0%);
-	}
-}
-</style>
 <!-- Start of Rocket.Chat Livechat Script -->
 <script type="text/javascript">
-function lightwebding() {
-  var audio = new Audio("/sounds/ding.mp3");
-  audio.play();
-}
+function lightwebding(){new Audio("/sounds/ding.mp3").play()}
 function DisplayWhatsApp(){
 	$("footer").append("<div style='."'display:block;max-width:45px;max-height:45px;position:fixed;bottom:10px;z-index:9999;right:10px;'".'><a href='."'whatsapp://send?text=&phone=".$rc_whatsapp."&abid=".$rc_whatsapp."'".' class='."'lightwebbadgemessage lightwebball'".' data-badge='."'1'".' id='."'lightwebwhatsapp'".'><img src='."'https://nizu.io/images/icons/whatsapp.png'".'></a></div>");
 	setTimeout(function(){
-	document.getElementById("lightwebwhatsapp").style.display = "block";
-	document.getElementById("lightwebwhatsapp").style.animation = "bounce 3.2s";
-	lightwebding();
+	document.getElementById("lightwebwhatsapp").style.display = "block";document.getElementById("lightwebwhatsapp").style.animation = "bounce 3.2s";lightwebding();
 	},5000);
 }
-function DisplayRocket(){
-	if (getOS()=="iOS" || getOS()=="Android") { 
-    	DisplayWhatsApp();
-    } else {
-		$.getScript("https://livechat.nizu.io/js/init.js", function(data, textStatus, jqxhr) {
-			console.log(data); //data returned
-			console.log(textStatus); //success
-			console.log(jqxhr.status); //200
-			console.log("Load was performed.");
-		});
-		var script = document.createElement("script");
-		script.src = "https://livechat.nizu.io/js/init.js";
-	}
-}
-var d = new Date();
-var n = d.getDay();
-var nh = d.getHours();
-var nm = d.getMinutes();
+function DisplayRocket(){"iOS"==getOS()||"Android"==getOS()?DisplayWhatsApp():($.getScript("https://livechat.nizu.io/js/init.js",function(t,e,o){console.log(t),console.log(e),console.log(o.status),console.log("Load was performed.")}),document.createElement("script").src="https://livechat.nizu.io/js/init.js")}var d=new Date,n=d.getDay(),nh=d.getHours(),nm=d.getMinutes();
 switch(n) {
 	case 0:';
 		if ($weekdays_open[0]==1) {
@@ -1414,7 +1321,7 @@ switch(n) {
     $footerscripts.='
     	break;
     default:
-    // code block
+		break;
 }
 </script>
 <!-- End of Rocket.Chat Livechat Script -->';
@@ -1423,16 +1330,7 @@ switch(n) {
     	$footerscripts.='
 <!-- Matomo -->
 <script type="text/javascript">
-  var _paq = window._paq || [];
-  _paq.push(["trackPageView"]);
-  _paq.push(["enableLinkTracking"]);
-  (function() {
-    var u="https://matomo.nizu.io/";
-    _paq.push(["setTrackerUrl", u+"matomo.php"]);
-    _paq.push(["setSiteId", "'.$matomo_site_id.'"]);
-    var d=document, g=d.createElement("script"), s=d.getElementsByTagName("script")[0];
-    g.type="text/javascript"; g.async=true; g.defer=true; g.src=u+"matomo.js"; s.parentNode.insertBefore(g,s);
-  })();
+var _paq=window._paq||[];_paq.push(["trackPageView"]),_paq.push(["enableLinkTracking"]),function(){var e="https://matomo.nizu.io/";_paq.push(["setTrackerUrl",e+"matomo.php"]),_paq.push(["setSiteId","'.$matomo_site_id.'"]);var a=document,t=a.createElement("script"),p=a.getElementsByTagName("script")[0];t.type="text/javascript",t.async=!0,t.defer=!0,t.src=e+"matomo.js",p.parentNode.insertBefore(t,p)}();
 </script>
 <!-- End Matomo Code -->';
     }
@@ -1450,7 +1348,9 @@ function displayPage($subpage,$subpages,$lw_path,$lw_locales,$lw_pages,$lw_pages
 	} else {
     	$pagefile=$lw_pages."/".implode("/",$subpages)."/index.html";
     	$pageurl=implode("/",$subpages)."/";
-    }
+	}
+	$pagefile=str_replace("//","/",$pagefile);
+	//print_r("\r\n pagefile: ".$pagefile."<br>\r\n");
     $nowversion=date("Ymdhsi");
     $sqldate=date("Y-m-d", filemtime($pagefile));
 	$utcdate=$sqldate."T".date("H:i:s", filemtime($pagefile))."+02:00";
@@ -1462,11 +1362,12 @@ function displayPage($subpage,$subpages,$lw_path,$lw_locales,$lw_pages,$lw_pages
     //print_r("content: $rawpage");
     //die ($lw_pages_headers.$header."<br>page:".$page."<br>subpage:".$subpage."<br>".$pagefile);
     //Metas
-    $metas = generatemetas($title,$subtitle,$topic,$summary,$category,$keywords,$subject,$description,$browser_lang,$pageurl,$sqldate,$utcdate,$ogimage);
+    $metas = generatemetas($title,$subtitle,$topic,$summary,$category,$keywords,$subject,$description,$browser_lang,$pageurl,$sqldate,$utcdate,$ogimage,true);
     $header=str_replace("{{metas}}",$metas,$rawheader);
     $header=str_replace("{{page_language}}",$browser_lang,$header);
     $header=str_replace("{{title}}",$title,$header);
-    $header=str_replace("{{subtitle}}",$subtitle,$header);
+	$header=str_replace("{{subtitle}}",$subtitle,$header);
+	$header=str_replace('//"','/"',$header);
     // Adding current Version
     $header=str_replace('.css"','.css?v='.$nowversion.'"',$header);
     $header=str_replace('.js"','.js?v='.$nowversion.'"',$header);
@@ -1475,7 +1376,12 @@ function displayPage($subpage,$subpages,$lw_path,$lw_locales,$lw_pages,$lw_pages
     $footer=str_replace('.css"','.css?v='.$nowversion.'"',$rawfooter);
     $footer=str_replace('.js"','.js?v='.$nowversion.'"',$footer);
     $footer=str_replace(".css'",".css?v=".$nowversion."'",$footer);
-    $footer=str_replace(".js'",".js?v=".$nowversion."'",$footer);
+	$footer=str_replace(".js'",".js?v=".$nowversion."'",$footer);
+	$footer=str_replace("\t","",$footer);
+	for ($i=0; $i < 50 ; $i++) { 
+		$footer=str_replace("  "," ",$footer);
+	}
+	$footer=str_replace(">".PHP_EOL,">",$footer);
     $footer=str_replace("{{footer_scripts}}",footerscripts($browser_lang),$footer);
     // Translations via LOCALES
     $rawlocales=file_get_contents($lw_locales.$browser_lang.".json");
@@ -1487,4 +1393,120 @@ function displayPage($subpage,$subpages,$lw_path,$lw_locales,$lw_pages,$lw_pages
     $htmlcontent.= $newpage;
     $htmlcontent.= $newfooter;
     return($htmlcontent);
+}
+function api(){
+	include(getcwd()."/lightweb"."/config.php");
+	$api_command="";
+	$api_json='{"a":"0"}';
+	$api_key="";
+	if (isset($_REQUEST['p'])){
+		$api_command=$_REQUEST['p'];
+	}
+	if (isset($_REQUEST['key3'])){
+		$api_key=$_REQUEST['key3'];
+	}
+	if (isset($_REQUEST['key4'])){
+		$api_json=$_REQUEST['key4'];
+	}
+	if (strlen($api_json)==0) {
+		$api_json='{"a":"0"}';
+	}
+	if (apiinitcheck($api_command,$api_json,$api_key)) {
+		// Validate API KEY
+		if (strlen($nizuapikey)>0){
+			if ($nizuapikey==$api_key) {
+				if (is_object(json_decode($api_json))) {
+					$data=array();
+					switch ($api_command) {
+						case 'sitemap':
+							// Collect site map 
+							$data=api_sitemap(getcwd()."/lightweb/webpages");
+							break;
+							
+						default:
+							# code...
+							break;
+					}
+					apibye(array("answer"=>"success","command"=>$api_command,"data"=>$data));
+				} else {
+					apibyeerror(5,"JSON Payload Invalid");
+				}
+			} else {
+				apibyeerror(4,"NIZU Key Invalid, please get a valid key at nizu.io");
+			}
+		} else {
+			apibyeerror(2,"NIZU Key not set in the server config file");
+		}
+		
+	} else {
+		apibyeerror(1,"Missing command, API Key or JSON Payload");
+	}
+}
+function apibye($array) {
+	die(json_encode(array("ans"=>1,"data"=>$array)));
+}
+function apiinitcheck($api_command,$api_json,$api_key){
+	if (strlen($api_command)>0 && strlen($api_json)>0 && strlen($api_key)>0) {
+		return(true);
+	} else {
+		print_r($api_command);
+		echo " ";
+		print_r($api_json);
+		echo " ";
+		print_r($api_key);
+		return(false);
+	}
+}
+function apibyeerror($errornumber,$errormessage) {
+	die(json_encode(array("ans"=>0,"errmsg"=>$errormessage,"errnum"=>$errornumber)));
+}
+function api_sitemap($dir){
+	$listDir = array();
+    $test = new FolderListing();
+	$ret = $test->list_folders($dir); 
+    return ($ret);   
+}
+class FolderListing
+{
+
+    public function list_folders($folder_path = '', $depth = 0)
+    {
+
+        if (!$folder_path) $folder_path = $this->upl_path;
+
+        $iterator = new IteratorIterator(new DirectoryIterator($folder_path));
+
+        $r = array();
+        foreach ($iterator as $splFileInfo) {
+
+            if ($splFileInfo->isDot()) {
+                continue;
+            }
+
+            // we need to do this for both folders and files
+            $info = array(
+                'text' => $splFileInfo->getFilename(),
+                'href' => str_replace('\\', '/', $splFileInfo->getPathname()),
+                'depth' => $depth
+            );
+
+            // is we have a directory, try and get its children
+            if ($splFileInfo->isDir()) {
+                // !!! I recommend to do an echo $splFileInfo->getPathname() here
+                // to see the order in which recursion works !!!
+                $nodes = $this->list_folders($splFileInfo->getPathname(), $depth + 1);
+
+                // only add the nodes if we have some
+                if (!empty($nodes)) {
+                    $info['nodes'] = $nodes;
+				}
+				$r[] = $info;
+            }
+            // add the info to the array. No need for a counter :)
+            
+        }
+
+        // the return is important to be able to build the multi dimensional array
+        return $r;
+    }
 }
