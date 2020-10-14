@@ -14,8 +14,6 @@ function create_lw_cms_subpage($page_path,$page,$languages) {
 				touch($page_path."/".$page."_".$languages[$i]."_config.json");
 				file_put_contents($page_path."/".$page."_".$languages[$i]."_config.json", $basicconfig);
 			}
-        	//print_r($page_path);
-    		//die($page_path);
         }
   	}
 }
@@ -44,7 +42,6 @@ function create_lw_cms_page($page,$pagefilename,$languages) {
     }
 }
 function create_lw_cms_404($lw_pages,$languages){
-	//die("404");
 	if(!file_exists($lw_pages."404")){
 		mkdir($lw_pages."404");
 	}
@@ -56,7 +53,6 @@ function create_lw_cms_404($lw_pages,$languages){
 			file_put_contents($lw_pages."404/404_".$languages[$i]."_config.json", $basicconfig);
 		}
 	}
-    
 }
 function create_lw_cms_locales($lw_locales,$language) {
 	die("locales $lw_locales");
@@ -361,7 +357,6 @@ function listFolders($dir){
 function publishSubLevel($mas,$lw_pages,$lw_publish_version,$languages,$lw_path,$lw_locales,$lw_pages_headers,$lw_pages_footers,$foldernames=array()) {
 	$folders=implode("/",$foldernames);
 	$foldername=end($foldernames);
-	//print_r("\r\n folders: ".$folders."<br>\r\n");
 	for ($languages_folder=0; $languages_folder < sizeof($languages); $languages_folder++) {
 		if (!file_exists($lw_publish_version.$languages[$languages_folder]."/".$folders)){
 			$levelpath=$lw_publish_version.$languages[$languages_folder]."/".$folders;
