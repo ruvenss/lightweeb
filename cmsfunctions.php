@@ -373,7 +373,6 @@ function publishSubLevel($mas,$lw_pages,$lw_publish_version,$languages,$lw_path,
 				}
 				if (strlen($homepage_content)) {
 					$homepage_path=$lw_publish_version.$languages[$languages_folder]."/".$folders."/index.html";
-					//print_r($homepage_path."\r\n");
 					file_put_contents($homepage_path, $homepage_content);
 					//
 				} else {
