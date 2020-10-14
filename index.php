@@ -60,8 +60,16 @@ if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])){
 if (isset($_REQUEST['lang'])) {
 	if (strlen($_REQUEST['lang'])==2) {
 		$browser_lang=$_REQUEST['lang'];
+		// check if the language exist in the translation, if not take language[0]
+		if (!in_array($browser_lang, $languages)) {
+			$browser_lang=$languages[0];
+		} 
 	} else {
-		header("Location: /".$browser_lang.$_REQUEST['page']);
+		if ($_REQUEST['lang']=="api") {
+			api();
+		} else {
+			header("Location: /".$browser_lang.$_REQUEST['page']);
+		}
 	}
 } else {
 	header("Location: /".$browser_lang."/");
@@ -83,6 +91,9 @@ if (!file_exists($lw_pages.$page)) {
 		case 'favicon.ico':
 		case '505':
 			break;
+		case 'api':
+			api();
+			break;
 		case 'publish':
 			publish($lw_path."config.php");
 			die();
@@ -95,8 +106,7 @@ if (!file_exists($lw_pages.$page)) {
 $subpage=false;
 $subpages=array();
 // Building up sub pages
-//print_r($_REQUEST);
-//die();
+
 if (strlen($_REQUEST['key3'])){$page=$_REQUEST['key3']; if (!file_exists($lw_pages.$_REQUEST['key3']."/")){create_lw_cms_subpage($lw_pages.$_REQUEST['p']."/",$_REQUEST['key3'],$languages);} $subpage=true; $subpages=array($_REQUEST['p'],$_REQUEST['key3']);}
 if (strlen($_REQUEST['key4'])){$page=$_REQUEST['key4']; if (!file_exists($lw_pages.$_REQUEST['key3']."/".$_REQUEST['key4']."/")){create_lw_cms_subpage($lw_pages.$_REQUEST['p']."/".$_REQUEST['key3']."/".$_REQUEST['key4'],$_REQUEST['key4'],$languages);} $subpage=true; $subpages=array($_REQUEST['p'],$_REQUEST['key3'],$_REQUEST['key4']);}
 if (strlen($_REQUEST['key5'])){$page=$_REQUEST['key5']; if (!file_exists($lw_pages.$_REQUEST['key3']."/".$_REQUEST['key4']."/".$_REQUEST['key5']."/")){create_lw_cms_subpage($lw_pages.$_REQUEST['p']."/".$_REQUEST['key3']."/".$_REQUEST['key4']."/".$_REQUEST['key5'],$_REQUEST['key5'],$languages);} $subpage=true; $subpages=array($_REQUEST['p'],$_REQUEST['key3'],$_REQUEST['key4'],$_REQUEST['key5']);}
