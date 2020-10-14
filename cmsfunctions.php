@@ -365,7 +365,6 @@ function publishSubLevel($mas,$lw_pages,$lw_publish_version,$languages,$lw_path,
 			$homepage_path = $levelpath."/index.html";
 			$pageconfig=getpageconfig($lw_pages.$folders."/",$languages[$languages_folder],$foldername);
 			if ($pageconfig['published']==="true") {
-				//print_r($pageconfig);
 				$LastUpdateDate=date("Y-m-d", filemtime("lightweb/webpages/".$folders."/index.html"));
 				$homepage_content=displayPage(true,$foldernames,$lw_path,$lw_locales,$lw_pages,$lw_pages_headers,$lw_pages_footers,$foldername,$browser_lang,$pageconfig['header'],$pageconfig['footer'],$pageconfig['description'],$pageconfig['title'],$pageconfig['subtitle'],$pageconfig['keywords'],$pageconfig['summary'],$pageconfig['category'],$pageconfig['subject'],$pageconfig['topic'],$pageconfig['ogimage']);
 				if ($pageconfig['minify']==="true") {
