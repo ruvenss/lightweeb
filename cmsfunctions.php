@@ -14,6 +14,8 @@ function create_lw_cms_subpage($page_path,$page,$languages) {
 				touch($page_path."/".$page."_".$languages[$i]."_config.json");
 				file_put_contents($page_path."/".$page."_".$languages[$i]."_config.json", $basicconfig);
 			}
+        	//print_r($page_path);
+    		//die($page_path);
         }
   	}
 }
@@ -42,6 +44,7 @@ function create_lw_cms_page($page,$pagefilename,$languages) {
     }
 }
 function create_lw_cms_404($lw_pages,$languages){
+	//die("404");
 	if(!file_exists($lw_pages."404")){
 		mkdir($lw_pages."404");
 	}
@@ -53,6 +56,7 @@ function create_lw_cms_404($lw_pages,$languages){
 			file_put_contents($lw_pages."404/404_".$languages[$i]."_config.json", $basicconfig);
 		}
 	}
+    
 }
 function create_lw_cms_locales($lw_locales,$language) {
 	die("locales $lw_locales");
@@ -357,6 +361,7 @@ function listFolders($dir){
 function publishSubLevel($mas,$lw_pages,$lw_publish_version,$languages,$lw_path,$lw_locales,$lw_pages_headers,$lw_pages_footers,$foldernames=array()) {
 	$folders=implode("/",$foldernames);
 	$foldername=end($foldernames);
+	//print_r("\r\n folders: ".$folders."<br>\r\n");
 	for ($languages_folder=0; $languages_folder < sizeof($languages); $languages_folder++) {
 		if (!file_exists($lw_publish_version.$languages[$languages_folder]."/".$folders)){
 			$levelpath=$lw_publish_version.$languages[$languages_folder]."/".$folders;
@@ -365,6 +370,7 @@ function publishSubLevel($mas,$lw_pages,$lw_publish_version,$languages,$lw_path,
 			$homepage_path = $levelpath."/index.html";
 			$pageconfig=getpageconfig($lw_pages.$folders."/",$languages[$languages_folder],$foldername);
 			if ($pageconfig['published']==="true") {
+				//print_r($pageconfig);
 				$LastUpdateDate=date("Y-m-d", filemtime("lightweb/webpages/".$folders."/index.html"));
 				$homepage_content=displayPage(true,$foldernames,$lw_path,$lw_locales,$lw_pages,$lw_pages_headers,$lw_pages_footers,$foldername,$browser_lang,$pageconfig['header'],$pageconfig['footer'],$pageconfig['description'],$pageconfig['title'],$pageconfig['subtitle'],$pageconfig['keywords'],$pageconfig['summary'],$pageconfig['category'],$pageconfig['subject'],$pageconfig['topic'],$pageconfig['ogimage']);
 				if ($pageconfig['minify']==="true") {
@@ -372,6 +378,7 @@ function publishSubLevel($mas,$lw_pages,$lw_publish_version,$languages,$lw_path,
 				}
 				if (strlen($homepage_content)) {
 					$homepage_path=$lw_publish_version.$languages[$languages_folder]."/".$folders."/index.html";
+					//print_r($homepage_path."\r\n");
 					file_put_contents($homepage_path, $homepage_content);
 					//
 				} else {
@@ -383,7 +390,7 @@ function publishSubLevel($mas,$lw_pages,$lw_publish_version,$languages,$lw_path,
 	}
 	return(true);
 }
-function publish($configfile){
+function publish($configfile,$quiet=false){
 	// Send output to nizu
 	// compress data
 	include $configfile;
@@ -423,7 +430,8 @@ header("Location: '.$publicsite.'/".$browser_lang);
 	}
 	// htaccess
 	$htaccess='RewriteEngine Off
-Options -Indexes';
+Options -Indexes
+ErrorDocument 404 '.$publicsite.'/'.$languages[0]."/404/";
 	file_put_contents($lw_publish_version.".htaccess", $htaccess);
 	for ($i=0; $i < sizeof($languages); $i++) {
 		if (!file_exists($lw_publish_version.$languages[$i])) { mkdir($lw_publish_version.$languages[$i]); }
@@ -556,7 +564,7 @@ Options -Indexes';
 										}
 										if (sizeof($value2)) {
 											//echo "|___LEVEL 3<br>\r\n";
-											print_r($value2);
+											//print_r($value2);
 											$branch = $value2;
 											for ($b3=0; $b3 < sizeof($value2) ; $b3++) { 
 												$branchdata3=$value2[$b3];
@@ -629,6 +637,9 @@ Options -Indexes';
 	exec($e);
 	$s="rm -R ".$lw_publish_version."*;rm -r ".$lw_publish_version;
 	exec($s);
+	if ($quiet) {
+
+	} else {
 	echo '
 <!DOCTYPE html>
 <html lang="eng" class="js">
@@ -738,6 +749,7 @@ td{
 </footer>
 </body>
 </html>';
+	}
 }
 function validatephone($configfile){
 	if (isset($_REQUEST['phone'])) {
@@ -1415,7 +1427,10 @@ function api(){
 							// Collect site map 
 							$data=api_sitemap(getcwd()."/lightweb/webpages");
 							break;
-							
+						case 'publish':
+							// Collect site map 
+							publish(getcwd()."/lightweb"."/config.php",true);
+							break;	
 						default:
 							# code...
 							break;
@@ -1495,10 +1510,8 @@ class FolderListing
 				}
 				$r[] = $info;
             }
-            // add the info to the array. No need for a counter :)
-            
+            // add the info to the array. No need for a counter :)   
         }
-
         // the return is important to be able to build the multi dimensional array
         return $r;
     }
