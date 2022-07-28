@@ -49,7 +49,7 @@ if (!file_exists($lw_pages_footers)) {
 if (file_exists($lw_path.'config.php')) {
 	include_once($lw_path.'config.php');
 } else {
-	header("Location: /lightweb/install/"); /* Redirect browser */
+	install();
 	exit();
 }
 if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])){
