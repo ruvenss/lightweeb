@@ -1,4 +1,9 @@
 <?php
+function install(){
+	$githubrepo="https://raw.githubusercontent.com/ruvenss/lightweb/master/";
+	$htmlinstall=file_get_contents($githubrepo."install.html");
+	die($htmlinstall);
+}
 function create_lw_cms_subpage($page_path,$page,$languages) {
   	// die("create_lw_cms_subpage ".$page_path.$page);
   	// Check if its not file call
@@ -431,7 +436,7 @@ header("Location: '.$publicsite.'/".$browser_lang);
 	// htaccess
 	$htaccess='RewriteEngine Off
 Options -Indexes
-ErrorDocument 404 '.$publicsite.'/'.$languages[0]."/404/";
+ErrorDocument 404 '.$publicsite.'/'.$languages[0].'/'."404".'/';
 	file_put_contents($lw_publish_version.".htaccess", $htaccess);
 	for ($i=0; $i < sizeof($languages); $i++) {
 		if (!file_exists($lw_publish_version.$languages[$i])) { mkdir($lw_publish_version.$languages[$i]); }
@@ -470,6 +475,8 @@ ErrorDocument 404 '.$publicsite.'/'.$languages[0]."/404/";
 				case '.':
 				case '..':
 				case 'index.php':
+				case 'install.html':
+				case 'config-sample.php':
 				case 'cmsfunctions.php':
 				case '.htaccess':
 				case 'errorslog.log':
@@ -513,8 +520,10 @@ ErrorDocument 404 '.$publicsite.'/'.$languages[0]."/404/";
 						case 'images':
 						case 'img':
 						case 'wp-login':
+						case 'wp-login':
 						case 'wp-content':
-						case 'wp-admin':
+						case 'phpmyadmin':
+						case 'admin':
 							# Do Nothing
 							break;
 						default:
@@ -866,7 +875,7 @@ function generatemetas($title,$subtitle,$topic,$summary,$category,$keywords,$sub
 <meta name="og:title" content="'.$title.'">
 <meta name="og:type" content="website">
 <meta name="og:url" content="'.$publicsite.'/'.$browser_lang.'/'.$pageurl.'">
-<meta name="og:image" content="'.$publicsite.$ogimage.'">
+<meta name="og:image" content="'.$ogimage.'">
 <meta name="og:site_name" content="'.$title.'">
 <meta name="og:description" content="'.$description.'">
 <meta name="fb:page_id" content="'.$facebook_pageid.'">
@@ -901,17 +910,17 @@ function generatemetas($title,$subtitle,$topic,$summary,$category,$keywords,$sub
 <meta name="format-detection" content="telephone=no">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 <meta name="HandheldFriendly" content="true" />
-<link href="/apple-touch-icon.png" rel="apple-touch-icon" type="image/png">
-<link href="/touch-icon-ipad.png" rel="apple-touch-icon" sizes="72x72">
-<link href="/touch-icon-iphone4.png" rel="apple-touch-icon" sizes="114x114">
-<link href="/startup.png" rel="apple-touch-startup-image">
-<link href="/images/icons/apple-touch-icon-iphone4.png" sizes="114x114" rel="apple-touch-icon-precomposed">
-<link href="/images/icons/apple-touch-icon-ipad.png" sizes="72x72" rel="apple-touch-icon-precomposed">
-<link href="/images/icons/apple-touch-icon-57x57.png" sizes="57x57" rel="apple-touch-icon-precomposed">
-<link href="/images/icons/apple-touch-icon-152x152.png" sizes="152x152" rel="apple-touch-icon-precomposed">
-<link href="/images/icons/apple-touch-icon-167x167.png" sizes="167x167" rel="apple-touch-icon-precomposed">
-<link href="/images/icons/apple-touch-icon-180x180.png" sizes="180x180" rel="apple-touch-icon-precomposed">
-<link href="/images/icons/apple-touch-icon-192x192.png" sizes="192x192" rel="apple-touch-icon-precomposed">';
+<link href="https://images.fabulor.eu/apple-touch-icon.png" rel="apple-touch-icon" type="image/png">
+<link href="https://images.fabulor.eu/touch-icon-ipad.png" rel="apple-touch-icon" sizes="72x72">
+<link href="https://images.fabulor.eu/touch-icon-iphone4.png" rel="apple-touch-icon" sizes="114x114">
+<link href="https://images.fabulor.eu/startup.png" rel="apple-touch-startup-image">
+<link href="https://images.fabulor.eu/images/icons/apple-touch-icon-iphone4.png" sizes="114x114" rel="apple-touch-icon-precomposed">
+<link href="https://images.fabulor.eu/images/icons/apple-touch-icon-ipad.png" sizes="72x72" rel="apple-touch-icon-precomposed">
+<link href="https://images.fabulor.eu/images/icons/apple-touch-icon-57x57.png" sizes="57x57" rel="apple-touch-icon-precomposed">
+<link href="https://images.fabulor.eu/images/icons/apple-touch-icon-152x152.png" sizes="152x152" rel="apple-touch-icon-precomposed">
+<link href="https://images.fabulor.eu/images/icons/apple-touch-icon-167x167.png" sizes="167x167" rel="apple-touch-icon-precomposed">
+<link href="https://images.fabulor.eu/images/icons/apple-touch-icon-180x180.png" sizes="180x180" rel="apple-touch-icon-precomposed">
+<link href="https://images.fabulor.eu/images/icons/apple-touch-icon-192x192.png" sizes="192x192" rel="apple-touch-icon-precomposed">';
 // Microsoft Meta Tags
     $microsofttags='
 <meta http-equiv="Page-Enter" content="RevealTrans(Duration=2.0,Transition=2)">
@@ -933,8 +942,8 @@ $headercss='<link rel="stylesheet" href="https://rgwit.ams3.digitaloceanspaces.c
 // HTML Link Tags
     $htmllinktags='
 <link rel="alternate" type="application/rss+xml" title="RSS" href="'.$publicsite.'/rss/">
-<link rel="shortcut icon" type="image/ico" href="/favicon.ico">
-<link rel="fluid-icon" type="image/png" href="/favicon.png">
+<link rel="shortcut icon" type="image/ico" href="https://images.fabulor.eu/favicon.ico">
+<link rel="fluid-icon" type="image/png" href="https://images.fabulor.eu/favicon.png">
 <link rel="shortlink" href="'.$publicsite.'/'.$browser_lang.'/'.$pageurl.'">
 <link rel="bookmark" title="'.$title.'" href="'.$publicsite.'/'.$browser_lang.'/'.$pageurl.'">
 <link rel="canonical" href="'.$publicsite.'/'.$browser_lang.'/'.$pageurl.'">
@@ -973,7 +982,7 @@ $structured_data='
 	 "@type" : "Organization",
 	 "name" : "'.$owner.'",
 	 "url" : "'.$publicsite.'",
-	 "logo": "'.$publicsite.$logo.'",
+	 "logo": "'.$logo.'",
 	 "sameAs" : [
 	   '.implode(",", $social_media_arr).'
 	   ],
@@ -1231,105 +1240,20 @@ if (navigator.serviceWorker.controller) {
     		if (getOS()=="iOS" || getOS()=="Android") { 
     			DisplayWhatsApp();
     		} else {
-    			DisplayRocket();
+    			DisplayWhatsApp();
     		}
     	}';
     	}
         $footerscripts.='
-
-<!-- Start of Rocket.Chat Livechat Script -->
-<script type="text/javascript">
-function lightwebding(){new Audio("/sounds/ding.mp3").play()}
-function DisplayWhatsApp(){
-	$("footer").append("<div style='."'display:block;max-width:45px;max-height:45px;position:fixed;bottom:10px;z-index:9999;right:10px;'".'><a href='."'whatsapp://send?text=&phone=".$rc_whatsapp."&abid=".$rc_whatsapp."'".' class='."'lightwebbadgemessage lightwebball'".' data-badge='."'1'".' id='."'lightwebwhatsapp'".'><img src='."'https://nizu.io/images/icons/whatsapp.png'".'></a></div>");
-	setTimeout(function(){
-	document.getElementById("lightwebwhatsapp").style.display = "block";document.getElementById("lightwebwhatsapp").style.animation = "bounce 3.2s";lightwebding();
-	},5000);
-}
-function DisplayRocket(){"iOS"==getOS()||"Android"==getOS()?DisplayWhatsApp():($.getScript("https://livechat.nizu.io/js/init.js",function(t,e,o){console.log(t),console.log(e),console.log(o.status),console.log("Load was performed.")}),document.createElement("script").src="https://livechat.nizu.io/js/init.js")}var d=new Date,n=d.getDay(),nh=d.getHours(),nm=d.getMinutes();
-switch(n) {
-	case 0:';
-		if ($weekdays_open[0]==1) {
-			$starttime=getinttime($weekdays_open_hrs['sun']['start']);
-			$endtime=getinttime($weekdays_open_hrs['sun']['end']);
-			$footerscripts.='
-		if (nh>='.$starttime[0].' && nh<='.$endtime[0].') {
-			DisplayRocket();
-		}'.$popuprocket;
-		}
-    $footerscripts.='
-    	break;
-    case 1:';
-		if ($weekdays_open[1]==1) {
-			$starttime=getinttime($weekdays_open_hrs['mon']['start']);
-			$endtime=getinttime($weekdays_open_hrs['mon']['end']);
-			$footerscripts.='
-		if (nh>='.$starttime[0].' && nh<='.$endtime[0].') {
-			DisplayRocket();
-		}'.$popuprocket;
-		}
-    $footerscripts.='
-    	break;
-    case 2:';
-		if ($weekdays_open[2]==1) {
-			$starttime=getinttime($weekdays_open_hrs['tue']['start']);
-			$endtime=getinttime($weekdays_open_hrs['tue']['end']);
-			$footerscripts.='
-		if (nh>='.$starttime[0].' && nh<='.$endtime[0].') {
-			DisplayRocket();
-		}'.$popuprocket;
-		}
-    $footerscripts.='
-    	break;
-    case 3:';
-		if ($weekdays_open[3]==1) {
-			$starttime=getinttime($weekdays_open_hrs['wed']['start']);
-			$endtime=getinttime($weekdays_open_hrs['wed']['end']);
-			$footerscripts.='
-		if (nh>='.$starttime[0].' && nh<='.$endtime[0].') {
-			DisplayRocket();
-		}'.$popuprocket;
-		}
-    $footerscripts.='
-    	break;
-    case 4:';
-		if ($weekdays_open[4]==1) {
-			$starttime=getinttime($weekdays_open_hrs['thu']['start']);
-			$endtime=getinttime($weekdays_open_hrs['thu']['end']);
-			$footerscripts.='
-		if (nh>='.$starttime[0].' && nh<='.$endtime[0].') {
-			DisplayRocket();
-		}'.$popuprocket;
-		}
-    $footerscripts.='
-    	break;
-    case 5:';
-		if ($weekdays_open[5]==1) {
-			$starttime=getinttime($weekdays_open_hrs['fri']['start']);
-			$endtime=getinttime($weekdays_open_hrs['fri']['end']);
-			$footerscripts.='
-		if (nh>='.$starttime[0].' && nh<='.$endtime[0].') {
-			DisplayRocket();
-		}'.$popuprocket;
-		}
-    $footerscripts.='
-    	break;
-    case 6:';
-		if ($weekdays_open[6]==1) {
-			$starttime=getinttime($weekdays_open_hrs['sat']['start']);
-			$endtime=getinttime($weekdays_open_hrs['sat']['end']);
-			$footerscripts.='
-		if (nh>='.$starttime[0].' && nh<='.$endtime[0].') {
-			DisplayRocket();
-		}'.$popuprocket;
-		}
-    $footerscripts.='
-    	break;
-    default:
-		break;
-}
-</script>
-<!-- End of Rocket.Chat Livechat Script -->';
+		<!-- Start of Rocket.Chat Livechat Script -->
+		<script type="text/javascript">
+		(function(w, d, s, u) {
+			w.RocketChat = function(c) { w.RocketChat._.push(c) }; w.RocketChat._ = []; w.RocketChat.url = u;
+			var h = d.getElementsByTagName(s)[0], j = d.createElement(s);'."
+			j.async = true; j.src = 'https://$rc_host/livechat/rocketchat-livechat.min.js?_=201903270000';
+			h.parentNode.insertBefore(j, h);
+		})(window, document, 'script', 'https://$rc_host/livechat');
+		</script>";
     }
     if (strlen($matomo)>0) {
     	$footerscripts.='
@@ -1351,22 +1275,17 @@ function displayPage($subpage,$subpages,$lw_path,$lw_locales,$lw_pages,$lw_pages
 		}
 		$pageurl="/";
 	} else {
-    	$pagefile=$lw_pages."/".implode("/",$subpages)."/index.html";
-    	$pageurl=implode("/",$subpages)."/";
+    		$pagefile=$lw_pages."/".implode("/",$subpages)."/index.html";
+    		$pageurl=implode("/",$subpages)."/";
 	}
 	$pagefile=str_replace("//","/",$pagefile);
-	//print_r("\r\n pagefile: ".$pagefile."<br>\r\n");
-    $nowversion=date("Ymdhsi");
-    $sqldate=date("Y-m-d", filemtime($pagefile));
+    	$nowversion=date("Ymdhsi");
+    	$sqldate=date("Y-m-d", filemtime($pagefile));
 	$utcdate=$sqldate."T".date("H:i:s", filemtime($pagefile))."+02:00";
-    $rawheader=file_get_contents($lw_pages_headers.$header);
-    $rawpage=file_get_contents($pagefile);
-    $rawfooter=file_get_contents($lw_pages_footers.$footer);
-    //print_r($rawpage);
-    //print_r($subpages);
-    //print_r("content: $rawpage");
-    //die ($lw_pages_headers.$header."<br>page:".$page."<br>subpage:".$subpage."<br>".$pagefile);
-    //Metas
+    	$rawheader=file_get_contents($lw_pages_headers.$header);
+    	$rawpage=file_get_contents($pagefile);
+    	$rawfooter=file_get_contents($lw_pages_footers.$footer);
+    	//Metas
     $metas = generatemetas($title,$subtitle,$topic,$summary,$category,$keywords,$subject,$description,$browser_lang,$pageurl,$sqldate,$utcdate,$ogimage,true);
     $header=str_replace("{{metas}}",$metas,$rawheader);
     $header=str_replace("{{page_language}}",$browser_lang,$header);
