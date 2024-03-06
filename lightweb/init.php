@@ -7,3 +7,9 @@ if (LIGHTWEB_DB) {
     }
 }
 define("LIGHTWEB_URI", $_REQUEST);
+if (!isset(LIGHTWEB_URI['lang'])) {
+    header("Location: /" . LIGHTWEB_LANG);
+}
+$uri = uripage();
+$fullpage = render_page($uri);
+echo i18n($fullpage);
