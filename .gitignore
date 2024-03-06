@@ -1,5 +1,8 @@
 *.css
 *.mp4
+assets
+js
+css
 lightweb/pages/*
 lightweb/footers/*
 lightweb/headers/*
