@@ -6,3 +6,4 @@ if (LIGHTWEB_DB) {
         die("LightWeb Failed to connect to MySQL: " . ldb->connect_error);
     }
 }
+define("LIGHTWEB_URI", $_REQUEST);

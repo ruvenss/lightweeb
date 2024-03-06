@@ -97,7 +97,7 @@ function sqlSelect($table, $field, $where, $orderby = "", $limit = "")
         }
     }
 }
-function sqlUpdate($table, $fields = array(), $values = array(), $keyfield, $keyvalue, $userid = 1)
+function sqlUpdate($table, $fields = [], $values = [], $keyfield = "", $keyvalue = "", $userid = 1)
 {
     if (strlen($table) > 0 && sizeof($fields) > 0 && sizeof($values) == sizeof($fields) && $userid > 0) {
         $sqlquery = "UPDATE `$table` SET ";

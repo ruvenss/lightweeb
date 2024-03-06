@@ -5,6 +5,6 @@ RewriteEngine On
 RewriteBase /
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteCond %{REQUEST_URI}  ^/([^/]+)/?([^/]*)?/?([^/]*)?/?([^/]*)?/?([^/]*)?/?([^/]*)?/?   [NC]
-RewriteRule .*    index.php?page=%{REQUEST_URI}&lang=%1&p=%2&key3=%3&key4=%4&key5=%5&key6=%6  [L]
+RewriteCond %{REQUEST_URI}  ^/([^/]+)/?([^/]*)?/?([^/]*)?/?([^/]*)?/?([^/]*)?/?([^/]*)?/?([^/]*)?/?([^/]*)?/?   [NC]
+RewriteRule .*    index.php?lang=%1&page1=%2&page2=%3&page3=%4&page4=%5&page5=%6&page6=%7&page7=%8  [L]
 Options -Indexes
