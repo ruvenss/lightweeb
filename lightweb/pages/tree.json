@@ -1,0 +1,41 @@
+{
+    "home": {
+        "id": "home",
+        "titlei18n": "home",
+        "descriptioni18n": "homedesc",
+        "robots": "Follow",
+        "path":"/home/index.html",
+        "author":"Light Web",
+        "url": "/",
+        "header":"header.html",
+        "footer":"footer.html",
+        "version":"1",
+        "type":"page"
+    },
+    "contact": {
+        "id": "contact",
+        "titlei18n": "contact",
+        "descriptioni18n": "contactdesc",
+        "robots": "Follow",
+        "path":"/contact/index.html",
+        "author":"Light Web",
+        "url": "/contact",
+        "header":"header.html",
+        "footer":"footer.html",
+        "version":"1",
+        "type":"page"
+    },
+    "gdpr": {
+        "id": "gdpr",
+        "titlei18n": "gdpr",
+        "descriptioni18n": "gdprdesc",
+        "robots": "NoFollow",
+        "path":"/gdpr/index.html",
+        "author":"Light Web",
+        "url": "/gdpr",
+        "header":"header.html",
+        "footer":"footer.html",
+        "version":"1",
+        "type":"page"
+    }
+}
