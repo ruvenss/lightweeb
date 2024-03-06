@@ -3,6 +3,10 @@
 assets
 js
 css
+images
+img
+videos
+downloads
 lightweb/pages/*
 lightweb/footers/*
 lightweb/headers/*
