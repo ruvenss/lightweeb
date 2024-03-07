@@ -23,11 +23,14 @@ function render_page($page = "home")
         }
         if ($publish_ok) {
             $headerhtml = file_get_contents(LIGHTWEB_PAGES_HEADERS_PATH . LIGHTWEB_TREE[$page]['header']);
+            // Insert BreadCrumbs Snippet
+
             $headerhtml = str_replace("{{title}}", i18nString(LIGHTWEB_TREE[$page]['titlei18n']), $headerhtml);
             $headerhtml = str_replace("{{description}}", i18nString(LIGHTWEB_TREE[$page]['descriptioni18n']), $headerhtml);
             if (LIGHTWEB_MINIFY) {
                 $headerhtml = minify($headerhtml);
             }
+            $headerhtml = str_replace("</title>", "</title>\n" . snippet_breadcrumb($page), $headerhtml);
             $bodyhtml = file_get_contents(LIGHTWEB_PAGES_PATH . LIGHTWEB_TREE[$page]['path']);
             if (LIGHTWEB_MINIFY) {
                 $bodyhtml = minify($bodyhtml);
@@ -69,13 +72,19 @@ function metatags()
 {
     $m = '<meta name="googlebot" content="notranslate">';
 }
-function snippet_breadcrumb($Breadcrumbs = [])
+function snippet_breadcrumb($page)
 {
+    $Breadcrumbs = explode("/", $page);
     $uri = "https://" . LIGHTWEB_PRODUCTION . "/" . LIGHTWEB_URI['lang'];
     $i = 0;
     foreach ($Breadcrumbs as $Breadcrumb) {
         $i++;
-        $BreadCrumbOBJ = LIGHTWEB_TREE[$Breadcrumb];
+        if ($i == 1) {
+            $BreadCrumbOBJ = LIGHTWEB_TREE[$Breadcrumb];
+        } else {
+            $thispage = implode('/', array_slice($Breadcrumbs, 0, $i));
+            $BreadCrumbOBJ = LIGHTWEB_TREE[$thispage];
+        }
         $BreadCrumbName = i18nString($BreadCrumbOBJ['titlei18n']);
         $snipped_child[] = '{
         "@type": "ListItem",
@@ -84,15 +93,13 @@ function snippet_breadcrumb($Breadcrumbs = [])
         "item": "' . $uri . $BreadCrumbOBJ['url'] . '"
       }';
     }
-
-    $s = '
-    <script type="application/ld+json">
+    $s = '<script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "BreadcrumbList",
       "itemListElement": [' . implode(",", $snipped_child) . ']
     }
-    </script>
+</script>
     ';
     return $s;
 }
@@ -103,24 +110,6 @@ function snippet($title, $descripion, $type, $author = "", $parameter1 = "", $pa
         "@context": "https://schema.org/",
         ';
     switch ($type) {
-        case 'breadcrubs':
-            $s .= '"@type": "BreadcrumbList",
-      "itemListElement": [{
-        "@type": "ListItem",
-        "position": 1,
-        "name": "Books",
-        "item": "https://example.com/books"
-      },{
-        "@type": "ListItem",
-        "position": 2,
-        "name": "Science Fiction",
-        "item": "https://example.com/books/sciencefiction"
-      },{
-        "@type": "ListItem",
-        "position": 3,
-        "name": "Award Winners"
-      }]';
-            break;
         case 'recipe':
             $s .= '"@type": "Recipe",
         "name": "' . $title . '",
