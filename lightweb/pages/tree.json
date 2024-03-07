@@ -9,7 +9,8 @@
         "header": "header.html",
         "footer": "footer.html",
         "version": "1",
-        "type": "page"
+        "type": "page",
+        "static": true
     },
     "404": {
         "titlei18n": "notfound",
@@ -21,7 +22,8 @@
         "header": "header_404.html",
         "footer": "footer_404.html",
         "version": "1",
-        "type": "page"
+        "type": "page",
+        "static": true
     },
     "contact": {
         "titlei18n": "contact",
@@ -33,7 +35,8 @@
         "header": "header_common.html",
         "footer": "footer.html",
         "version": "1",
-        "type": "page"
+        "type": "page",
+        "static": true
     },
     "gdpr": {
         "titlei18n": "gdpr",
@@ -45,7 +48,8 @@
         "header": "header.html",
         "footer": "footer.html",
         "version": "1",
-        "type": "page"
+        "type": "page",
+        "static": true
     },
     "products": {
         "titlei18n": "products",
@@ -57,7 +61,8 @@
         "header": "header_common.html",
         "footer": "footer.html",
         "version": "1",
-        "type": "page"
+        "type": "page",
+        "static": true
     },
     "products/nizu": {
         "titlei18n": "nizu",
@@ -69,6 +74,9 @@
         "header": "header_common.html",
         "footer": "footer.html",
         "version": "1",
-        "type": "page"
+        "type": "page",
+        "publish_from": "2024-03-08 10:43:00",
+        "publish_until": "2025-03-09 10:43:00",
+        "static": true
     }
 }

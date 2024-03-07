@@ -13,4 +13,6 @@ if (!isset(LIGHTWEB_URI['lang'])) {
 }
 $uri = uripage();
 $fullpage = render_page($uri);
+
 echo i18n($fullpage);
+

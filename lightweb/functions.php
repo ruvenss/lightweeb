@@ -1,4 +1,14 @@
 <?php
+function LoadPlugins($uri, $fullpage)
+{
+    $plugins = glob(LIGHTWEB_PATH . 'lightweb/plugins/*.{php}', GLOB_BRACE);
+    if (count($plugins) > 0) {
+        foreach ($plugins as $plugin) {
+            include_once($plugin);
+        }
+    }
+    return $fullpage;
+}
 function defi18n()
 {
     $locales_file = LIGHTWEB_LOCALES_PATH . LIGHTWEB_URI['lang'] . ".json";

@@ -5,30 +5,50 @@ function render_page($page = "home")
         $page = "home";
     }
     if (isset(LIGHTWEB_TREE[$page])) {
-        $headerhtml = file_get_contents(LIGHTWEB_PAGES_HEADERS_PATH . LIGHTWEB_TREE[$page]['header']);
-        $headerhtml = str_replace("{{title}}", i18nString(LIGHTWEB_TREE[$page]['titlei18n']), $headerhtml);
-        $headerhtml = str_replace("{{description}}", i18nString(LIGHTWEB_TREE[$page]['descriptioni18n']), $headerhtml);
-        if (LIGHTWEB_MINIFY) {
-            $headerhtml = minify($headerhtml);
+        $publish_from = LIGHTWEB_TREE[$page]['publish_from'] ?? null;
+        $publish_until = LIGHTWEB_TREE[$page]['publish_until'] ?? null;
+        $publish_ok = true;
+        $TodayDate = new DateTime(); // Today
+        if ($publish_from !== null) {
+            $publish_from_date = new DateTime($publish_from);
+            if ($TodayDate > $publish_from_date) {
+                $publish_ok = true;
+            }
         }
-        $bodyhtml = file_get_contents(LIGHTWEB_PAGES_PATH . LIGHTWEB_TREE[$page]['path']);
-        if (LIGHTWEB_MINIFY) {
-            $bodyhtml = minify($bodyhtml);
+        if ($publish_until !== null) {
+            $publish_until_date = new DateTime($publish_until);
+            if ($TodayDate < $publish_until_date) {
+                $publish_ok = true;
+            }
         }
-        $footerhtml = file_get_contents(LIGHTWEB_PAGES_FOOTERS_PATH . LIGHTWEB_TREE[$page]['footer']);
-        if (LIGHTWEB_MINIFY) {
-            $footerhtml = minify($footerhtml);
-        }
-        return($headerhtml . "\n" . $bodyhtml . "\n" . $footerhtml);
-    } else {
-        if (isset(LIGHTWEB_TREE['404'])) {
-            $page = "404";
+        if ($publish_ok) {
             $headerhtml = file_get_contents(LIGHTWEB_PAGES_HEADERS_PATH . LIGHTWEB_TREE[$page]['header']);
             $headerhtml = str_replace("{{title}}", i18nString(LIGHTWEB_TREE[$page]['titlei18n']), $headerhtml);
             $headerhtml = str_replace("{{description}}", i18nString(LIGHTWEB_TREE[$page]['descriptioni18n']), $headerhtml);
+            if (LIGHTWEB_MINIFY) {
+                $headerhtml = minify($headerhtml);
+            }
             $bodyhtml = file_get_contents(LIGHTWEB_PAGES_PATH . LIGHTWEB_TREE[$page]['path']);
+            if (LIGHTWEB_MINIFY) {
+                $bodyhtml = minify($bodyhtml);
+            }
             $footerhtml = file_get_contents(LIGHTWEB_PAGES_FOOTERS_PATH . LIGHTWEB_TREE[$page]['footer']);
-            return($headerhtml . "\n" . $bodyhtml . "\n" . $footerhtml);
+            if (LIGHTWEB_MINIFY) {
+                $footerhtml = minify($footerhtml);
+            }
+            $fullpage = $headerhtml . "\n" . $bodyhtml . "\n" . $footerhtml;
+            $fullpage = LoadPlugins($page, $fullpage);
+            return($fullpage);
+        } else {
+            if (isset(LIGHTWEB_TREE['404'])) {
+                return render_404();
+            } else {
+                return "404";
+            }
+        }
+    } else {
+        if (isset(LIGHTWEB_TREE['404'])) {
+            return render_404();
         } else {
             return "404";
         }
@@ -36,11 +56,13 @@ function render_page($page = "home")
 }
 function render_404()
 {
-    if (isset(LIGHTWEB_TREE['404'])) {
-        return render_page("404");
-    } else {
-        return "404";
-    }
+    $page = "404";
+    $headerhtml = file_get_contents(LIGHTWEB_PAGES_HEADERS_PATH . LIGHTWEB_TREE[$page]['header']);
+    $headerhtml = str_replace("{{title}}", i18nString(LIGHTWEB_TREE[$page]['titlei18n']), $headerhtml);
+    $headerhtml = str_replace("{{description}}", i18nString(LIGHTWEB_TREE[$page]['descriptioni18n']), $headerhtml);
+    $bodyhtml = file_get_contents(LIGHTWEB_PAGES_PATH . LIGHTWEB_TREE[$page]['path']);
+    $footerhtml = file_get_contents(LIGHTWEB_PAGES_FOOTERS_PATH . LIGHTWEB_TREE[$page]['footer']);
+    return($headerhtml . "\n" . $bodyhtml . "\n" . $footerhtml);
 }
 function minify($buffer)
 {

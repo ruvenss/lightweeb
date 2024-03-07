@@ -18,6 +18,7 @@ function publish()
 }
 function prepare_render()
 {
+    $offlinehtml = '<html><head><title>LightWeb Offline</title><style>body{background:black;color:lime;font-family:mono;}</style></head><body>LightWeb 3.0 OffLine Data</body></html>';
     if (!file_exists(LIGHTWEB_PUBLISH_PATH)) {
         mkdir(LIGHTWEB_PUBLISH_PATH);
         mkdir(LIGHTWEB_PUBLISH_PATH . "compress");
@@ -51,5 +52,11 @@ define('LIGHTWEB_DB_COLLATE', '" . LIGHTWEB_DB_COLLATE . "');";
             $lcdata = file_get_contents(LIGHTWEB_LOCALES_PATH . $lcfile);
             file_put_contents(LIGHTWEB_PUBLISH_PATH . "uncompress/api/locales/" . $lcfile, $lcdata);
         }
+    }
+    if (!file_exists(LIGHTWEB_PUBLISH_PATH . "uncompress/offline")) {
+        mkdir(LIGHTWEB_PUBLISH_PATH . "uncompress/offline");
+    }
+    if (!file_exists(LIGHTWEB_PUBLISH_PATH . "uncompress/offline/index.html")) {
+        file_put_contents(LIGHTWEB_PUBLISH_PATH . "uncompress/offline/index.html", $offlinehtml);
     }
 }
