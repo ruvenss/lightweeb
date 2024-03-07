@@ -69,57 +69,97 @@ function metatags()
 {
     $m = '<meta name="googlebot" content="notranslate">';
 }
-function snippet($title, $descripion, $type, $image = "", $author = "", $parameter1 = "", $parameter2 = "")
+function snippet_breadcrumb($Breadcrumbs = [])
 {
-    switch ($type) {
-        case 'recipe':
-            $s = '
+    $uri = "https://" . LIGHTWEB_PRODUCTION . "/" . LIGHTWEB_URI['lang'];
+    $i = 0;
+    foreach ($Breadcrumbs as $Breadcrumb) {
+        $i++;
+        $BreadCrumbOBJ = LIGHTWEB_TREE[$Breadcrumb];
+        $BreadCrumbName = i18nString($BreadCrumbOBJ['titlei18n']);
+        $snipped_child[] = '{
+        "@type": "ListItem",
+        "position": ' . $i . ',
+        "name": "' . $BreadCrumbName . '",
+        "item": "' . $uri . $BreadCrumbOBJ['url'] . '"
+      }';
+    }
+
+    $s = '
     <script type="application/ld+json">
     {
-      "@context": "https://schema.org/",
-      "@type": "Recipe",
-      "name": "' . $title . '",
-      "author": {
-        "@type": "Person",
-        "name": "' . $author . '"
-      },
-      "datePublished": "' . date("Y-m-d") . '",
-      "description": "' . $descripion . '",
-      "prepTime": "PT' . $parameter1 . 'M"
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [' . implode(",", $snipped_child) . ']
     }
-    </script>';
+    </script>
+    ';
+    return $s;
+}
+function snippet($title, $descripion, $type, $author = "", $parameter1 = "", $parameter2 = "")
+{
+    $s = '<script type="application/ld+json">
+    {
+        "@context": "https://schema.org/",
+        ';
+    switch ($type) {
+        case 'breadcrubs':
+            $s .= '"@type": "BreadcrumbList",
+      "itemListElement": [{
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Books",
+        "item": "https://example.com/books"
+      },{
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Science Fiction",
+        "item": "https://example.com/books/sciencefiction"
+      },{
+        "@type": "ListItem",
+        "position": 3,
+        "name": "Award Winners"
+      }]';
+            break;
+        case 'recipe':
+            $s .= '"@type": "Recipe",
+        "name": "' . $title . '",
+        "author": {
+            "@type": "Person",
+            "name": "' . $author . '"
+        },
+        "datePublished": "' . date("Y-m-d") . '",
+        "description": "' . $descripion . '",
+        "prepTime": "PT' . $parameter1 . 'M"';
             break;
         case 'organization':
-            $s = '
-     <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      "image": "' . $image . '",
-      "url": "https://' . LIGHTWEB_PRODUCTION . '",
-      "sameAs": ["https://example.net/profile/example1234", "https://example.org/example1234"],
-      "logo": "https://www.example.com/images/logo.png",
-      "name": "' . $title . '",
-      "description": "' . $descripion . '",
-      "email": "contact@example.com",
-      "telephone": "+47-99-999-9999",
-      "address": {
-        "@type": "PostalAddress",
-        "streetAddress": "Rue Improbable 99",
-        "addressLocality": "Paris",
-        "addressCountry": "FR",
-        "addressRegion": "Ile-de-France",
-        "postalCode": "75001"
-      },
-      "vatID": "FR12345678901",
-      "iso6523Code": "0199:724500PMK2A2M1SQQ228"
-    }';
+            $s .= '"@type": "Organization",
+        "image": "' . LIGHTWEB_SITE_CONFIG['image'] . '",
+        "url": "https://' . LIGHTWEB_PRODUCTION . '",
+        "sameAs": ["https://example.net/profile/example1234", "https://example.org/example1234"],
+        "logo": "' . LIGHTWEB_SITE_CONFIG['logo'] . '",
+        "name": "' . LIGHTWEB_SITE_CONFIG['name'] . '",
+        "description": "' . $descripion . '",
+        "email": "' . LIGHTWEB_SITE_CONFIG['email'] . '",
+        "telephone": "' . LIGHTWEB_SITE_CONFIG['phone'] . '",
+        "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "' . LIGHTWEB_SITE_CONFIG['locations'][0]['address'] . '",
+            "addressLocality": "' . LIGHTWEB_SITE_CONFIG['locations'][0]['city'] . '",
+            "addressCountry": "' . LIGHTWEB_SITE_CONFIG['locations'][0]['country'] . '",
+            "addressRegion": "' . LIGHTWEB_SITE_CONFIG['locations'][0]['region'] . '",
+            "postalCode": "' . LIGHTWEB_SITE_CONFIG['locations'][0]['cp'] . '"
+        },
+        "vatID": "' . LIGHTWEB_SITE_CONFIG['vat'] . '",
+        "iso6523Code": "' . LIGHTWEB_SITE_CONFIG['iso'] . '"';
             break;
         default:
             # code...
             break;
     }
-
+    $s .= '
+    }
+    </script>';
 }
 function render_404()
 {
