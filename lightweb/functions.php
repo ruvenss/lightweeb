@@ -1,4 +1,16 @@
 <?php
+function GetLanguages()
+{
+    if (!defined("locales")) {
+        $languages_files = glob(LIGHTWEB_LOCALES_PATH . '*.{json}', GLOB_BRACE);
+        $languages = [];
+        foreach ($languages_files as $language_file) {
+            $language = right(str_replace(".json", "", $language_file), 2);
+            $languages[] = $language;
+        }
+        define("locales", $languages);
+    }
+}
 function LoadPlugins($uri, $fullpage)
 {
     $plugins = glob(LIGHTWEB_PATH . 'lightweb/plugins/*.{php}', GLOB_BRACE);

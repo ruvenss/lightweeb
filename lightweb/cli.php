@@ -8,6 +8,7 @@ if (LIGHTWEB_ENVIRONMENT == 'development') {
 include_once('functions.php');
 include_once('render.php');
 include_once('db.php');
+GetLanguages();
 include_once('publish.php');
 if ($argc > 1) {
     $param = $argv[1];
