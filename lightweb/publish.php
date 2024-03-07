@@ -53,6 +53,8 @@ define('LIGHTWEB_DB_COLLATE', '" . LIGHTWEB_DB_COLLATE . "');";
             file_put_contents(LIGHTWEB_PUBLISH_PATH . "uncompress/api/locales/" . $lcfile, $lcdata);
         }
     }
+    $dbphp = file_get_contents(LIGHTWEB_PATH . "lightweb/db.php");
+    file_put_contents(LIGHTWEB_PUBLISH_PATH . "uncompress/api/db.php", $dbphp);
     if (!file_exists(LIGHTWEB_PUBLISH_PATH . "uncompress/offline")) {
         mkdir(LIGHTWEB_PUBLISH_PATH . "uncompress/offline");
     }

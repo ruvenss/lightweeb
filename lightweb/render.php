@@ -54,6 +54,73 @@ function render_page($page = "home")
         }
     }
 }
+function ogcard($title, $descripion, $url, $ogimage)
+{
+    /* Standard OG Card */
+    $ogcard = '<meta property="og:url" content="' . $url . '">
+<meta property="og:type" content="article:publisher">
+<meta property="og:title" content=' . $title . '">
+<meta property="og:description" content="' . $descripion . '">
+<meta property="og:image" content="' . $ogimage . '">
+<meta property="og:site_name" content="' . LIGHTWEB_PRODUCTION . '">';
+    return $ogcard;
+}
+function metatags()
+{
+    $m = '<meta name="googlebot" content="notranslate">';
+}
+function snippet($title, $descripion, $type, $image = "", $author = "", $parameter1 = "", $parameter2 = "")
+{
+    switch ($type) {
+        case 'recipe':
+            $s = '
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org/",
+      "@type": "Recipe",
+      "name": "' . $title . '",
+      "author": {
+        "@type": "Person",
+        "name": "' . $author . '"
+      },
+      "datePublished": "' . date("Y-m-d") . '",
+      "description": "' . $descripion . '",
+      "prepTime": "PT' . $parameter1 . 'M"
+    }
+    </script>';
+            break;
+        case 'organization':
+            $s = '
+     <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "image": "' . $image . '",
+      "url": "https://' . LIGHTWEB_PRODUCTION . '",
+      "sameAs": ["https://example.net/profile/example1234", "https://example.org/example1234"],
+      "logo": "https://www.example.com/images/logo.png",
+      "name": "' . $title . '",
+      "description": "' . $descripion . '",
+      "email": "contact@example.com",
+      "telephone": "+47-99-999-9999",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "Rue Improbable 99",
+        "addressLocality": "Paris",
+        "addressCountry": "FR",
+        "addressRegion": "Ile-de-France",
+        "postalCode": "75001"
+      },
+      "vatID": "FR12345678901",
+      "iso6523Code": "0199:724500PMK2A2M1SQQ228"
+    }';
+            break;
+        default:
+            # code...
+            break;
+    }
+
+}
 function render_404()
 {
     $page = "404";
