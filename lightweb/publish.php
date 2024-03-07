@@ -42,6 +42,7 @@ Sitemap: https://' . LIGHTWEB_PRODUCTION . '/sitemap.xml';
     } else {
         $version_data = json_decode(file_get_contents(LIGHTWEB_PUBLISH_PATH . "versions.json"), true);
         $version = $version_data['v'] + 1;
+        file_put_contents(LIGHTWEB_PUBLISH_PATH . "versions.json", json_encode(["v" => $version]));
     }
     $htaccess = "RewriteEngine Off
 Options -Indexes
