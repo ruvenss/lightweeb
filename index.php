@@ -1,4 +1,5 @@
 <?php
+$cli = false;
 include_once('lightweb/config.php');
 if (LIGHTWEB_ENVIRONMENT == 'development') {
 	error_reporting(E_ALL);

@@ -18,16 +18,21 @@ function i18nString($i18key)
             return $value;
         }
     }
+    return "";
 }
-function i18n($fullpage)
+function i18n($fullpage = "")
 {
     if (!defined("i18Translations")) {
         defi18n();
     }
-    foreach (i18Translations as $key => $value) {
-        $fullpage = str_replace("{{{$key}}}", $value, $fullpage);
+    if (!$fullpage == null && strlen($fullpage) > 0) {
+        foreach (i18Translations as $key => $value) {
+            $fullpage = str_replace("{{{$key}}}", $value, $fullpage);
+        }
+        return $fullpage;
+    } else {
+        return null;
     }
-    return $fullpage;
 }
 function left($str, $length)
 {

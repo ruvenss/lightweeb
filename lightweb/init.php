@@ -1,4 +1,5 @@
 <?php
+header("PoweredBy: LightWeb 3.0;");
 if (LIGHTWEB_DB) {
     $ldb = new mysqli(LIGHTWEB_DB_HOST, LIGHTWEB_DB_USER, LIGHTWEB_DB_PASS, LIGHTWEB_DB_NAME);
     define("ldb", $ldb);

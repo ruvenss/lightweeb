@@ -11,3 +11,5 @@ lightweb/pages/*
 lightweb/footers/*
 lightweb/headers/*
 lightweb/templates/*
+lightweb/publish/compress/*
+lightweb/publish/uncompress/*

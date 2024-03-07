@@ -9,7 +9,12 @@ define('LIGHTWEB_PRODUCTION', 'nizu.io');
 define('LIGHTWEB_STAGE', 'draft.nizu.io');
 define('LIGHTWEB_LANG', 'en');
 define('LIGHTWEB_VERSION', '3.0');
-define('LIGHTWEB_PATH', getcwd() . "/");
+if ($cli) {
+    $path = str_replace("/lightweb/lightweb", "/lightweb", getcwd());
+    define('LIGHTWEB_PATH', $path . "/");
+} else {
+    define('LIGHTWEB_PATH', getcwd() . "/");
+}
 define('LIGHTWEB_PAGES_PATH', LIGHTWEB_PATH . 'lightweb/pages/');
 define('LIGHTWEB_LOCALES_PATH', LIGHTWEB_PATH . 'lightweb/locales/');
 define('LIGHTWEB_PAGES_HEADERS_PATH', LIGHTWEB_PATH . 'lightweb/headers/');

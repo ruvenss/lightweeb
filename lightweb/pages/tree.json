@@ -18,8 +18,8 @@
         "path": "404/index.html",
         "author": "Light Web",
         "url": "/",
-        "header": "header.html",
-        "footer": "footer.html",
+        "header": "header_404.html",
+        "footer": "footer_404.html",
         "version": "1",
         "type": "page"
     },
@@ -30,7 +30,7 @@
         "path": "contact/index.html",
         "author": "Light Web",
         "url": "/contact",
-        "header": "header.html",
+        "header": "header_common.html",
         "footer": "footer.html",
         "version": "1",
         "type": "page"
@@ -43,6 +43,30 @@
         "author": "Light Web",
         "url": "/gdpr",
         "header": "header.html",
+        "footer": "footer.html",
+        "version": "1",
+        "type": "page"
+    },
+    "products": {
+        "titlei18n": "products",
+        "descriptioni18n": "productsdesc",
+        "robots": "Follow",
+        "path": "products/index.html",
+        "author": "Light Web",
+        "url": "/products",
+        "header": "header_common.html",
+        "footer": "footer.html",
+        "version": "1",
+        "type": "page"
+    },
+    "products/nizu": {
+        "titlei18n": "nizu",
+        "descriptioni18n": "nizudesc",
+        "robots": "Follow",
+        "path": "products/nizu/index.html",
+        "author": "Light Web",
+        "url": "/products/nizu",
+        "header": "header_common.html",
         "footer": "footer.html",
         "version": "1",
         "type": "page"

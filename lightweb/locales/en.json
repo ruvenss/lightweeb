@@ -21,5 +21,11 @@
     "gdpr": "GDPR",
     "gdprdesc": "Information for Users in the European Union, General Data Protection Regulation.",
     "contact": "Contact",
-    "contactdesc": "Contact information for Light Web"
+    "contactdesc": "Contact information for Light Web",
+    "notfound": "Page not Found",
+    "notfounddesc": "Missing page",
+    "products": "Products",
+    "productsdesc": "NIZU and others",
+    "nizu": "NIZU",
+    "nizudesc": "ERP, CRM, HRM and e-commerce"
 }
