@@ -1,4 +1,4 @@
-# lightweb 3.0
+# LightWeb 3.0
 
 Light Web is an Open Source framework for light and optimised websites
 
@@ -11,9 +11,10 @@ Light Web is an Open Source framework for light and optimised websites
 - Social Media and OG Cards embed
 
 # Basic structure and Content
-`/lightweb/headers` *All your html headers*
-`/lightweb/footers` *All your html footers*
-`/lightweb/pages` *All your page contents without the html headers or footers*
-`/lightweb/pages/tree.js` *Your website structure and pages properties*
+
+- `/lightweb/headers` *All your html headers*
+- `/lightweb/footers` *All your html footers*
+- `/lightweb/pages` *All your page contents without the html headers or footers*
+- `/lightweb/pages/tree.js` *Your website structure and pages properties*
 
 
