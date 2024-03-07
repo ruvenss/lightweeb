@@ -13,3 +13,4 @@ lightweb/headers/*
 lightweb/templates/*
 lightweb/publish/compress/*
 lightweb/publish/uncompress/*
+lightweb/publish/versions.json

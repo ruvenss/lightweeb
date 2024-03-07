@@ -1,8 +1,8 @@
 <?php
 function publish()
 {
-    echo "\nPublishing...\n";
-    prepare_render();
+    $version = prepare_render();
+    echo "\nPublishing v$version...\n";
     echo ".------------------------------------------.\n";
     echo "|                Pages                |    |\n";
     echo "|-------------------------------------|----|\n";
@@ -31,9 +31,17 @@ Sitemap: https://' . LIGHTWEB_PRODUCTION . '/sitemap.xml';
         mkdir(LIGHTWEB_PUBLISH_PATH);
         mkdir(LIGHTWEB_PUBLISH_PATH . "compress");
         mkdir(LIGHTWEB_PUBLISH_PATH . "uncompress");
+
     }
     if (!file_exists(LIGHTWEB_PUBLISH_PATH . "uncompress/api")) {
         mkdir(LIGHTWEB_PUBLISH_PATH . "uncompress/api");
+    }
+    if (!file_exists(LIGHTWEB_PUBLISH_PATH . "versions.json")) {
+        file_put_contents(LIGHTWEB_PUBLISH_PATH . "versions.json", json_encode(["v" => 1]));
+        $version = 1;
+    } else {
+        $version_data = json_decode(file_get_contents(LIGHTWEB_PUBLISH_PATH . "versions.json"), true);
+        $version = $version_data['v'] + 1;
     }
     $htaccess = "RewriteEngine Off
 Options -Indexes
@@ -96,5 +104,5 @@ define('LIGHTWEB_DB_COLLATE', '" . LIGHTWEB_DB_COLLATE . "');";
     /*
         Service Workers
     */
-
+    return $version;
 }
