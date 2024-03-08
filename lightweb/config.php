@@ -34,3 +34,5 @@ define('LIGHTWEB_DB_PREFIX', 'tbl_');
 define('LIGHTWEB_DB_PORT', '3306');
 define('LIGHTWEB_DB_CHARSET', 'utf8mb4');
 define('LIGHTWEB_DB_COLLATE', 'utf8mb4_unicode_ci');
+define('LIGHTWEB_NIZU_TOKEN', "");
+define('LIGHTWEB_NIZU_CMS',"");

@@ -31,7 +31,6 @@ Sitemap: https://' . LIGHTWEB_PRODUCTION . '/sitemap.xml';
         mkdir(LIGHTWEB_PUBLISH_PATH);
         mkdir(LIGHTWEB_PUBLISH_PATH . "compress");
         mkdir(LIGHTWEB_PUBLISH_PATH . "uncompress");
-
     }
     if (!file_exists(LIGHTWEB_PUBLISH_PATH . "uncompress/api")) {
         mkdir(LIGHTWEB_PUBLISH_PATH . "uncompress/api");
@@ -105,5 +104,17 @@ define('LIGHTWEB_DB_COLLATE', '" . LIGHTWEB_DB_COLLATE . "');";
     /*
         Service Workers
     */
+    $serviceworker = str_replace("{{version}}", $version, file_get_contents(LIGHTWEB_PATH . "lightweb/js/service-worker.js"));
+    $cachefiles = '';
+    foreach (locales as $isolang) {
+        foreach (LIGHTWEB_TREE as $page) {
+            if (isset($page['url'])) {
+                $swurl = $page['url'];
+                $cachefiles .= "'/$isolang$swurl',";
+            }
+        }
+    }
+    $serviceworker = str_replace("'cachefiles'", $cachefiles, $serviceworker);
+    file_put_contents(LIGHTWEB_PUBLISH_PATH . "uncompress/service-worker.js", $serviceworker);
     return $version;
 }
