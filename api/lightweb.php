@@ -54,7 +54,7 @@ function create_page()
             }
         }
         /**
-         * create the i18n files
+         * Create the i18n files
          */
         response(true, $newtree);
     }
