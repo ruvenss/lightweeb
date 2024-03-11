@@ -24,7 +24,7 @@ define('LIGHTWEB_PUBLISH_PATH', LIGHTWEB_PATH . 'lightweb/publish/');
 define('LIGHTWEB_TREE', json_decode(file_get_contents(LIGHTWEB_PAGES_PATH . 'tree.json'), true));
 define('LIGHTWEB_SITE_CONFIG', json_decode(file_get_contents(LIGHTWEB_PAGES_PATH . 'siteconfig.json'), true));
 define('LIGHTWEB_DEBUG', false);
-define('LIGHTWEB_MINIFY', true);
+define('LIGHTWEB_MINIFY', false);
 define('LIGHTWEB_DB', false);
 define('LIGHTWEB_DB_HOST', 'localhost');
 define('LIGHTWEB_DB_USER', 'root');

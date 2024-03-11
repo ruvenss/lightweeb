@@ -53,7 +53,8 @@ Sitemap: https://' . LIGHTWEB_PRODUCTION . '/sitemap.xml';
     if (!file_exists(LIGHTWEB_PUBLISH_PATH . "uncompress/api/v1")) {
         mkdir(LIGHTWEB_PUBLISH_PATH . "uncompress/api/v1");
     }
-    copy(LIGHTWEB_PATH . "lightweb/phpcode/api/index.php", LIGHTWEB_PUBLISH_PATH . "uncompress/api/index.php");
+    copy(LIGHTWEB_PATH . "api/index.php", LIGHTWEB_PUBLISH_PATH . "uncompress/api/index.php");
+    copy(LIGHTWEB_PATH . "api/errors.json", LIGHTWEB_PUBLISH_PATH . "uncompress/api/errors.json");
     copy(LIGHTWEB_PATH . "lightweb/phpcode/api/v1/index.php", LIGHTWEB_PUBLISH_PATH . "uncompress/api/v1/index.php");
     if (!file_exists(LIGHTWEB_PUBLISH_PATH . "versions.json")) {
         file_put_contents(LIGHTWEB_PUBLISH_PATH . "versions.json", json_encode(["v" => 1]));

@@ -4,6 +4,7 @@ function render_page($page = "home", $lang = "")
     if ($page == "") {
         $page = "home";
     }
+    $jsvendors = '<script type="text/javascript" id="lightweb-vendors-js" src="/vendors.js?v=3.0.0"></script>' . "\n</body>";
     if (isset(LIGHTWEB_TREE[$page])) {
         $publish_from = LIGHTWEB_TREE[$page]['publish_from'] ?? null;
         $publish_until = LIGHTWEB_TREE[$page]['publish_until'] ?? null;
@@ -37,6 +38,11 @@ function render_page($page = "home", $lang = "")
                 $bodyhtml = minify($bodyhtml);
             }
             $footerhtml = file_get_contents(LIGHTWEB_PAGES_FOOTERS_PATH . LIGHTWEB_TREE[$page]['footer']);
+            if (strlen(GOOGLE_UA) > 0) {
+                $google_script = '<!-- Google tag (gtag.js) --><script async src="https://www.googletagmanager.com/gtag/js?id=UA-' . GOOGLE_UA . '"></script>' . "\n</body>";
+                $footerhtml = str_replace("</body>", $google_script, $footerhtml);
+            }
+            $footerhtml = str_replace("</body>", $jsvendors, $footerhtml);
             if (LIGHTWEB_MINIFY) {
                 $footerhtml = minify($footerhtml);
             }

@@ -1,0 +1,82 @@
+{
+    "errors": [
+        {
+            "id": 0,
+            "description": "Bearer token Missing",
+            "app": null,
+            "type": null
+        },
+        {
+            "id": 1,
+            "description": "Bearer token is not valid",
+            "app": null,
+            "type": null
+        },
+        {
+            "id": 2,
+            "description": "Invalid Method",
+            "app": null,
+            "type": null
+        },
+        {
+            "id": 3,
+            "description": "Server offline",
+            "app": null,
+            "type": null
+        },
+        {
+            "id": 4,
+            "description": "Action not allowed",
+            "app": null,
+            "type": null
+        },
+        {
+            "id": 5,
+            "description": "IP not allowed",
+            "app": null,
+            "type": null
+        },
+        {
+            "id": 6,
+            "description": "Method is not allowed",
+            "app": null,
+            "type": null
+        },
+        {
+            "id": 7,
+            "description": "Module name missing in the payload",
+            "app": null,
+            "type": null
+        },
+        {
+            "id": 8,
+            "description": "This module is not accessible using this method",
+            "app": null,
+            "type": null
+        },
+        {
+            "id": 9,
+            "description": "Account already exists",
+            "app": null,
+            "type": null
+        },
+        {
+            "id": 10,
+            "description": "Account does not exists",
+            "app": null,
+            "type": null
+        },
+        {
+            "id": 11,
+            "description": "Key already exist",
+            "app": null,
+            "type": null
+        },
+        {
+            "id": 12,
+            "description": "Company ID can not be null, empty or equal to 0",
+            "app": null,
+            "type": null
+        }
+    ]
+}
