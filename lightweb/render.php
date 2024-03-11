@@ -1,5 +1,5 @@
 <?php
-function render_page($page = "home")
+function render_page($page = "home", $lang = "")
 {
     if ($page == "") {
         $page = "home";
@@ -24,13 +24,14 @@ function render_page($page = "home")
         if ($publish_ok) {
             $headerhtml = file_get_contents(LIGHTWEB_PAGES_HEADERS_PATH . LIGHTWEB_TREE[$page]['header']);
             // Insert BreadCrumbs Snippet
-
-            $headerhtml = str_replace("{{title}}", i18nString(LIGHTWEB_TREE[$page]['titlei18n']), $headerhtml);
-            $headerhtml = str_replace("{{description}}", i18nString(LIGHTWEB_TREE[$page]['descriptioni18n']), $headerhtml);
+            $headerhtml = str_replace("{{title}}", i18nString(LIGHTWEB_TREE[$page]['titlei18n'], $lang), $headerhtml);
+            $headerhtml = str_replace("{{lang_lc}}", i18nString("lang_lc", $lang), $headerhtml);
+            $headerhtml = str_replace("{{author}}", "LightWeb 3.0.1", $headerhtml);
+            $headerhtml = str_replace("{{description}}", i18nString(LIGHTWEB_TREE[$page]['descriptioni18n'], $lang), $headerhtml);
             if (LIGHTWEB_MINIFY) {
                 $headerhtml = minify($headerhtml);
             }
-            $headerhtml = str_replace("</title>", "</title>\n" . snippet_breadcrumb($page), $headerhtml);
+            $headerhtml = str_replace("</title>", "</title>\n" . snippet_breadcrumb($page, $lang), $headerhtml);
             $bodyhtml = file_get_contents(LIGHTWEB_PAGES_PATH . LIGHTWEB_TREE[$page]['path']);
             if (LIGHTWEB_MINIFY) {
                 $bodyhtml = minify($bodyhtml);
@@ -44,7 +45,7 @@ function render_page($page = "home")
             return($fullpage);
         } else {
             if (isset(LIGHTWEB_TREE['404'])) {
-                return render_404();
+                return render_404($lang);
             } else {
                 return "404";
             }
@@ -72,10 +73,15 @@ function metatags()
 {
     $m = '<meta name="googlebot" content="notranslate">';
 }
-function snippet_breadcrumb($page)
+function snippet_breadcrumb($page, $lang = "")
 {
     $Breadcrumbs = explode("/", $page);
-    $uri = "https://" . LIGHTWEB_PRODUCTION . "/" . LIGHTWEB_URI['lang'];
+    if (publishing) {
+        $uri = "https://" . LIGHTWEB_PRODUCTION . "/" . $lang;
+    } else {
+        $uri = "https://" . LIGHTWEB_PRODUCTION . "/" . LIGHTWEB_URI['lang'];
+    }
+
     $i = 0;
     foreach ($Breadcrumbs as $Breadcrumb) {
         $i++;
@@ -85,7 +91,7 @@ function snippet_breadcrumb($page)
             $thispage = implode('/', array_slice($Breadcrumbs, 0, $i));
             $BreadCrumbOBJ = LIGHTWEB_TREE[$thispage];
         }
-        $BreadCrumbName = i18nString($BreadCrumbOBJ['titlei18n']);
+        $BreadCrumbName = i18nString($BreadCrumbOBJ['titlei18n'], $lang);
         $snipped_child[] = '{
         "@type": "ListItem",
         "position": ' . $i . ',
@@ -150,12 +156,12 @@ function snippet($title, $descripion, $type, $author = "", $parameter1 = "", $pa
     }
     </script>';
 }
-function render_404()
+function render_404($lang = "")
 {
     $page = "404";
     $headerhtml = file_get_contents(LIGHTWEB_PAGES_HEADERS_PATH . LIGHTWEB_TREE[$page]['header']);
-    $headerhtml = str_replace("{{title}}", i18nString(LIGHTWEB_TREE[$page]['titlei18n']), $headerhtml);
-    $headerhtml = str_replace("{{description}}", i18nString(LIGHTWEB_TREE[$page]['descriptioni18n']), $headerhtml);
+    $headerhtml = str_replace("{{title}}", i18nString(LIGHTWEB_TREE[$page]['titlei18n'], $lang), $headerhtml);
+    $headerhtml = str_replace("{{description}}", i18nString(LIGHTWEB_TREE[$page]['descriptioni18n'], $lang), $headerhtml);
     $bodyhtml = file_get_contents(LIGHTWEB_PAGES_PATH . LIGHTWEB_TREE[$page]['path']);
     $footerhtml = file_get_contents(LIGHTWEB_PAGES_FOOTERS_PATH . LIGHTWEB_TREE[$page]['footer']);
     return($headerhtml . "\n" . $bodyhtml . "\n" . $footerhtml);

@@ -30,30 +30,60 @@ function defi18n()
     }
     define("i18Translations", json_decode(file_get_contents($locales_file), true));
 }
-function i18nString($i18key)
+function defi18nPublishing($lang)
 {
-    if (!defined("i18Translations")) {
-        defi18n();
+    $locales_file = LIGHTWEB_LOCALES_PATH . $lang . ".json";
+    if (!file_exists($locales_file)) {
+        $lang = "en";
+        $locales_file = LIGHTWEB_LOCALES_PATH . $lang . ".json";
     }
-    foreach (i18Translations as $key => $value) {
-        if ($key == $i18key) {
-            return $value;
+    return(json_decode(file_get_contents($locales_file), true));
+}
+function i18nString($i18key, $lang = "")
+{
+    if (publishing) {
+        $translations = defi18nPublishing($lang);
+        foreach ($translations as $key => $value) {
+            if ($key == $i18key) {
+                return $value;
+            }
+        }
+    } else {
+        if (!defined("i18Translations")) {
+            defi18n();
+        }
+        foreach (i18Translations as $key => $value) {
+            if ($key == $i18key) {
+                return $value;
+            }
         }
     }
     return "";
 }
-function i18n($fullpage = "")
+function i18n($fullpage = "", $lang = "")
 {
-    if (!defined("i18Translations")) {
-        defi18n();
-    }
-    if (!$fullpage == null && strlen($fullpage) > 0) {
-        foreach (i18Translations as $key => $value) {
-            $fullpage = str_replace("{{{$key}}}", $value, $fullpage);
+    if (publishing) {
+        $translations = defi18nPublishing($lang);
+        if (!$fullpage == null && strlen($fullpage) > 0) {
+            foreach ($translations as $key => $value) {
+                $fullpage = str_replace("{{{$key}}}", $value, $fullpage);
+            }
+            return $fullpage;
+        } else {
+            return null;
         }
-        return $fullpage;
     } else {
-        return null;
+        if (!defined("i18Translations")) {
+            defi18n();
+        }
+        if (!$fullpage == null && strlen($fullpage) > 0) {
+            foreach (i18Translations as $key => $value) {
+                $fullpage = str_replace("{{{$key}}}", $value, $fullpage);
+            }
+            return $fullpage;
+        } else {
+            return null;
+        }
     }
 }
 function left($str, $length)
