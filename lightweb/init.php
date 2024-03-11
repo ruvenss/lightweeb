@@ -7,6 +7,10 @@ if (LIGHTWEB_DB) {
         die("LightWeb Failed to connect to MySQL: " . ldb->connect_error);
     }
 }
+
+if (!file_exists(dirname(dirname(__FILE__)) . "/api")) {
+    die(dirname(dirname(__FILE__)) . "/api is missing.");
+}
 define("LIGHTWEB_URI", $_REQUEST);
 if (!isset(LIGHTWEB_URI['lang'])) {
     header("Location: /" . LIGHTWEB_LANG);

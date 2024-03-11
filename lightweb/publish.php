@@ -50,6 +50,11 @@ Sitemap: https://' . LIGHTWEB_PRODUCTION . '/sitemap.xml';
     if (!file_exists(LIGHTWEB_PUBLISH_PATH . "uncompress/api")) {
         mkdir(LIGHTWEB_PUBLISH_PATH . "uncompress/api");
     }
+    if (!file_exists(LIGHTWEB_PUBLISH_PATH . "uncompress/api/v1")) {
+        mkdir(LIGHTWEB_PUBLISH_PATH . "uncompress/api/v1");
+    }
+    copy(LIGHTWEB_PATH . "lightweb/phpcode/api/index.php", LIGHTWEB_PUBLISH_PATH . "uncompress/api/index.php");
+    copy(LIGHTWEB_PATH . "lightweb/phpcode/api/v1/index.php", LIGHTWEB_PUBLISH_PATH . "uncompress/api/v1/index.php");
     if (!file_exists(LIGHTWEB_PUBLISH_PATH . "versions.json")) {
         file_put_contents(LIGHTWEB_PUBLISH_PATH . "versions.json", json_encode(["v" => 1]));
         $version = 1;
@@ -76,6 +81,9 @@ define('LIGHTWEB_DB_COLLATE', '" . LIGHTWEB_DB_COLLATE . "');";
     file_put_contents(LIGHTWEB_PUBLISH_PATH . "uncompress/api/config.php", $configphp);
     if (!file_exists(LIGHTWEB_PUBLISH_PATH . "uncompress/api/locales")) {
         mkdir(LIGHTWEB_PUBLISH_PATH . "uncompress/api/locales");
+    }
+    if (!file_exists(LIGHTWEB_PUBLISH_PATH . "uncompress/api/search")) {
+        mkdir(LIGHTWEB_PUBLISH_PATH . "uncompress/api/search");
     }
     $locales_files = scandir(LIGHTWEB_LOCALES_PATH);
     foreach ($locales_files as $lcfile) {
@@ -116,6 +124,16 @@ define('LIGHTWEB_DB_COLLATE', '" . LIGHTWEB_DB_COLLATE . "');";
         }
     }
     file_put_contents(LIGHTWEB_PUBLISH_PATH . "uncompress/sitemap.xml", $sitemap_header . $sitemap_body . $sitemap_footer);
+    /**
+     * SEO TRACKERS... Google, Facebook Pixel
+     */
+    $jsvendors = "";
+    if (!GOOGLE_UA == "" || !GOOGLE_UA == null) {
+        $jsvendors .= str_replace("{{GOOGLE_UA}}", GOOGLE_UA, file_get_contents(LIGHTWEB_PATH . "lightweb/jscode/google_ua.js"));
+    }
+    if (strlen($jsvendors) > 0) {
+        file_put_contents(LIGHTWEB_PUBLISH_PATH . "uncompress/vendors.js", $jsvendors);
+    }
     /*
         Service Workers
     */
