@@ -9,6 +9,7 @@ define('LIGHTWEB_PRODUCTION', 'nizu.io');
 define('LIGHTWEB_STAGE', 'draft.nizu.io');
 define('LIGHTWEB_LANG', 'en');
 define('LIGHTWEB_VERSION', '3.0');
+define('LIGHTWEB_APIKEY', "My_secret_key");
 if ($cli) {
     $path = str_replace("/lightweb/lightweb", "/lightweb", getcwd());
     define('LIGHTWEB_PATH', $path . "/");

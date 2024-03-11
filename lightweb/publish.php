@@ -53,7 +53,7 @@ Sitemap: https://' . LIGHTWEB_PRODUCTION . '/sitemap.xml';
     if (!file_exists(LIGHTWEB_PUBLISH_PATH . "uncompress/api/v1")) {
         mkdir(LIGHTWEB_PUBLISH_PATH . "uncompress/api/v1");
     }
-    copy(LIGHTWEB_PATH . "api/index.php", LIGHTWEB_PUBLISH_PATH . "uncompress/api/index.php");
+    copy(LIGHTWEB_PATH . "lightweb/phpcode/api/index.php", LIGHTWEB_PUBLISH_PATH . "uncompress/api/index.php");
     copy(LIGHTWEB_PATH . "api/errors.json", LIGHTWEB_PUBLISH_PATH . "uncompress/api/errors.json");
     copy(LIGHTWEB_PATH . "lightweb/phpcode/api/v1/index.php", LIGHTWEB_PUBLISH_PATH . "uncompress/api/v1/index.php");
     if (!file_exists(LIGHTWEB_PUBLISH_PATH . "versions.json")) {
@@ -112,14 +112,19 @@ define('LIGHTWEB_DB_COLLATE', '" . LIGHTWEB_DB_COLLATE . "');";
     <loc>https://' . LIGHTWEB_PRODUCTION . "/" . $isolang . '{{url}}</loc>
     <lastmod>{{fileupdate}}+00:00</lastmod>
 </url>';
+        $homepage = false;
         foreach (LIGHTWEB_TREE as $page) {
             if (isset($page['url'])) {
-                $sitemapitem = str_replace("{{url}}", $page['url'], $sitemapob);
-                $filepage = LIGHTWEB_PAGES_PATH . $page['path'];
-                if (file_exists($filepage)) {
-                    $itemdate = date("Y-m-d", filemtime($filepage)) . "T" . date("H:i:s", filemtime($filepage));
-                    $sitemapitem = str_replace("{{fileupdate}}", $itemdate, $sitemapitem);
-                    $sitemap_body .= $sitemapitem;
+                if ($page['url'] == "/" && $homepage) {
+
+                } else {
+                    $sitemapitem = str_replace("{{url}}", $page['url'], $sitemapob);
+                    $filepage = LIGHTWEB_PAGES_PATH . $page['path'];
+                    if (file_exists($filepage)) {
+                        $itemdate = date("Y-m-d", filemtime($filepage)) . "T" . date("H:i:s", filemtime($filepage));
+                        $sitemapitem = str_replace("{{fileupdate}}", $itemdate, $sitemapitem);
+                        $sitemap_body .= $sitemapitem;
+                    }
                 }
             }
         }
@@ -153,11 +158,20 @@ define('LIGHTWEB_DB_COLLATE', '" . LIGHTWEB_DB_COLLATE . "');";
     /* Copy root Content to uncompress */
     $root_files = scandir(getcwd() . '/../', SCANDIR_SORT_ASCENDING);
     //print_r($root_files);
-    $avoid_files = [".", "..", ".git", ".gitignore", ".htaccess", "index.php", "lightweb", "README.md"];
+    $avoid_files = [".", "..", ".git", ".gitignore", ".htaccess", "index.php", "lightweb", "README.md", "api"];
     foreach ($root_files as $file2copy) {
         if (!in_array($file2copy, $avoid_files)) {
             //echo "file2copy: $file2copy\n";
             exec("cp -rf ../$file2copy publish/uncompress");
+        }
+    }
+    /* Copy API Content to uncompress */
+    $API_files = scandir(getcwd() . '/../api/', SCANDIR_SORT_ASCENDING);
+    $avoid_files = [".", "..", ".git", ".gitignore", "lightweb.php", "index.php"];
+    foreach ($API_files as $file2copy) {
+        if (!in_array($file2copy, $avoid_files)) {
+            //echo "file2copy: $file2copy\n";
+            exec("cp -rf ../$file2copy publish/uncompress/api");
         }
     }
     /* Copy root autoforwarder */
