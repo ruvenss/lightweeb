@@ -119,7 +119,7 @@ define('LIGHTWEB_DB_COLLATE', '" . LIGHTWEB_DB_COLLATE . "');";
     /*
         Service Workers
     */
-    $serviceworker = str_replace("{{version}}", $version, file_get_contents(LIGHTWEB_PATH . "lightweb/js/service-worker.js"));
+    $serviceworker = str_replace("{{version}}", $version, file_get_contents(LIGHTWEB_PATH . "lightweb/jscode/service-worker.js"));
     $cachefiles = '';
     foreach (locales as $isolang) {
         foreach (LIGHTWEB_TREE as $page) {
