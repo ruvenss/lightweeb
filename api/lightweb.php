@@ -35,7 +35,6 @@ function create_page()
                 break;
             }
         }
-
         response(true, []);
     } else {
         response(false, [], 0, "Tree is not defined");
