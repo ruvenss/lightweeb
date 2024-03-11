@@ -27,6 +27,22 @@ if (file_exists("../lightweb/config.php")) {
 } else {
     die('{"answer":false,"error":"LightWeb API Key missing in the server"}');
 }
+function GetTree()
+{
+    response(true, tree);
+}
+function GetLocales()
+{
+    $translations = [];
+    for ($i = 0; $i < sizeof(locales); $i++) {
+        $locales_path = dirname(dirname(__FILE__)) . "/lightweb/locales/" . locales[$i] . ".json";
+        if (file_exists($locales_path)) {
+            $currentLocales = json_decode(file_get_contents($locales_path), true);
+            $translations[locales[$i]] = $currentLocales;
+        }
+    }
+    response(true, ["locales" => locales, "translations" => $translations]);
+}
 function create_page()
 {
     if (verified_payload()) {
@@ -52,10 +68,26 @@ function create_page()
                 mkdir(dirname(dirname(__FILE__)) . "/lightweb/pages" . $fullpath);
                 file_put_contents(dirname(dirname(__FILE__)) . "/lightweb/pages" . $fullpath . "/index.html", "<p></p>");
             }
+            if (isset(DataInput['content']) && strlen(DataInput['content']) > 0) {
+                if ($i == sizeof($brach_parts)) {
+                    file_put_contents(dirname(dirname(__FILE__)) . "/lightweb/pages" . $fullpath . "/index.html", DataInput['content']);
+                }
+            }
         }
         /**
-         * Create the i18n files
+         * Update the i18n Files
          */
+        for ($i = 0; $i < sizeof(locales); $i++) {
+            $locales_path = dirname(dirname(__FILE__)) . "/lightweb/locales/" . locales[$i] . ".json";
+            if (file_exists($locales_path)) {
+                $currentLocales = json_decode(file_get_contents($locales_path), true);
+                $payloadi18nkeys = DataInput['i18n'][locales[$i]];
+                foreach ($payloadi18nkeys as $key => $value) {
+                    $currentLocales[$key] = $value;
+                }
+                file_put_contents($locales_path, json_encode($currentLocales));
+            }
+        }
         response(true, $newtree);
     }
 }
