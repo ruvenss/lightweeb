@@ -15,17 +15,32 @@ if (file_exists("../lightweb/config.php")) {
     $DataInputRaw = file_get_contents("php://input");
     if (json_validator($DataInputRaw)) {
         $Bearer = getAuthorizationHeader();
-        define("DataInput", json_decode($DataInputRaw, TRUE));
-        define("request_type", $_SERVER['REQUEST_METHOD']);
-        if (isset(DataInput['a'])) {
-            $ThisFunction = DataInput['a'];
-            if (function_exists($ThisFunction)) {
-                $ThisFunction();
+        if ($Bearer == LIGHTWEB_APIKEY) {
+            define("DataInput", json_decode($DataInputRaw, TRUE));
+            define("request_type", $_SERVER['REQUEST_METHOD']);
+            if (isset(DataInput['a'])) {
+                $ThisFunction = DataInput['a'];
+                if (function_exists($ThisFunction)) {
+                    $ThisFunction();
+                }
             }
+        } else {
+            response(false, [], 0, "Incorrect Key");
         }
     }
 } else {
     die('{"answer":false,"error":"LightWeb API Key missing in the server"}');
+}
+function get_page()
+{
+    if (page_exist(DataInput['id'])) {
+        $headerhtml = file_get_contents(LIGHTWEB_PAGES_HEADERS_PATH . tree[DataInput['id']]['header']);
+        $bodyhtml = file_get_contents(LIGHTWEB_PAGES_PATH . DataInput['id'] . "/index.html");
+        $footerhtml = file_get_contents(LIGHTWEB_PAGES_FOOTERS_PATH . tree[DataInput['id']]['footer']);
+        response(true, ["config" => tree[DataInput['id']], "header" => $headerhtml, "body" => $bodyhtml, "footer" => $footerhtml]);
+    } else {
+        response(false, [], 0, "Page ID does not exist.");
+    }
 }
 function GetTree()
 {
@@ -43,11 +58,26 @@ function GetLocales()
     }
     response(true, ["locales" => locales, "translations" => $translations]);
 }
-function 
+function delete_page()
+{
+    if (page_exist(DataInput['id'])) {
+        $copytree = tree;
+        $treepath = dirname(dirname(__FILE__)) . "/lightweb/pages/tree.json";
+        foreach ($copytree as $key => $value) {
+            if (DataInput['id'] == $key) {
+                unset($copytree[$key]);
+            }
+        }
+        file_put_contents($treepath, json_encode($copytree));
+        response(true, $copytree);
+    } else {
+        response(false, [], 0, "Page does not exist, you can't delete something that does not exist.");
+    }
+}
 function update_page()
 {
     if (verified_payload()) {
-        if (!page_exist(DataInput['id'])) {
+        if (page_exist(DataInput['id'])) {
             $copytree = tree;
             $newtree = [];
             foreach ($copytree as $key => $value) {
@@ -82,6 +112,7 @@ function update_page()
                     file_put_contents($locales_path, json_encode($currentLocales));
                 }
             }
+            response(true, []);
         } else {
             response(false, [], 0, "Page does not exist, you can't update something that does not exist.");
         }
@@ -133,8 +164,8 @@ function create_page()
 }
 function page_exist($page_id)
 {
-    foreach (tree as $page) {
-        if ($page == $page_id) {
+    foreach (tree as $key => $value) {
+        if ($key == $page_id) {
             return true;
         }
     }
