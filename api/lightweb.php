@@ -43,14 +43,55 @@ function GetLocales()
     }
     response(true, ["locales" => locales, "translations" => $translations]);
 }
+function 
+function update_page()
+{
+    if (verified_payload()) {
+        if (!page_exist(DataInput['id'])) {
+            $copytree = tree;
+            $newtree = [];
+            foreach ($copytree as $key => $value) {
+                $newtree[$key] = $value;
+            }
+            $newtree[DataInput['id']] = DataInput['tree'];
+            $treepath = dirname(dirname(__FILE__)) . "/lightweb/pages/tree.json";
+            file_put_contents($treepath, json_encode($newtree));
+            $brach_parts = explode("/", DataInput['id']);
+            $fullpath = "";
+            for ($i = 0; $i < sizeof($brach_parts); $i++) {
+                $fullpath .= "/" . $brach_parts[$i];
+                if (!file_exists(dirname(dirname(__FILE__)) . "/lightweb/pages" . $fullpath)) {
+                    mkdir(dirname(dirname(__FILE__)) . "/lightweb/pages" . $fullpath);
+                    file_put_contents(dirname(dirname(__FILE__)) . "/lightweb/pages" . $fullpath . "/index.html", "<p></p>");
+                }
+            }
+            if (isset(DataInput['htmlcontent']) && strlen(DataInput['htmlcontent']) > 0) {
+                file_put_contents(dirname(dirname(__FILE__)) . "/lightweb/pages" . $fullpath . "/index.html", DataInput['htmlcontent']);
+            }
+            /**
+             * Update the i18n Files
+             */
+            for ($i = 0; $i < sizeof(locales); $i++) {
+                $locales_path = dirname(dirname(__FILE__)) . "/lightweb/locales/" . locales[$i] . ".json";
+                if (file_exists($locales_path)) {
+                    $currentLocales = json_decode(file_get_contents($locales_path), true);
+                    $payloadi18nkeys = DataInput['i18n'][locales[$i]];
+                    foreach ($payloadi18nkeys as $key => $value) {
+                        $currentLocales[$key] = $value;
+                    }
+                    file_put_contents($locales_path, json_encode($currentLocales));
+                }
+            }
+        } else {
+            response(false, [], 0, "Page does not exist, you can't update something that does not exist.");
+        }
+    }
+}
 function create_page()
 {
     if (verified_payload()) {
-        foreach (tree as $page) {
-            if ($page == DataInput['id']) {
-                response(false, [], 0, "Page already exist.");
-                break;
-            }
+        if (page_exist(DataInput['id'])) {
+            response(false, [], 0, "Page already exist.");
         }
         $copytree = tree;
         $newtree = [];
@@ -68,11 +109,10 @@ function create_page()
                 mkdir(dirname(dirname(__FILE__)) . "/lightweb/pages" . $fullpath);
                 file_put_contents(dirname(dirname(__FILE__)) . "/lightweb/pages" . $fullpath . "/index.html", "<p></p>");
             }
-            if (isset(DataInput['content']) && strlen(DataInput['content']) > 0) {
-                if ($i == sizeof($brach_parts)) {
-                    file_put_contents(dirname(dirname(__FILE__)) . "/lightweb/pages" . $fullpath . "/index.html", DataInput['content']);
-                }
-            }
+
+        }
+        if (isset(DataInput['htmlcontent']) && strlen(DataInput['htmlcontent']) > 0) {
+            file_put_contents(dirname(dirname(__FILE__)) . "/lightweb/pages" . $fullpath . "/index.html", DataInput['htmlcontent']);
         }
         /**
          * Update the i18n Files
@@ -90,6 +130,15 @@ function create_page()
         }
         response(true, $newtree);
     }
+}
+function page_exist($page_id)
+{
+    foreach (tree as $page) {
+        if ($page == $page_id) {
+            return true;
+        }
+    }
+    return false;
 }
 function verified_payload()
 {

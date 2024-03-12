@@ -166,12 +166,13 @@ define('LIGHTWEB_DB_COLLATE', '" . LIGHTWEB_DB_COLLATE . "');";
         }
     }
     /* Copy API Content to uncompress */
-    $API_files = scandir(getcwd() . '/../api/', SCANDIR_SORT_ASCENDING);
+    $API_path = getcwd() . '/../api/';
+    $API_files = scandir($API_path, SCANDIR_SORT_ASCENDING);
     $avoid_files = [".", "..", ".git", ".gitignore", "lightweb.php", "index.php"];
     foreach ($API_files as $file2copy) {
         if (!in_array($file2copy, $avoid_files)) {
-            //echo "file2copy: $file2copy\n";
-            exec("cp -rf ../$file2copy publish/uncompress/api");
+            //echo "file2copy: $API_path$file2copy\n";
+            exec("cp -rf $API_path$file2copy publish/uncompress/api");
         }
     }
     /* Copy root autoforwarder */
