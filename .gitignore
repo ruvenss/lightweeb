@@ -7,10 +7,10 @@ images
 img
 videos
 downloads
+lightweb/config.php
 lightweb/pages/*
 lightweb/footers/*
 lightweb/headers/*
-lightweb/templates/*
 lightweb/publish/compress/*
 lightweb/publish/uncompress/*
 lightweb/publish/versions.json

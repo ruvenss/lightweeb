@@ -1,0 +1,44 @@
+{
+    "name": "NIZU",
+    "company": "NIZU OÜ",
+    "vat": "EE102264113",
+    "iso": "",
+    "coc": "",
+    "siret": "",
+    "email": "noreply@nizu.io",
+    "phone": "+3244224832",
+    "logo": "https://images.nizu.io/logo.png",
+    "image": "https://images.nizu.io/card_banner.jpg",
+    "locations": [
+        {
+            "type": "HQ",
+            "address": "Lõõtsa tn 5, Lasnamäe linnaosa",
+            "cp": "11415",
+            "city": "Tallinn",
+            "region": "",
+            "country": "EE",
+            "latitude": "",
+            "longitude": ""
+        }
+    ],
+    "socialmedia": {
+        "whatsapp": "",
+        "twitter": "",
+        "facebook": "",
+        "instagram": "",
+        "tiktok": "",
+        "linkedin": "https://www.linkedin.com/company/65877584",
+        "dribble": "",
+        "youtube": "",
+        "snapchat": "",
+        "pinterest": "",
+        "reddit": "",
+        "discord": "",
+        "twitch": "",
+        "tumblr": "",
+        "threads": "",
+        "mastodon": "",
+        "blog": "https://blog.nizu.io/",
+        "documentation": ""
+    }
+}
