@@ -35,10 +35,10 @@ define('LIGHTWEB_SITE_CONFIG', json_decode(file_get_contents(LIGHTWEB_PAGES_PATH
 define('LIGHTWEB_DEBUG', false);
 define('LIGHTWEB_MINIFY', true);
 define('LIGHTWEB_DB', true);
-define('LIGHTWEB_DB_HOST', 'db.rgwit.be');
-define('LIGHTWEB_DB_USER', 'ruvenss');
-define('LIGHTWEB_DB_PASS', '1104');
-define('LIGHTWEB_DB_NAME', 'wpsocarbe');
+define('LIGHTWEB_DB_HOST', '');
+define('LIGHTWEB_DB_USER', '');
+define('LIGHTWEB_DB_PASS', '');
+define('LIGHTWEB_DB_NAME', '');
 define('LIGHTWEB_DB_PREFIX', 'wp_');
 define('LIGHTWEB_DB_PORT', '3306');
 define('LIGHTWEB_DB_CHARSET', 'utf8mb4');
