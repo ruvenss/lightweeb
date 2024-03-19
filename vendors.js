@@ -1,5 +1,5 @@
 /* LightWeb 3.0.0 Standard JS Vendors   */
-/* lightweb.js version [ 1710843314 ] */
+/* lightweb.js version [ 1710854960 ] */
 var lw_version = 3.0;
 /*
 Nizu Core JS Library
@@ -8,7 +8,24 @@ Author RGW IT SERVICES
 Web: nizu.be
 */
 // File Upload Functions
-
+function nizu_Form(htmlObjectId, apiServer, callbackFunction) {
+    const form = document.querySelector('#' + htmlObjectId)
+    // listen for submit even
+    form.addEventListener('submit', event => {
+        event.preventDefault()
+        let PostData = new FormData(form)
+        var object = {};
+        PostData.forEach(function (value, key) {
+            object[key] = value;
+        });
+        var data = JSON.stringify(object);
+        nizu_GetData(apiServer, { a: "formsubmit", id: htmlObjectId, formData: data, lang: localStorage.getItem("LW_user_language"), uuid: localStorage.getItem("LW_uuid"), version: localStorage.getItem("LW_rel_ver") }, function (apianswer) {
+            if (apianswer.success) {
+                nizu_executeFunctionByName(callbackFunction);
+            }
+        });
+    })
+}
 String.prototype.left = function (n) {
     return this.substring(0, n);
 };
@@ -99,9 +116,13 @@ function nizu_GetData(nizu_serverurl, options, callback) {
             });
         }
     } else {
-        console.log("options incorrect");
+        console.error("options incorrect");
         callback(ans);
     }
+}/* my_code.js version [ 1710855190 ] */
+nizu_Form("newsletter", "/api/", "MyAlert");
+function MyAlert() {
+    alert("subscribed");
 }/* zxy_theme.js version [ 1710842989 ] */
 var LW_user_language = "en";
 var LW_rel_ver = "59";

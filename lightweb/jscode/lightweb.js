@@ -6,7 +6,24 @@ Author RGW IT SERVICES
 Web: nizu.be
 */
 // File Upload Functions
-
+function nizu_Form(htmlObjectId, apiServer, callbackFunction) {
+    const form = document.querySelector('#' + htmlObjectId)
+    // listen for submit even
+    form.addEventListener('submit', event => {
+        event.preventDefault()
+        let PostData = new FormData(form)
+        var object = {};
+        PostData.forEach(function (value, key) {
+            object[key] = value;
+        });
+        var data = JSON.stringify(object);
+        nizu_GetData(apiServer, { a: "formsubmit", id: htmlObjectId, formData: data, lang: localStorage.getItem("LW_user_language"), uuid: localStorage.getItem("LW_uuid"), version: localStorage.getItem("LW_rel_ver") }, function (apianswer) {
+            if (apianswer.success) {
+                nizu_executeFunctionByName(callbackFunction);
+            }
+        });
+    })
+}
 String.prototype.left = function (n) {
     return this.substring(0, n);
 };

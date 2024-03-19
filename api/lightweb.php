@@ -37,7 +37,12 @@ if (file_exists("../lightweb/config.php")) {
                     $ThisFunction();
                     break;
                 default:
-                    # code...
+                    include_once ("my_config.php");
+                    include_once ("my_functions.php");
+                    include_once ("my_init.php");
+                    if (function_exists($ThisFunction)) {
+                        $ThisFunction();
+                    }
                     break;
             }
         }
