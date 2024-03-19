@@ -1,5 +1,5 @@
 /* LightWeb 3.0.0 Standard JS Vendors   */
-/* lightweb.js version [ 1710785541 ] */
+/* lightweb.js version [ 1710843314 ] */
 var lw_version = 3.0;
 /*
 Nizu Core JS Library
@@ -76,26 +76,25 @@ function nizu_GetData(nizu_serverurl, options, callback) {
             $.post(nizu_serverurl, options, function (result, status) {
                 if (status == "success") {
                     if (result.length > 0) {
-                        var ans = JSON.parse(result);
-                        if (typeof ans.errcode !== 'undefined') {
-                            if (ans.errcode > 0) {
-                                console.log("nizu error code: " + ans.errcode + " nizu error message: " + ans.errmsg);
-                                callback(ans);
+                        if (typeof result.errcode !== 'undefined') {
+                            if (result.errcode > 0) {
+                                console.error("nizu error code: " + result.errcode + " nizu error message: " + result.errmsg);
+                                callback(result);
                                 if (callback) { callback(ans); } else {
                                     callback({ "answer": false });
                                 }
                             }
                         } else {
                             if (callback) {
-                                callback(ans);
+                                callback(result);
                             }
                         }
                     } else {
-                        callback(ans);
+                        callback(result);
                     }
                 } else {
-                    console.log("getData transaction error");
-                    callback(ans);
+                    console.error("getData transaction error");
+                    callback(result);
                 }
             });
         }
@@ -103,8 +102,8 @@ function nizu_GetData(nizu_serverurl, options, callback) {
         console.log("options incorrect");
         callback(ans);
     }
-}/* zxy_theme.js version [ 1710810729 ] */
-var LW_user_language = "page-wallets-v2.html";
+}/* zxy_theme.js version [ 1710842989 ] */
+var LW_user_language = "en";
 var LW_rel_ver = "59";
 if (localStorage.getItem("LW_user_language") === null) {
     localStorage.setItem("LW_user_language", LW_user_language);
@@ -121,4 +120,10 @@ document.addEventListener("DOMContentLoaded", function (event) {
 function LighWebInit() {
     console.info("LighWebInit DOM Content loaded LightWeb 3.0.0 initiated\nUser Language: " + LW_user_language + "\nVersion: " + LW_rel_ver);
     /* Theme Code Begins here */
+    nizu_GetData("/api/", { a: "onlyhumans", LW_uuid: localStorage.getItem("LW_uuid") }, function (data) {
+        console.info(data);
+        if (data.success) {
+            console.info("Only Human Verification: " + data.data.onlyhumans);
+        }
+    });
 }

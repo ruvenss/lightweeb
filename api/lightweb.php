@@ -5,7 +5,7 @@
  * @author Ruvenss G. Wilches <ruvenss@gmail.com>
  */
 if (file_exists("../lightweb/config.php")) {
-    include_once("../lightweb/config.php");
+    include_once ("../lightweb/config.php");
     GetLanguages();
     if (file_exists("../lightweb/pages/tree.json")) {
         define("tree", json_decode(file_get_contents("../lightweb/pages/tree.json"), true));
@@ -18,7 +18,7 @@ if (file_exists("../lightweb/config.php")) {
         if ($Bearer == LIGHTWEB_APIKEY) {
             define("DataInput", json_decode($DataInputRaw, TRUE));
             define("request_type", $_SERVER['REQUEST_METHOD']);
-            if (isset(DataInput['a'])) {
+            if (isset (DataInput['a'])) {
                 $ThisFunction = DataInput['a'];
                 if (function_exists($ThisFunction)) {
                     $ThisFunction();
@@ -27,9 +27,48 @@ if (file_exists("../lightweb/config.php")) {
         } else {
             response(false, [], 0, "Incorrect Key");
         }
+
+    } else {
+        if (isset ($_REQUEST['a'])) {
+            $ThisFunction = trim(str_replace(" ", "", $_REQUEST['a']));
+            switch ($ThisFunction) {
+                case 'version':
+                case 'onlyhumans':
+                    $ThisFunction();
+                    break;
+                default:
+                    # code...
+                    break;
+            }
+        }
+        response(false);
     }
 } else {
-    die('{"answer":false,"error":"LightWeb API Key missing in the server"}');
+    die ('{"answer":false,"error":"LightWeb API Key missing in the server"}');
+}
+function onlyhumans()
+{
+
+    if (isset ($_REQUEST['LW_uuid']) && strlen($_REQUEST['LW_uuid']) > 5) {
+        $LW_uuid = trim($_REQUEST['LW_uuid']);
+        if (!file_exists("onlyhumans")) {
+            mkdir("onlyhumans");
+            touch("onlyhumans/index.html");
+        }
+        if (!file_exists("onlyhumans/$LW_uuid.json")) {
+            $key = sha1($LW_uuid);
+            file_put_contents("onlyhumans/$LW_uuid.json", sha1($LW_uuid));
+        } else {
+            $key = file_get_contents("onlyhumans/$LW_uuid.json");
+        }
+        response(true, ["onlyhumans" => $key]);
+    } else {
+        response(false);
+    }
+}
+function version()
+{
+    response(true, ["version" => LIGHTWEB_VERSION]);
 }
 function get_page()
 {
@@ -95,7 +134,7 @@ function update_page()
                     file_put_contents(dirname(dirname(__FILE__)) . "/lightweb/pages" . $fullpath . "/index.html", "<p></p>");
                 }
             }
-            if (isset(DataInput['htmlcontent']) && strlen(DataInput['htmlcontent']) > 0) {
+            if (isset (DataInput['htmlcontent']) && strlen(DataInput['htmlcontent']) > 0) {
                 file_put_contents(dirname(dirname(__FILE__)) . "/lightweb/pages" . $fullpath . "/index.html", DataInput['htmlcontent']);
             }
             /**
@@ -142,7 +181,7 @@ function create_page()
             }
 
         }
-        if (isset(DataInput['htmlcontent']) && strlen(DataInput['htmlcontent']) > 0) {
+        if (isset (DataInput['htmlcontent']) && strlen(DataInput['htmlcontent']) > 0) {
             file_put_contents(dirname(dirname(__FILE__)) . "/lightweb/pages" . $fullpath . "/index.html", DataInput['htmlcontent']);
         }
         /**
@@ -174,9 +213,9 @@ function page_exist($page_id)
 function verified_payload()
 {
     $i18OK = true;
-    if (isset(DataInput['tree']) && isset(DataInput['id'])) {
+    if (isset (DataInput['tree']) && isset (DataInput['id'])) {
 
-        if (isset(DataInput['i18n'])) {
+        if (isset (DataInput['i18n'])) {
             foreach (DataInput['i18n'] as $i18lang) {
                 if (in_array($i18lang, locales)) {
                     // all good
@@ -198,27 +237,27 @@ function verified_payload()
 function getAuthorizationHeader()
 {
     $headers = null;
-    if (isset($_SERVER['Authorization'])) {
+    if (isset ($_SERVER['Authorization'])) {
         $headers = trim($_SERVER["Authorization"]);
-    } elseif (isset($_SERVER['HTTP_AUTHORIZATION'])) { //Nginx or fast CGI
+    } elseif (isset ($_SERVER['HTTP_AUTHORIZATION'])) { //Nginx or fast CGI
         $headers = trim($_SERVER["HTTP_AUTHORIZATION"]);
     } elseif (function_exists('apache_request_headers')) {
         $requestHeaders = apache_request_headers();
         $requestHeaders = array_combine(array_map('ucwords', array_keys($requestHeaders)), array_values($requestHeaders));
-        if (isset($requestHeaders['Authorization'])) {
+        if (isset ($requestHeaders['Authorization'])) {
             $headers = trim($requestHeaders['Authorization']);
         }
     }
-    if (!empty($headers)) {
+    if (!empty ($headers)) {
         $Bearer = trim(str_replace("Bearer", "", $headers));
-        return($Bearer);
+        return ($Bearer);
     } else {
         return null;
     }
 }
 function json_validator($data)
 {
-    if (!empty($data)) {
+    if (!empty ($data)) {
         return is_string($data) &&
             is_array(json_decode($data, true)) ? true : false;
     }

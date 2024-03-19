@@ -74,31 +74,30 @@ function nizu_GetData(nizu_serverurl, options, callback) {
             $.post(nizu_serverurl, options, function (result, status) {
                 if (status == "success") {
                     if (result.length > 0) {
-                        var ans = JSON.parse(result);
-                        if (typeof ans.errcode !== 'undefined') {
-                            if (ans.errcode > 0) {
-                                console.log("nizu error code: " + ans.errcode + " nizu error message: " + ans.errmsg);
-                                callback(ans);
+                        if (typeof result.errcode !== 'undefined') {
+                            if (result.errcode > 0) {
+                                console.error("nizu error code: " + result.errcode + " nizu error message: " + result.errmsg);
+                                callback(result);
                                 if (callback) { callback(ans); } else {
                                     callback({ "answer": false });
                                 }
                             }
                         } else {
                             if (callback) {
-                                callback(ans);
+                                callback(result);
                             }
                         }
                     } else {
-                        callback(ans);
+                        callback(result);
                     }
                 } else {
-                    console.log("getData transaction error");
-                    callback(ans);
+                    console.error("getData transaction error");
+                    callback(result);
                 }
             });
         }
     } else {
-        console.log("options incorrect");
+        console.error("options incorrect");
         callback(ans);
     }
 }
