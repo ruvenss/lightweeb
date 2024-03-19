@@ -77,7 +77,15 @@ define('LIGHTWEB_DB_NAME', '" . LIGHTWEB_DB_NAME . "');
 define('LIGHTWEB_DB_PREFIX', '" . LIGHTWEB_DB_PREFIX . "');
 define('LIGHTWEB_DB_PORT', '" . LIGHTWEB_DB_PORT . "');
 define('LIGHTWEB_DB_CHARSET', '" . LIGHTWEB_DB_CHARSET . "');
-define('LIGHTWEB_DB_COLLATE', '" . LIGHTWEB_DB_COLLATE . "');";
+define('LIGHTWEB_DB_COLLATE', '" . LIGHTWEB_DB_COLLATE . "');
+";
+    } else {
+        $configphp .= "define('LIGHTWEB_DB', false);
+";
+    }
+    if (strlen(LIGHTWEB_APIKEY > 0)) {
+        $configphp .= "define('LIGHTWEB_APIKEY', '" . LIGHTWEB_APIKEY . "');
+";
     }
     file_put_contents(LIGHTWEB_PUBLISH_PATH . "uncompress/api/config.php", $configphp);
     if (!file_exists(LIGHTWEB_PUBLISH_PATH . "uncompress/api/locales")) {
@@ -114,7 +122,7 @@ define('LIGHTWEB_DB_COLLATE', '" . LIGHTWEB_DB_COLLATE . "');";
 </url>';
         $homepage = false;
         foreach (LIGHTWEB_TREE as $page) {
-            if (isset($page['url'])) {
+            if (isset ($page['url'])) {
                 if ($page['url'] == "/" && $homepage) {
 
                 } else {
@@ -147,7 +155,7 @@ define('LIGHTWEB_DB_COLLATE', '" . LIGHTWEB_DB_COLLATE . "');";
     $cachefiles = '';
     foreach (locales as $isolang) {
         foreach (LIGHTWEB_TREE as $page) {
-            if (isset($page['url'])) {
+            if (isset ($page['url'])) {
                 $swurl = $page['url'];
                 $cachefiles .= "'/$isolang$swurl',";
             }
