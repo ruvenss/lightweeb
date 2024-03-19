@@ -11,7 +11,7 @@ lightweb/config.php
 lightweb/pages/*
 lightweb/footers/*
 lightweb/headers/*
-api/onlyhumans
+api/v1/onlyhumans
 lightweb/publish/compress/*
 lightweb/publish/uncompress/*
 lightweb/publish/versions.json

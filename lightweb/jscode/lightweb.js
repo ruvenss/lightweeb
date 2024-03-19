@@ -19,7 +19,7 @@ function nizu_Form(htmlObjectId, apiServer, callbackFunction) {
         var data = JSON.stringify(object);
         nizu_GetData(apiServer, { a: "formsubmit", id: htmlObjectId, formData: data, lang: localStorage.getItem("LW_user_language"), uuid: localStorage.getItem("LW_uuid"), version: localStorage.getItem("LW_rel_ver") }, function (apianswer) {
             if (apianswer.success) {
-                nizu_executeFunctionByName(callbackFunction);
+                nizu_executeFunctionByName(callbackFunction, htmlObjectId, apianswer.data);
             }
         });
     })
@@ -81,7 +81,7 @@ function nizu_executeFunctionByName(functionName, context /*, args */) {
         for (var i = 0; i < namespaces.length; i++) {
             context = context[namespaces[i]];
         }
-        return context[func].apply(context, args);
+        window[functionName](args);
     }
 }
 function nizu_GetData(nizu_serverurl, options, callback) {

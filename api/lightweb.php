@@ -27,53 +27,9 @@ if (file_exists("../lightweb/config.php")) {
         } else {
             response(false, [], 0, "Incorrect Key");
         }
-
-    } else {
-        if (isset ($_REQUEST['a'])) {
-            $ThisFunction = trim(str_replace(" ", "", $_REQUEST['a']));
-            switch ($ThisFunction) {
-                case 'version':
-                case 'onlyhumans':
-                    $ThisFunction();
-                    break;
-                default:
-                    include_once ("my_config.php");
-                    include_once ("my_functions.php");
-                    include_once ("my_init.php");
-                    if (function_exists($ThisFunction)) {
-                        $ThisFunction();
-                    }
-                    break;
-            }
-        }
-        response(false);
     }
 } else {
     die ('{"answer":false,"error":"LightWeb API Key missing in the server"}');
-}
-function onlyhumans()
-{
-
-    if (isset ($_REQUEST['LW_uuid']) && strlen($_REQUEST['LW_uuid']) > 5) {
-        $LW_uuid = trim($_REQUEST['LW_uuid']);
-        if (!file_exists("onlyhumans")) {
-            mkdir("onlyhumans");
-            touch("onlyhumans/index.html");
-        }
-        if (!file_exists("onlyhumans/$LW_uuid.json")) {
-            $key = sha1($LW_uuid);
-            file_put_contents("onlyhumans/$LW_uuid.json", sha1($LW_uuid));
-        } else {
-            $key = file_get_contents("onlyhumans/$LW_uuid.json");
-        }
-        response(true, ["onlyhumans" => $key]);
-    } else {
-        response(false);
-    }
-}
-function version()
-{
-    response(true, ["version" => LIGHTWEB_VERSION]);
 }
 function get_page()
 {

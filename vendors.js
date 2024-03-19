@@ -1,5 +1,5 @@
 /* LightWeb 3.0.0 Standard JS Vendors   */
-/* lightweb.js version [ 1710854960 ] */
+/* lightweb.js version [ 1710860367 ] */
 var lw_version = 3.0;
 /*
 Nizu Core JS Library
@@ -21,7 +21,7 @@ function nizu_Form(htmlObjectId, apiServer, callbackFunction) {
         var data = JSON.stringify(object);
         nizu_GetData(apiServer, { a: "formsubmit", id: htmlObjectId, formData: data, lang: localStorage.getItem("LW_user_language"), uuid: localStorage.getItem("LW_uuid"), version: localStorage.getItem("LW_rel_ver") }, function (apianswer) {
             if (apianswer.success) {
-                nizu_executeFunctionByName(callbackFunction);
+                nizu_executeFunctionByName(callbackFunction, htmlObjectId, apianswer.data);
             }
         });
     })
@@ -83,7 +83,7 @@ function nizu_executeFunctionByName(functionName, context /*, args */) {
         for (var i = 0; i < namespaces.length; i++) {
             context = context[namespaces[i]];
         }
-        return context[func].apply(context, args);
+        window[functionName](args);
     }
 }
 function nizu_GetData(nizu_serverurl, options, callback) {
@@ -119,11 +119,12 @@ function nizu_GetData(nizu_serverurl, options, callback) {
         console.error("options incorrect");
         callback(ans);
     }
-}/* my_code.js version [ 1710855190 ] */
-nizu_Form("newsletter", "/api/", "MyAlert");
-function MyAlert() {
+}/* my_code.js version [ 1710861733 ] */
+nizu_Form("newsletter", "/api/v1/", "MyAlert");
+function MyAlert(message) {
+    console.info("Subscribed");
     alert("subscribed");
-}/* zxy_theme.js version [ 1710842989 ] */
+}/* zxy_theme.js version [ 1710861754 ] */
 var LW_user_language = "en";
 var LW_rel_ver = "59";
 if (localStorage.getItem("LW_user_language") === null) {
@@ -141,7 +142,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
 function LighWebInit() {
     console.info("LighWebInit DOM Content loaded LightWeb 3.0.0 initiated\nUser Language: " + LW_user_language + "\nVersion: " + LW_rel_ver);
     /* Theme Code Begins here */
-    nizu_GetData("/api/", { a: "onlyhumans", LW_uuid: localStorage.getItem("LW_uuid") }, function (data) {
+    nizu_GetData("/api/v1/", { a: "onlyhumans", LW_uuid: localStorage.getItem("LW_uuid") }, function (data) {
         console.info(data);
         if (data.success) {
             console.info("Only Human Verification: " + data.data.onlyhumans);
