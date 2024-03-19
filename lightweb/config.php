@@ -10,7 +10,7 @@ define('LIGHTWEB_STAGE', 'draft.nizu.io');
 define('LIGHTWEB_LANG', 'en');
 define('LIGHTWEB_VERSION', '3.0');
 define('LIGHTWEB_APIKEY', "My_secret_key");
-if (isset($cli)) {
+if (isset ($cli)) {
     $path = str_replace("/lightweb/lightweb", "/lightweb", getcwd());
     define('LIGHTWEB_PATH', $path . "/");
 } else {
@@ -33,8 +33,8 @@ if (!file_exists(LIGHTWEB_PAGES_PATH . 'siteconfig.json')) {
 define('LIGHTWEB_TREE', json_decode(file_get_contents(LIGHTWEB_PAGES_PATH . 'tree.json'), true));
 define('LIGHTWEB_SITE_CONFIG', json_decode(file_get_contents(LIGHTWEB_PAGES_PATH . 'siteconfig.json'), true));
 define('LIGHTWEB_DEBUG', false);
-define('LIGHTWEB_MINIFY', true);
-define('LIGHTWEB_DB', true);
+define('LIGHTWEB_MINIFY', false);
+define('LIGHTWEB_DB', false);
 define('LIGHTWEB_DB_HOST', '');
 define('LIGHTWEB_DB_USER', '');
 define('LIGHTWEB_DB_PASS', '');

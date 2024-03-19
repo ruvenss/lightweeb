@@ -1,3 +1,5 @@
+/* LightWeb 3.0.0 Standard JS Vendors   */
+/* lightweb.js version [ 1710785541 ] */
 var lw_version = 3.0;
 /*
 Nizu Core JS Library
@@ -101,4 +103,22 @@ function nizu_GetData(nizu_serverurl, options, callback) {
         console.log("options incorrect");
         callback(ans);
     }
+}/* zxy_theme.js version [ 1710810729 ] */
+var LW_user_language = "page-wallets-v2.html";
+var LW_rel_ver = "59";
+if (localStorage.getItem("LW_user_language") === null) {
+    localStorage.setItem("LW_user_language", LW_user_language);
+}
+if (localStorage.getItem("LW_rel_ver") === null) {
+    localStorage.setItem("LW_rel_ver", LW_rel_ver);
+}
+if (localStorage.getItem("LW_uuid") === null) {
+    localStorage.setItem("LW_uuid", nizu_guid());
+}
+document.addEventListener("DOMContentLoaded", function (event) {
+    LighWebInit();
+});
+function LighWebInit() {
+    console.info("LighWebInit DOM Content loaded LightWeb 3.0.0 initiated\nUser Language: " + LW_user_language + "\nVersion: " + LW_rel_ver);
+    /* Theme Code Begins here */
 }

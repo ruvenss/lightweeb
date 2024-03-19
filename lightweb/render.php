@@ -4,8 +4,28 @@ function render_page($page = "home", $lang = "")
     if ($page == "") {
         $page = "home";
     }
+    if ($lang == "") {
+        $lang = LIGHTWEB_URI['lang'];
+    }
+    $version_data = json_decode(file_get_contents(LIGHTWEB_PUBLISH_PATH . "versions.json"), true);
     $jsvendors = '<script type="text/javascript" id="lightweb-vendors-js" src="/vendors.js?v=3.0.0"></script>' . "\n</body>";
-    if (isset(LIGHTWEB_TREE[$page])) {
+    $jsvendors_files = scandir(LIGHTWEB_PATH . 'lightweb/jscode', SCANDIR_SORT_ASCENDING);
+    $jsvendors_path = dirname(dirname(__FILE__)) . "/vendors.js";
+    if (count($jsvendors_files)) {
+        $avoid_files = [".", "..", "facebook_pixel.js", "google_ua.js", "service-worker.js"];
+        $jsvendors_code = '/* LightWeb 3.0.0 Standard JS Vendors   */' . "\n";
+        foreach ($jsvendors_files as $jsvendors_file) {
+            if (!in_array($jsvendors_file, $avoid_files)) {
+                $jsvendors_code .= '/* ' . $jsvendors_file . ' version [ ' . filectime(LIGHTWEB_PATH . 'lightweb/jscode/' . $jsvendors_file) . ' ] */' . "\n";
+                $jsvendors_code .= file_get_contents(LIGHTWEB_PATH . 'lightweb/jscode/' . $jsvendors_file);
+            }
+        }
+        //die ($lang);
+        $jsvendors_code = str_replace("{{lang_lc}}", $lang, $jsvendors_code);
+        $jsvendors_code = str_replace("{{version}}", $version_data['v'], $jsvendors_code);
+        file_put_contents($jsvendors_path, $jsvendors_code);
+    }
+    if (isset (LIGHTWEB_TREE[$page])) {
         $publish_from = LIGHTWEB_TREE[$page]['publish_from'] ?? null;
         $publish_until = LIGHTWEB_TREE[$page]['publish_until'] ?? null;
         $publish_ok = true;
@@ -29,6 +49,9 @@ function render_page($page = "home", $lang = "")
             $headerhtml = str_replace("{{lang_lc}}", i18nString("lang_lc", $lang), $headerhtml);
             $headerhtml = str_replace("{{author}}", "LightWeb 3.0.1", $headerhtml);
             $headerhtml = str_replace("{{description}}", i18nString(LIGHTWEB_TREE[$page]['descriptioni18n'], $lang), $headerhtml);
+            if (isset (LIGHTWEB_TREE[$page]['featured_image'])) {
+                $headerhtml = str_replace("</head>", ogcard(i18nString(LIGHTWEB_TREE[$page]['titlei18n'], $lang), i18nString(LIGHTWEB_TREE[$page]['descriptioni18n'], $lang), "https://" . LIGHTWEB_PRODUCTION . LIGHTWEB_TREE[$page]['url'], LIGHTWEB_TREE[$page]['featured_image']) . "\n</head>", $headerhtml);
+            }
             if (LIGHTWEB_MINIFY) {
                 $headerhtml = minify($headerhtml);
             }
@@ -39,7 +62,7 @@ function render_page($page = "home", $lang = "")
             }
             $footerhtml = file_get_contents(LIGHTWEB_PAGES_FOOTERS_PATH . LIGHTWEB_TREE[$page]['footer']);
             if (strlen(GOOGLE_UA) > 0) {
-                $google_script = '<!-- Google tag (gtag.js) --><script async src="https://www.googletagmanager.com/gtag/js?id=UA-' . GOOGLE_UA . '"></script>' . "\n</body>";
+                $google_script = '<!-- Google tag (gtag.js) -->' . "\n" . '<script async src="https://www.googletagmanager.com/gtag/js?id=UA-' . GOOGLE_UA . '"></script>' . "\n</body>";
                 $footerhtml = str_replace("</body>", $google_script, $footerhtml);
             }
             $footerhtml = str_replace("</body>", $jsvendors, $footerhtml);
@@ -48,16 +71,16 @@ function render_page($page = "home", $lang = "")
             }
             $fullpage = $headerhtml . "\n" . $bodyhtml . "\n" . $footerhtml;
             $fullpage = LoadPlugins($page, $fullpage);
-            return($fullpage);
+            return ($fullpage);
         } else {
-            if (isset(LIGHTWEB_TREE['404'])) {
+            if (isset (LIGHTWEB_TREE['404'])) {
                 return render_404($lang);
             } else {
                 return "404";
             }
         }
     } else {
-        if (isset(LIGHTWEB_TREE['404'])) {
+        if (isset (LIGHTWEB_TREE['404'])) {
             return render_404();
         } else {
             return "404";
@@ -170,7 +193,7 @@ function render_404($lang = "")
     $headerhtml = str_replace("{{description}}", i18nString(LIGHTWEB_TREE[$page]['descriptioni18n'], $lang), $headerhtml);
     $bodyhtml = file_get_contents(LIGHTWEB_PAGES_PATH . LIGHTWEB_TREE[$page]['path']);
     $footerhtml = file_get_contents(LIGHTWEB_PAGES_FOOTERS_PATH . LIGHTWEB_TREE[$page]['footer']);
-    return($headerhtml . "\n" . $bodyhtml . "\n" . $footerhtml);
+    return ($headerhtml . "\n" . $bodyhtml . "\n" . $footerhtml);
 }
 function minify($buffer)
 {

@@ -8,6 +8,7 @@
         "url": "\/",
         "header": "header.html",
         "footer": "footer.html",
+        "featured_image": "https://images.mydomain.com/og/home.jpg",
         "version": "1",
         "type": "page",
         "static": true

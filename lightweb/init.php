@@ -14,7 +14,7 @@ define("LIGHTWEB_URI", $_REQUEST);
 if (!isset (LIGHTWEB_URI['lang'])) {
     header("Location: /" . LIGHTWEB_LANG);
 }
-if (!file_exists(LIGHTWEB_TREE))
+if (!file_exists(LIGHTWEB_PAGES_PATH . "tree.json"))
     GetLanguages();
 $uri = uripage();
 $fullpage = render_page($uri);

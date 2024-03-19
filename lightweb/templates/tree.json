@@ -8,6 +8,7 @@
         "url": "\/",
         "header": "header.html",
         "footer": "footer.html",
+        "featured_image": "https://images.mydomain.com/og/home.jpg",
         "version": "1",
         "type": "page",
         "static": true
@@ -21,6 +22,7 @@
         "url": "\/",
         "header": "header_404.html",
         "footer": "footer_404.html",
+        "featured_image": "https://images.mydomain.com/og/404.jpg",
         "version": "1",
         "type": "page",
         "static": true

@@ -2,14 +2,16 @@
 /**
  * @name WordPress Plugin Connectivity
  * @author Ruvenss G. Wilches <ruvenss@gmail.com>
- * 
+ * @depends LIGHTWEB_DB=true
  */
 // $fullpage = str_replace("{{this_year}}", date("Y"), $fullpage);
-if (str_contains($fullpage, '{{wp_categories}}')) {
-    $fullpage = str_replace("{{wp_categories}}", wp_categories(), $fullpage);
-}
-if (str_contains($fullpage, '{{wp_nav}}')) {
-    $fullpage = str_replace("{{wp_nav}}", wp_nav(), $fullpage);
+if (LIGHTWEB_DB) {
+    if (str_contains($fullpage, '{{wp_categories}}')) {
+        $fullpage = str_replace("{{wp_categories}}", wp_categories(), $fullpage);
+    }
+    if (str_contains($fullpage, '{{wp_nav}}')) {
+        $fullpage = str_replace("{{wp_nav}}", wp_nav(), $fullpage);
+    }
 }
 function wp_search()
 {
