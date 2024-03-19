@@ -16,7 +16,13 @@ function LoadPlugins($uri, $fullpage)
     $plugins = glob(LIGHTWEB_PATH . 'lightweb/plugins/*.{php}', GLOB_BRACE);
     if (count($plugins) > 0) {
         foreach ($plugins as $plugin) {
-            include_once($plugin);
+            $plug_arr = explode("/", $plugin);
+            $plugfunction = end($plug_arr);
+            $plugfunction = str_replace(".php", "", $plugfunction);
+            include_once ($plugin);
+            if (function_exists($plugfunction)) {
+                $fullpage = $plugfunction($fullpage);
+            }
         }
     }
     return $fullpage;
@@ -37,7 +43,7 @@ function defi18nPublishing($lang)
         $lang = "en";
         $locales_file = LIGHTWEB_LOCALES_PATH . $lang . ".json";
     }
-    return(json_decode(file_get_contents($locales_file), true));
+    return (json_decode(file_get_contents($locales_file), true));
 }
 function i18nString($i18key, $lang = "")
 {
@@ -107,4 +113,8 @@ function uripage()
     }
     $page_id = implode("/", $uriarr);
     return $page_id;
+}
+function buildManifest()
+{
+
 }

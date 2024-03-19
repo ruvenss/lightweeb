@@ -5,7 +5,7 @@
 function formsubmit()
 {
     if (!formData == null) {
-        if (LIGHTWEB_DB) {
+        if (defined("LIGHTWEB_DB") && LIGHTWEB_DB) {
             // Save into DB
         }
         response(true, formData);

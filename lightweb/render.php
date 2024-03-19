@@ -20,7 +20,6 @@ function render_page($page = "home", $lang = "")
                 $jsvendors_code .= file_get_contents(LIGHTWEB_PATH . 'lightweb/jscode/' . $jsvendors_file);
             }
         }
-        //die ($lang);
         $jsvendors_code = str_replace("{{lang_lc}}", $lang, $jsvendors_code);
         $jsvendors_code = str_replace("{{version}}", $version_data['v'], $jsvendors_code);
         if (publishing) {
@@ -53,6 +52,9 @@ function render_page($page = "home", $lang = "")
             $headerhtml = str_replace("{{lang_lc}}", i18nString("lang_lc", $lang), $headerhtml);
             $headerhtml = str_replace("{{author}}", "LightWeb 3.0.1", $headerhtml);
             $headerhtml = str_replace("{{description}}", i18nString(LIGHTWEB_TREE[$page]['descriptioni18n'], $lang), $headerhtml);
+            // Insert Manifest for offline
+            $manifesttag = '<link rel="manifest" href="/manifest.json" />';
+            $headerhtml = str_replace("<head>", "<head>\n\t$manifesttag", $headerhtml);
             if (isset (LIGHTWEB_TREE[$page]['featured_image'])) {
                 $headerhtml = str_replace("</head>", ogcard(i18nString(LIGHTWEB_TREE[$page]['titlei18n'], $lang), i18nString(LIGHTWEB_TREE[$page]['descriptioni18n'], $lang), "https://" . LIGHTWEB_PRODUCTION . LIGHTWEB_TREE[$page]['url'], LIGHTWEB_TREE[$page]['featured_image']) . "\n</head>", $headerhtml);
             }
@@ -114,7 +116,6 @@ function snippet_breadcrumb($page, $lang = "")
     } else {
         $uri = "https://" . LIGHTWEB_PRODUCTION . "/" . LIGHTWEB_URI['lang'];
     }
-
     $i = 0;
     foreach ($Breadcrumbs as $Breadcrumb) {
         $i++;

@@ -5,13 +5,17 @@
  * @depends LIGHTWEB_DB=true
  */
 // $fullpage = str_replace("{{this_year}}", date("Y"), $fullpage);
-if (LIGHTWEB_DB) {
-    if (str_contains($fullpage, '{{wp_categories}}')) {
-        $fullpage = str_replace("{{wp_categories}}", wp_categories(), $fullpage);
+function wordpress($fullpage)
+{
+    if (LIGHTWEB_DB) {
+        if (str_contains($fullpage, '{{wp_categories}}')) {
+            $fullpage = str_replace("{{wp_categories}}", wp_categories(), $fullpage);
+        }
+        if (str_contains($fullpage, '{{wp_nav}}')) {
+            $fullpage = str_replace("{{wp_nav}}", wp_nav(), $fullpage);
+        }
     }
-    if (str_contains($fullpage, '{{wp_nav}}')) {
-        $fullpage = str_replace("{{wp_nav}}", wp_nav(), $fullpage);
-    }
+    return ($fullpage);
 }
 function wp_search()
 {
