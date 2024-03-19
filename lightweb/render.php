@@ -23,7 +23,11 @@ function render_page($page = "home", $lang = "")
         //die ($lang);
         $jsvendors_code = str_replace("{{lang_lc}}", $lang, $jsvendors_code);
         $jsvendors_code = str_replace("{{version}}", $version_data['v'], $jsvendors_code);
-        file_put_contents($jsvendors_path, $jsvendors_code);
+        if (publishing) {
+            file_put_contents(LIGHTWEB_PUBLISH_PATH . "uncompress/vendors.js", $jsvendors_code);
+        } else {
+            file_put_contents($jsvendors_path, $jsvendors_code);
+        }
     }
     if (isset (LIGHTWEB_TREE[$page])) {
         $publish_from = LIGHTWEB_TREE[$page]['publish_from'] ?? null;
