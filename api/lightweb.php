@@ -4,6 +4,7 @@
  * This file won't be copied to production
  * @author Ruvenss G. Wilches <ruvenss@gmail.com>
  */
+
 if (file_exists("../lightweb/config.php")) {
     include_once ("../lightweb/config.php");
     GetLanguages();
