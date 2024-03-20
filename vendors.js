@@ -126,7 +126,7 @@ function MyAlert(message) {
     alert("subscribed");
 }/* zxy_theme.js version [ 1710861754 ] */
 var LW_user_language = "{{lang_lc}}";
-var LW_rel_ver = "82";
+var LW_rel_ver = "85";
 if (localStorage.getItem("LW_user_language") === null) {
     localStorage.setItem("LW_user_language", LW_user_language);
 }

@@ -7,6 +7,7 @@
 
 if (file_exists("../lightweb/config.php")) {
     include_once ("../lightweb/config.php");
+
     GetLanguages();
     if (file_exists("../lightweb/pages/tree.json")) {
         define("tree", json_decode(file_get_contents("../lightweb/pages/tree.json"), true));
@@ -31,6 +32,17 @@ if (file_exists("../lightweb/config.php")) {
     }
 } else {
     die ('{"answer":false,"error":"LightWeb API Key missing in the server"}');
+}
+function publish()
+{
+    $e = "cd " . LIGHTWEB_PATH . "lightweb/ && ./ToProduction.sh";
+    exec($e);
+    if (file_exists("../lightweb/publish/versions.json")) {
+        define("versions", json_decode(file_get_contents("../lightweb/publish/versions.json"), true));
+    } else {
+        define("versions", ["v" => 0]);
+    }
+    response(true, ["zip" => "/lightweb/publish/compress/download.zip", "version" => versions['v']]);
 }
 function get_page()
 {
