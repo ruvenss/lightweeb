@@ -16,3 +16,11 @@ lightweb/publish/compress/*
 lightweb/publish/uncompress/*
 lightweb/publish/versions.json
 manifest.json
+manifest_en.json
+manifest_fr.json
+manifest_it.json
+manifest_pt.json
+manifest_nl.json
+manifest_ar.json
+manifest_dk.json
+manifest_de.json

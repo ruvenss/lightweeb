@@ -125,8 +125,8 @@ function MyAlert(message) {
     console.info("Subscribed");
     alert("subscribed");
 }/* zxy_theme.js version [ 1710861754 ] */
-var LW_user_language = "en";
-var LW_rel_ver = "72";
+var LW_user_language = "page-about-v2.html";
+var LW_rel_ver = "75";
 if (localStorage.getItem("LW_user_language") === null) {
     localStorage.setItem("LW_user_language", LW_user_language);
 }

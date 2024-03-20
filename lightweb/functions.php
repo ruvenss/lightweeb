@@ -114,7 +114,22 @@ function uripage()
     $page_id = implode("/", $uriarr);
     return $page_id;
 }
-function buildManifest()
+function buildManifest($lang)
 {
-
+    if (strlen($lang) == 2) {
+        $manifest_path = dirname(dirname(__FILE__)) . "/manifest_$lang.json";
+        $manifest = [
+            "short_name" => LIGHTWEB_SITE_CONFIG['name'],
+            "name" => LIGHTWEB_SITE_CONFIG['name'],
+            "description" => i18nString("homedesc", $lang),
+            "start_url" => "/$lang/",
+            "background_color" => LIGHTWEB_SITE_CONFIG['background_color'],
+            "display" => "standalone",
+            "orientation" => "portrait-primary",
+            "theme_color" => LIGHTWEB_SITE_CONFIG['background_color'],
+            "icons" => ["src" => "/favicon.ico", "type" => "image/png", "sizes" => "128x128"]
+        ];
+        $manifest_json = json_encode($manifest, JSON_PRETTY_PRINT);
+        file_put_contents($manifest_path, $manifest_json);
+    }
 }
