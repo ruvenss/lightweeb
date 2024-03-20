@@ -118,6 +118,12 @@ function buildManifest($lang)
 {
     if (strlen($lang) == 2) {
         $manifest_path = dirname(dirname(__FILE__)) . "/manifest_$lang.json";
+        $icon_sizes = ["36x36", "48x48", "72x72", "96x96", "144x144", "192x192", "256x256", "384x384", "512x512"];
+        $icons = [];
+        for ($i = 0; $i < sizeof($icon_sizes); $i++) {
+            $iconsize = $icon_sizes[$i];
+            $icons[] = ["src" => "/android-chrome-" . $iconsize . ".png", "sizes" => $iconsize, "type" => "image/png"];
+        }
         $manifest = [
             "short_name" => LIGHTWEB_SITE_CONFIG['name'],
             "name" => LIGHTWEB_SITE_CONFIG['name'],
@@ -127,9 +133,24 @@ function buildManifest($lang)
             "display" => "standalone",
             "orientation" => "portrait-primary",
             "theme_color" => LIGHTWEB_SITE_CONFIG['background_color'],
-            "icons" => ["src" => "/favicon.ico", "type" => "image/png", "sizes" => "128x128"]
+            "icons" => $icons
         ];
         $manifest_json = json_encode($manifest, JSON_PRETTY_PRINT);
         file_put_contents($manifest_path, $manifest_json);
     }
+    /* Microsoft App */
+    $manifest_xml = dirname(dirname(__FILE__)) . "/browserconfig.xml";
+    $manifest_xmlcontent = '<?xml version="1.0" encoding="utf-8"?>
+<browserconfig>
+    <msapplication>
+        <tile>
+            <square70x70logo src="/mstile-70x70.png"/>
+            <square150x150logo src="/mstile-150x150.png"/>
+            <square310x310logo src="/mstile-310x310.png"/>
+            <wide310x150logo src="/mstile-310x150.png"/>
+            <TileColor>#ffffff</TileColor>
+        </tile>
+    </msapplication>
+</browserconfig>';
+    file_put_contents($manifest_xml, $manifest_xmlcontent);
 }

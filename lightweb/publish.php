@@ -20,6 +20,10 @@ function publish()
             if ($key == "home") {
                 $htmlpath = LIGHTWEB_PUBLISH_PATH . "uncompress/$lang/index.html";
                 file_put_contents($htmlpath, $rendered_page);
+            } else {
+                publish_dir($key, $lang);
+                $htmlpath = LIGHTWEB_PUBLISH_PATH . "uncompress/$lang/$key/index.html";
+                file_put_contents($htmlpath, $rendered_page);
             }
         }
         echo "✅ |\n";
@@ -28,7 +32,33 @@ function publish()
     }
     echo "|------------------------------------------|\n";
     echo "|Render complete                           |\n";
+    echo "|-------------------------------------|----|\n";
+    echo "|Compressing....                      |";
+    $uncompress = LIGHTWEB_PUBLISH_PATH . "uncompress";
+    $compress = LIGHTWEB_PUBLISH_PATH . "compress/download.zip";
+    if (file_exists($compress)) {
+        unlink($compress);
+    }
+    exec("cd $uncompress && zip -r -q -T $compress . && cd " . LIGHTWEB_PATH);
+    echo " ✅ |\n";
     echo "--------------------------------------------\n";
+}
+function publish_dir($key, $lang)
+{
+    $keypatharr = explode("/", $key);
+    if (count($keypatharr) > 0) {
+        $rootPath = LIGHTWEB_PUBLISH_PATH . "uncompress/$lang";
+        foreach ($keypatharr as $keysplitpath) {
+            $rootPath .= "/" . $keysplitpath;
+            if (!file_exists($rootPath)) {
+                mkdir($rootPath);
+            }
+        }
+    } else {
+        if (!file_exists(LIGHTWEB_PUBLISH_PATH . "uncompress/$lang/$key")) {
+            mkdir(LIGHTWEB_PUBLISH_PATH . "uncompress/$lang/$key");
+        }
+    }
 }
 function prepare_render()
 {

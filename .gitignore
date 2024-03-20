@@ -15,6 +15,7 @@ api/v1/onlyhumans
 lightweb/publish/compress/*
 lightweb/publish/uncompress/*
 lightweb/publish/versions.json
+browserconfig.xml
 manifest.json
 manifest_en.json
 manifest_fr.json
