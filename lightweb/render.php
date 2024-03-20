@@ -20,7 +20,9 @@ function render_page($page = "home", $lang = "")
                 $jsvendors_code .= file_get_contents(LIGHTWEB_PATH . 'lightweb/jscode/' . $jsvendors_file);
             }
         }
-        $jsvendors_code = str_replace("{{lang_lc}}", $lang, $jsvendors_code);
+        if (strlen($lang) == 2) {
+            $jsvendors_code = str_replace("{{lang_lc}}", $lang, $jsvendors_code);
+        }
         $jsvendors_code = str_replace("{{version}}", $version_data['v'], $jsvendors_code);
         if (publishing) {
             file_put_contents(LIGHTWEB_PUBLISH_PATH . "uncompress/vendors.js", $jsvendors_code);

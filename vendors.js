@@ -125,7 +125,7 @@ function MyAlert(message) {
     console.info("Subscribed");
     alert("subscribed");
 }/* zxy_theme.js version [ 1710861754 ] */
-var LW_user_language = "android-chrome-512x512.png";
+var LW_user_language = "{{lang_lc}}";
 var LW_rel_ver = "82";
 if (localStorage.getItem("LW_user_language") === null) {
     localStorage.setItem("LW_user_language", LW_user_language);

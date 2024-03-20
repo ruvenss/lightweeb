@@ -16,6 +16,7 @@ lightweb/publish/compress/*
 lightweb/publish/uncompress/*
 lightweb/publish/versions.json
 browserconfig.xml
+vendors.js
 manifest.json
 manifest_en.json
 manifest_fr.json
