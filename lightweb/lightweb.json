@@ -26,6 +26,6 @@
         "/lightweb/render.php",
         "/lightweb/ToProduction.sh",
         "/.htaccess",
-        "index.php"
+        "/index.php"
     ]
 }
