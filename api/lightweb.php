@@ -33,6 +33,13 @@ if (file_exists("../lightweb/config.php")) {
 } else {
     die ('{"answer":false,"error":"LightWeb API Key missing in the server"}');
 }
+function lightweb_version()
+{
+    define("GITURL", "https://raw.githubusercontent.com/ruvenss/lightweb/master/");
+    define("LW_LOCAL", json_decode(file_get_contents("../lightweb/lightweb.json"), true));
+    define("LW_RELEASE", json_decode(file_get_contents(GITURL . "lightweb/lightweb.json"), true));
+    response(true, ["latest" => LW_RELEASE['version'], "local" => LW_LOCAL['version']]);
+}
 function publish()
 {
     $e = "cd " . LIGHTWEB_PATH . "lightweb/ && ./ToProduction.sh";
