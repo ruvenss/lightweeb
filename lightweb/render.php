@@ -1,6 +1,9 @@
 <?php
 function render_page($page = "home", $lang = "")
 {
+    if (!defined("LW_CODEVER")) {
+        define("LW_CODEVER", json_decode(file_get_contents(LIGHTWEB_PATH . "lightweb/lightweb.json"), true)['version']);
+    }
     if ($page == "") {
         $page = "home";
     }
@@ -52,7 +55,7 @@ function render_page($page = "home", $lang = "")
             // Insert BreadCrumbs Snippet
             $headerhtml = str_replace("{{title}}", i18nString(LIGHTWEB_TREE[$page]['titlei18n'], $lang), $headerhtml);
             $headerhtml = str_replace("{{lang_lc}}", i18nString("lang_lc", $lang), $headerhtml);
-            $headerhtml = str_replace("{{author}}", "LightWeb 3.0.1", $headerhtml);
+            $headerhtml = str_replace("{{author}}", "LightWeb v" . LW_CODEVER, $headerhtml);
             $headerhtml = str_replace("{{description}}", i18nString(LIGHTWEB_TREE[$page]['descriptioni18n'], $lang), $headerhtml);
             // Insert Manifest for offline
             $manifesttag = '<link rel="manifest" href="/manifest_' . $lang . '.json" />';
