@@ -66,7 +66,7 @@ function render_page($page = "home", $lang = "")
                 if ($langheader === $lang) {
 
                 } else {
-                    $tagheader .= '<link rel="alternate" hreflang="' . $langheader . '" href="https://' . LIGHTWEB_PRODUCTION . '/' . $langheader . LIGHTWEB_TREE[$page]['url'] . '" />' . "\n";
+                    $tagheader .= '<link rel="alternate" hreflang="' . $langheader . '" href="https://' . LIGHTWEB_PRODUCTION . '/' . $langheader . LIGHTWEB_TREE[$page]['url'] . '">' . "\n";
                 }
             }
             $headerhtml = str_replace("<head>", "<head>\n\t$tagheader", $headerhtml);
@@ -117,7 +117,7 @@ function ogcard($title, $descripion, $url, $ogimage)
     /* Standard OG Card */
     $ogcard = '<meta property="og:url" content="' . $url . '">
 <meta property="og:type" content="article:publisher">
-<meta property="og:title" content=' . $title . '">
+<meta property="og:title" content="' . $title . '">
 <meta property="og:description" content="' . $descripion . '">
 <meta property="og:image" content="' . $ogimage . '">
 <meta property="og:site_name" content="' . LIGHTWEB_PRODUCTION . '">';
