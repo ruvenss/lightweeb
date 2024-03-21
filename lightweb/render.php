@@ -57,6 +57,19 @@ function render_page($page = "home", $lang = "")
             $headerhtml = str_replace("{{lang_lc}}", i18nString("lang_lc", $lang), $headerhtml);
             $headerhtml = str_replace("{{author}}", "LightWeb v" . LW_CODEVER, $headerhtml);
             $headerhtml = str_replace("{{description}}", i18nString(LIGHTWEB_TREE[$page]['descriptioni18n'], $lang), $headerhtml);
+            // Insert Other languages references
+            $tagheader = "";
+            if (!defined("locales")) {
+                GetLanguages();
+            }
+            foreach (locales as $langheader) {
+                if ($langheader === $lang) {
+
+                } else {
+                    $tagheader .= '<link rel="alternate" hreflang="' . $langheader . '" href="https://' . LIGHTWEB_PRODUCTION . '/' . $langheader . LIGHTWEB_TREE[$page]['url'] . '" />' . "\n";
+                }
+            }
+            $headerhtml = str_replace("<head>", "<head>\n\t$tagheader", $headerhtml);
             // Insert Manifest for offline
             $manifesttag = '<link rel="manifest" href="/manifest_' . $lang . '.json" />';
             buildManifest($lang);
