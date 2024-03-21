@@ -1,0 +1,31 @@
+{
+    "version": "3.0.0",
+    "last_update": "2024-03-21 07:13:20",
+    "release_title": "LightWeb SpotLight",
+    "release_notes": "",
+    "change_log_patches": "",
+    "change_log_bugs": "",
+    "change_log_updates": "",
+    "change_log_new": "",
+    "change_log_security": "",
+    "updatable_files": [
+        "/api/v1/plugins/email.php",
+        "/api/v1/index.php",
+        "/api/errors.json",
+        "/api/index.php",
+        "/api/lightweb.php",
+        "/lightweb/phpcode/api/v1/index.php",
+        "/lightweb/phpcode/api/index.php",
+        "/lightweb/plugins/copyright.php",
+        "/lightweb/plugins/wordpress.php",
+        "/lightweb/cli.php",
+        "/lightweb/db.php",
+        "/lightweb/functions.php",
+        "/lightweb/init.php",
+        "/lightweb/publish.php",
+        "/lightweb/render.php",
+        "/lightweb/ToProduction.sh",
+        "/.htaccess",
+        "index.php"
+    ]
+}
