@@ -8,10 +8,10 @@ define('LIGHTWEB_ENVIRONMENT', 'development');
 define('LIGHTWEB_PRODUCTION', 'mydomain.com');
 define('LIGHTWEB_STAGE', 'stage.mydomain.com');
 define('LIGHTWEB_LANG', 'en');
-define('LIGHTWEB_VERSION', '3.0.0');
+define('LIGHTWEB_VERSION', '3.0.12');
 define('LIGHTWEB_APIKEY', "My_secret_key");
 if (isset ($cli)) {
-    $path = str_replace("/lightweb/lightweb", "/lightweb", getcwd());
+    $path = $path = dirname(dirname(__FILE__));
     define('LIGHTWEB_PATH', $path . "/");
 } else {
     $path = getcwd() . "/";
