@@ -4,10 +4,8 @@
  * This file won't be copied to production
  * @author Ruvenss G. Wilches <ruvenss@gmail.com>
  */
-
 if (file_exists("../lightweb/config.php")) {
     include_once ("../lightweb/config.php");
-
     GetLanguages();
     if (file_exists("../lightweb/pages/tree.json")) {
         define("tree", json_decode(file_get_contents("../lightweb/pages/tree.json"), true));
@@ -160,7 +158,6 @@ function create_page()
                 mkdir(dirname(dirname(__FILE__)) . "/lightweb/pages" . $fullpath);
                 file_put_contents(dirname(dirname(__FILE__)) . "/lightweb/pages" . $fullpath . "/index.html", "<p></p>");
             }
-
         }
         if (isset (DataInput['htmlcontent']) && strlen(DataInput['htmlcontent']) > 0) {
             file_put_contents(dirname(dirname(__FILE__)) . "/lightweb/pages" . $fullpath . "/index.html", DataInput['htmlcontent']);
