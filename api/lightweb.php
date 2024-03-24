@@ -4,8 +4,10 @@
  * This file won't be copied to production
  * @author Ruvenss G. Wilches <ruvenss@gmail.com>
  */
+
 if (file_exists("../lightweb/config.php")) {
     include_once ("../lightweb/config.php");
+
     GetLanguages();
     if (file_exists("../lightweb/pages/tree.json")) {
         define("tree", json_decode(file_get_contents("../lightweb/pages/tree.json"), true));
@@ -31,13 +33,6 @@ if (file_exists("../lightweb/config.php")) {
 } else {
     die ('{"answer":false,"error":"LightWeb API Key missing in the server"}');
 }
-function lightweb_version()
-{
-    define("GITURL", "https://raw.githubusercontent.com/ruvenss/lightweb/master/");
-    define("LW_LOCAL", json_decode(file_get_contents("../lightweb/lightweb.json"), true));
-    define("LW_RELEASE", json_decode(file_get_contents(GITURL . "lightweb/lightweb.json"), true));
-    response(true, ["latest" => LW_RELEASE['version'], "local" => LW_LOCAL['version']]);
-}
 function publish()
 {
     $e = "cd " . LIGHTWEB_PATH . "lightweb/ && ./ToProduction.sh";
@@ -48,6 +43,32 @@ function publish()
         define("versions", ["v" => 0]);
     }
     response(true, ["zip" => "/lightweb/publish/compress/download.zip", "version" => versions['v']]);
+}
+function update_locales()
+{
+    if (isset (DataInput['i18nfiles'])) {
+        $i18nfiles = DataInput['i18nfiles'];
+        if (sizeof($i18nfiles)) {
+            foreach ($i18nfiles as $i18nfile => $i18ncontent) {
+                $i18npath = LIGHTWEB_LOCALES_PATH . $i18nfile . ".json";
+                $i18nfile_content = [];
+                $i = 0;
+                for ($i = 0; $i < sizeof($i18ncontent); $i++) {
+                    $i18ncontentObj = $i18ncontent[$i];
+                    $n = 0;
+                    foreach ($i18ncontentObj as $key => $value) {
+                        $i18nfile_content[$n][$key] = $value;
+                        $n++;
+                    }
+                }
+                file_put_contents($i18npath, json_encode($i18nfile_content[0]));
+
+            }
+        }
+        response(true);
+    } else {
+        response(false, [], 0, "i18nfiles not defined");
+    }
 }
 function get_page()
 {
@@ -158,6 +179,7 @@ function create_page()
                 mkdir(dirname(dirname(__FILE__)) . "/lightweb/pages" . $fullpath);
                 file_put_contents(dirname(dirname(__FILE__)) . "/lightweb/pages" . $fullpath . "/index.html", "<p></p>");
             }
+
         }
         if (isset (DataInput['htmlcontent']) && strlen(DataInput['htmlcontent']) > 0) {
             file_put_contents(dirname(dirname(__FILE__)) . "/lightweb/pages" . $fullpath . "/index.html", DataInput['htmlcontent']);
