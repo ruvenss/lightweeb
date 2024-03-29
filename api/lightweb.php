@@ -20,7 +20,7 @@ if (file_exists("../lightweb/config.php")) {
         if ($Bearer == LIGHTWEB_APIKEY) {
             define("DataInput", json_decode($DataInputRaw, TRUE));
             define("request_type", $_SERVER['REQUEST_METHOD']);
-            if (isset (DataInput['a'])) {
+            if (isset(DataInput['a'])) {
                 $ThisFunction = DataInput['a'];
                 if (function_exists($ThisFunction)) {
                     $ThisFunction();
@@ -31,7 +31,20 @@ if (file_exists("../lightweb/config.php")) {
         }
     }
 } else {
-    die ('{"answer":false,"error":"LightWeb API Key missing in the server"}');
+    die('{"answer":false,"error":"LightWeb API Key missing in the server"}');
+}
+function getHeaders()
+{
+    $headers = scandir(dirname(dirname(__FILE__)) . "/lightweb/headers");
+    for ($i = 0; $i < sizeof($headers); $i++) {
+        $language = str_replace(".html", "", $headers[$i]);
+        if ($language == ".." || $language == ".") {
+
+        } else {
+            $languages[] = $language;
+        }
+    }
+    response(true, ["headers" => $headers]);
 }
 function publish()
 {
@@ -46,7 +59,7 @@ function publish()
 }
 function update_locales()
 {
-    if (isset (DataInput['i18nfiles'])) {
+    if (isset(DataInput['i18nfiles'])) {
         $i18nfiles = DataInput['i18nfiles'];
         if (sizeof($i18nfiles)) {
             foreach ($i18nfiles as $i18nfile => $i18ncontent) {
@@ -62,7 +75,6 @@ function update_locales()
                     }
                 }
                 file_put_contents($i18npath, json_encode($i18nfile_content[0]));
-
             }
         }
         response(true);
@@ -134,7 +146,7 @@ function update_page()
                     file_put_contents(dirname(dirname(__FILE__)) . "/lightweb/pages" . $fullpath . "/index.html", "<p></p>");
                 }
             }
-            if (isset (DataInput['htmlcontent']) && strlen(DataInput['htmlcontent']) > 0) {
+            if (isset(DataInput['htmlcontent']) && strlen(DataInput['htmlcontent']) > 0) {
                 file_put_contents(dirname(dirname(__FILE__)) . "/lightweb/pages" . $fullpath . "/index.html", DataInput['htmlcontent']);
             }
             /**
@@ -181,7 +193,7 @@ function create_page()
             }
 
         }
-        if (isset (DataInput['htmlcontent']) && strlen(DataInput['htmlcontent']) > 0) {
+        if (isset(DataInput['htmlcontent']) && strlen(DataInput['htmlcontent']) > 0) {
             file_put_contents(dirname(dirname(__FILE__)) . "/lightweb/pages" . $fullpath . "/index.html", DataInput['htmlcontent']);
         }
         /**
@@ -213,9 +225,9 @@ function page_exist($page_id)
 function verified_payload()
 {
     $i18OK = true;
-    if (isset (DataInput['tree']) && isset (DataInput['id'])) {
+    if (isset(DataInput['tree']) && isset(DataInput['id'])) {
 
-        if (isset (DataInput['i18n'])) {
+        if (isset(DataInput['i18n'])) {
             foreach (DataInput['i18n'] as $i18lang) {
                 if (in_array($i18lang, locales)) {
                     // all good
@@ -237,18 +249,18 @@ function verified_payload()
 function getAuthorizationHeader()
 {
     $headers = null;
-    if (isset ($_SERVER['Authorization'])) {
+    if (isset($_SERVER['Authorization'])) {
         $headers = trim($_SERVER["Authorization"]);
-    } elseif (isset ($_SERVER['HTTP_AUTHORIZATION'])) { //Nginx or fast CGI
+    } elseif (isset($_SERVER['HTTP_AUTHORIZATION'])) { //Nginx or fast CGI
         $headers = trim($_SERVER["HTTP_AUTHORIZATION"]);
     } elseif (function_exists('apache_request_headers')) {
         $requestHeaders = apache_request_headers();
         $requestHeaders = array_combine(array_map('ucwords', array_keys($requestHeaders)), array_values($requestHeaders));
-        if (isset ($requestHeaders['Authorization'])) {
+        if (isset($requestHeaders['Authorization'])) {
             $headers = trim($requestHeaders['Authorization']);
         }
     }
-    if (!empty ($headers)) {
+    if (!empty($headers)) {
         $Bearer = trim(str_replace("Bearer", "", $headers));
         return ($Bearer);
     } else {
@@ -257,7 +269,7 @@ function getAuthorizationHeader()
 }
 function json_validator($data)
 {
-    if (!empty ($data)) {
+    if (!empty($data)) {
         return is_string($data) &&
             is_array(json_decode($data, true)) ? true : false;
     }

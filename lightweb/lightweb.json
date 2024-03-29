@@ -10,6 +10,7 @@
     "change_log_security": "",
     "updatable_files": [
         "/api/v1/plugins/email.php",
+        "/api/v1/plugins/wordpress.php",
         "/api/v1/index.php",
         "/api/errors.json",
         "/api/index.php",
