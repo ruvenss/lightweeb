@@ -6,9 +6,10 @@ include_once ("../xhr_handler.php");
 include_once ("../my_config.php");
 include_once ("../my_functions.php");
 include_once ("../my_init.php");
-if (isset ($_REQUEST['a'])) {
+loadPlugins();
+if (isset($_REQUEST['a'])) {
     $ThisFunction = trim(str_replace(" ", "", $_REQUEST['a']));
-    if (isset ($_POST['formData']) && json_decode($_POST['formData'])) {
+    if (isset($_POST['formData']) && json_decode($_POST['formData'])) {
         define("formData", json_decode($_POST['formData'], true));
     } else {
         define("formData", null);
@@ -31,7 +32,7 @@ if (isset ($_REQUEST['a'])) {
 response(false);
 function onlyhumans()
 {
-    if (isset ($_REQUEST['LW_uuid']) && strlen($_REQUEST['LW_uuid']) > 5) {
+    if (isset($_REQUEST['LW_uuid']) && strlen($_REQUEST['LW_uuid']) > 5) {
         $LW_uuid = trim($_REQUEST['LW_uuid']);
         if (!file_exists("onlyhumans")) {
             mkdir("onlyhumans");
@@ -51,4 +52,13 @@ function onlyhumans()
 function version()
 {
     response(true, ["version" => LIGHTWEB_VERSION]);
+}
+function loadPlugins()
+{
+    $pluginsfiles = scandir("plugins", SCANDIR_SORT_ASCENDING);
+    foreach ($pluginsfiles as $pluginfile) {
+        if ($pluginfile == "." || $pluginfile == "..") {
+            include_once ("plugins/$pluginfile");
+        }
+    }
 }

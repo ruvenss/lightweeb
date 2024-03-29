@@ -17,10 +17,6 @@ function wordpress($fullpage)
     }
     return ($fullpage);
 }
-function wp_search()
-{
-    return null;
-}
 function wp_nav()
 {
     return null;

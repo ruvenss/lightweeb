@@ -11,3 +11,4 @@ define("LIGHTWEB_ONESIGNAL_API_KEY", null);
 define("LIGHTWEB_NIZUTOKEN", null);
 define("LIGHTWEB_NIZUCLOUDAPI", null);
 define("LIGHTWEB_STRIPE_SECRET", null);
+define("WP_IDX", "wp_");
