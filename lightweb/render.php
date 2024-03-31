@@ -33,7 +33,7 @@ function render_page($page = "home", $lang = "")
             file_put_contents($jsvendors_path, $jsvendors_code);
         }
     }
-    if (isset (LIGHTWEB_TREE[$page])) {
+    if (isset(LIGHTWEB_TREE[$page])) {
         $publish_from = LIGHTWEB_TREE[$page]['publish_from'] ?? null;
         $publish_until = LIGHTWEB_TREE[$page]['publish_until'] ?? null;
         $publish_ok = true;
@@ -51,6 +51,12 @@ function render_page($page = "home", $lang = "")
             }
         }
         if ($publish_ok) {
+            if (!file_exists(LIGHTWEB_PAGES_HEADERS_PATH . LIGHTWEB_TREE[$page]['header'])) {
+                touch(LIGHTWEB_PAGES_HEADERS_PATH . LIGHTWEB_TREE[$page]['header']);
+            }
+            if (!file_exists(LIGHTWEB_PAGES_FOOTERS_PATH . LIGHTWEB_TREE[$page]['footer'])) {
+                touch(LIGHTWEB_PAGES_FOOTERS_PATH . LIGHTWEB_TREE[$page]['footer']);
+            }
             $headerhtml = file_get_contents(LIGHTWEB_PAGES_HEADERS_PATH . LIGHTWEB_TREE[$page]['header']);
             // Insert BreadCrumbs Snippet
             $headerhtml = str_replace("{{title}}", i18nString(LIGHTWEB_TREE[$page]['titlei18n'], $lang), $headerhtml);
@@ -74,7 +80,7 @@ function render_page($page = "home", $lang = "")
             $manifesttag = '<link rel="manifest" href="/manifest_' . $lang . '.json" />';
             buildManifest($lang);
             $headerhtml = str_replace("<head>", "<head>\n\t$manifesttag", $headerhtml);
-            if (isset (LIGHTWEB_TREE[$page]['featured_image'])) {
+            if (isset(LIGHTWEB_TREE[$page]['featured_image'])) {
                 $headerhtml = str_replace("</head>", ogcard(i18nString(LIGHTWEB_TREE[$page]['titlei18n'], $lang), i18nString(LIGHTWEB_TREE[$page]['descriptioni18n'], $lang), "https://" . LIGHTWEB_PRODUCTION . LIGHTWEB_TREE[$page]['url'], LIGHTWEB_TREE[$page]['featured_image']) . "\n</head>", $headerhtml);
             }
             if (LIGHTWEB_MINIFY) {
@@ -98,14 +104,14 @@ function render_page($page = "home", $lang = "")
             $fullpage = LoadPlugins($page, $fullpage);
             return ($fullpage);
         } else {
-            if (isset (LIGHTWEB_TREE['404'])) {
+            if (isset(LIGHTWEB_TREE['404'])) {
                 return render_404($lang);
             } else {
                 return "404";
             }
         }
     } else {
-        if (isset (LIGHTWEB_TREE['404'])) {
+        if (isset(LIGHTWEB_TREE['404'])) {
             return render_404();
         } else {
             return "404";
