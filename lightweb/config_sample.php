@@ -28,7 +28,52 @@ if (!file_exists(LIGHTWEB_PAGES_PATH . 'tree.json')) {
     file_put_contents(LIGHTWEB_PAGES_PATH . 'tree.json', '{}');
 }
 if (!file_exists(LIGHTWEB_PAGES_PATH . 'siteconfig.json')) {
-    file_put_contents(LIGHTWEB_PAGES_PATH . 'siteconfig.json', '{}');
+    file_put_contents(LIGHTWEB_PAGES_PATH . 'siteconfig.json', '{
+    "name": "WEB NAME",
+    "company": "MY COMPANY",
+    "vat": "",
+    "iso": "",
+    "coc": "",
+    "siret": "",
+    "email": "noreply@mycompany.com",
+    "phone": "+1555555555",
+    "logo": "https://images.mycompany.com/logo.png",
+    "image": "https://images.mycompany.com/card_banner.jpg",
+    "background_color": "#1940b0",
+    "theme_color": "#ffffff",
+    "locations": [
+        {
+            "type": "HQ",
+            "address": "Lõõtsa tn 5, Lasnamäe linnaosa",
+            "cp": "11415",
+            "city": "Tallinn",
+            "region": "",
+            "country": "EE",
+            "latitude": "",
+            "longitude": ""
+        }
+    ],
+    "socialmedia": {
+        "whatsapp": "",
+        "twitter": "",
+        "facebook": "",
+        "instagram": "",
+        "tiktok": "",
+        "linkedin": "https://www.linkedin.com/company/65877584",
+        "dribble": "",
+        "youtube": "",
+        "snapchat": "",
+        "pinterest": "",
+        "reddit": "",
+        "discord": "",
+        "twitch": "",
+        "tumblr": "",
+        "threads": "",
+        "mastodon": "",
+        "blog": "https://blog.nizu.io/",
+        "documentation": ""
+    }
+}');
 }
 define('LIGHTWEB_TREE', json_decode(file_get_contents(LIGHTWEB_PAGES_PATH . 'tree.json'), true));
 define('LIGHTWEB_SITE_CONFIG', json_decode(file_get_contents(LIGHTWEB_PAGES_PATH . 'siteconfig.json'), true));

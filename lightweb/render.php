@@ -10,6 +10,12 @@ function render_page($page = "home", $lang = "")
     if ($lang == "") {
         $lang = LIGHTWEB_URI['lang'];
     }
+    if (!file_exists(LIGHTWEB_PATH . "lightweb/publish")) {
+        mkdir(LIGHTWEB_PATH . "lightweb/publish");
+    }
+    if (!file_exists(LIGHTWEB_PUBLISH_PATH . "versions.json")) {
+        file_put_contents(LIGHTWEB_PUBLISH_PATH . "versions.json", '{"v":1}');
+    }
     $version_data = json_decode(file_get_contents(LIGHTWEB_PUBLISH_PATH . "versions.json"), true);
     $jsvendors = '<script type="text/javascript" id="lightweb-vendors-js" src="/vendors.js?v=3.0.0"></script>' . "\n</body>";
     $jsvendors_files = scandir(LIGHTWEB_PATH . 'lightweb/jscode', SCANDIR_SORT_ASCENDING);
@@ -51,8 +57,14 @@ function render_page($page = "home", $lang = "")
             }
         }
         if ($publish_ok) {
+            if (!file_exists(LIGHTWEB_PAGES_HEADERS_PATH)) {
+                mkdir(LIGHTWEB_PAGES_HEADERS_PATH);
+            }
             if (!file_exists(LIGHTWEB_PAGES_HEADERS_PATH . LIGHTWEB_TREE[$page]['header'])) {
                 touch(LIGHTWEB_PAGES_HEADERS_PATH . LIGHTWEB_TREE[$page]['header']);
+            }
+            if (!file_exists(LIGHTWEB_PAGES_FOOTERS_PATH)) {
+                mkdir(LIGHTWEB_PAGES_FOOTERS_PATH);
             }
             if (!file_exists(LIGHTWEB_PAGES_FOOTERS_PATH . LIGHTWEB_TREE[$page]['footer'])) {
                 touch(LIGHTWEB_PAGES_FOOTERS_PATH . LIGHTWEB_TREE[$page]['footer']);
@@ -221,6 +233,9 @@ function render_404($lang = "")
     $headerhtml = file_get_contents(LIGHTWEB_PAGES_HEADERS_PATH . LIGHTWEB_TREE[$page]['header']);
     $headerhtml = str_replace("{{title}}", i18nString(LIGHTWEB_TREE[$page]['titlei18n'], $lang), $headerhtml);
     $headerhtml = str_replace("{{description}}", i18nString(LIGHTWEB_TREE[$page]['descriptioni18n'], $lang), $headerhtml);
+    if (isset(LIGHTWEB_TREE[$page]['featured_image'])) {
+        $headerhtml = str_replace("</head>", ogcard(i18nString(LIGHTWEB_TREE[$page]['titlei18n'], $lang), i18nString(LIGHTWEB_TREE[$page]['descriptioni18n'], $lang), "https://" . LIGHTWEB_PRODUCTION . LIGHTWEB_TREE[$page]['url'], LIGHTWEB_TREE[$page]['featured_image']) . "\n</head>", $headerhtml);
+    }
     $bodyhtml = file_get_contents(LIGHTWEB_PAGES_PATH . LIGHTWEB_TREE[$page]['path']);
     $footerhtml = file_get_contents(LIGHTWEB_PAGES_FOOTERS_PATH . LIGHTWEB_TREE[$page]['footer']);
     return ($headerhtml . "\n" . $bodyhtml . "\n" . $footerhtml);
