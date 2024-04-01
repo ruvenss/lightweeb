@@ -59,7 +59,7 @@ if (!file_exists(LIGHTWEB_PAGES_PATH . 'siteconfig.json')) {
         "facebook": "",
         "instagram": "",
         "tiktok": "",
-        "linkedin": "https://www.linkedin.com/company/65877584",
+        "linkedin": "",
         "dribble": "",
         "youtube": "",
         "snapchat": "",
@@ -70,8 +70,10 @@ if (!file_exists(LIGHTWEB_PAGES_PATH . 'siteconfig.json')) {
         "tumblr": "",
         "threads": "",
         "mastodon": "",
-        "blog": "https://blog.nizu.io/",
-        "documentation": ""
+        "blog": "",
+        "documentation": "",
+        "googleplay": "",
+        "appstore": ""
     }
 }');
 }
