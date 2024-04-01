@@ -11,7 +11,7 @@ function GetLanguages()
         define("locales", $languages);
     }
 }
-function LoadPlugins($uri, $fullpage)
+function LoadPlugins($uri, $fullpage, $lang)
 {
     $plugins = glob(LIGHTWEB_PATH . 'lightweb/plugins/*.{php}', GLOB_BRACE);
     if (count($plugins) > 0) {
@@ -21,7 +21,7 @@ function LoadPlugins($uri, $fullpage)
             $plugfunction = str_replace(".php", "", $plugfunction);
             include_once ($plugin);
             if (function_exists($plugfunction)) {
-                $fullpage = $plugfunction($fullpage);
+                $fullpage = $plugfunction($fullpage, $lang);
             }
         }
     }

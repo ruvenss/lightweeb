@@ -1,4 +1,11 @@
 <?php
+if (LIGHTWEB_DB) {
+    $ldb = new mysqli(LIGHTWEB_DB_HOST, LIGHTWEB_DB_USER, LIGHTWEB_DB_PASS, LIGHTWEB_DB_NAME);
+    define("ldb", $ldb);
+    if (ldb->connect_errno) {
+        die("LightWeb Failed to connect to DB Server: " . ldb->connect_error);
+    }
+}
 function publish()
 {
     define("publishing", true);
@@ -162,7 +169,7 @@ define('LIGHTWEB_DB_COLLATE', '" . LIGHTWEB_DB_COLLATE . "');
 </url>';
         $homepage = false;
         foreach (LIGHTWEB_TREE as $page) {
-            if (isset ($page['url'])) {
+            if (isset($page['url'])) {
                 if ($page['url'] == "/" && $homepage) {
 
                 } else {
@@ -195,7 +202,7 @@ define('LIGHTWEB_DB_COLLATE', '" . LIGHTWEB_DB_COLLATE . "');
     $cachefiles = '';
     foreach (locales as $isolang) {
         foreach (LIGHTWEB_TREE as $page) {
-            if (isset ($page['url'])) {
+            if (isset($page['url'])) {
                 $swurl = $page['url'];
                 $cachefiles .= "'/$isolang$swurl',";
             }

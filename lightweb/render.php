@@ -113,7 +113,7 @@ function render_page($page = "home", $lang = "")
                 $footerhtml = minify($footerhtml);
             }
             $fullpage = $headerhtml . "\n" . $bodyhtml . "\n" . $footerhtml;
-            $fullpage = LoadPlugins($page, $fullpage);
+            $fullpage = LoadPlugins($page, $fullpage, $lang);
             return ($fullpage);
         } else {
             if (isset(LIGHTWEB_TREE['404'])) {
