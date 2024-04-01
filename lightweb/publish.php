@@ -24,6 +24,7 @@ function publish()
         echo "| " . str_pad($key, 35, " ", STR_PAD_RIGHT) . " | ";
         foreach (locales as $lang) {
             $rendered_page = render_page($key, $lang);
+            $rendered_page = i18n($rendered_page, $lang);
             if ($key == "home") {
                 $htmlpath = LIGHTWEB_PUBLISH_PATH . "uncompress/$lang/index.html";
                 file_put_contents($htmlpath, $rendered_page);
