@@ -1,3 +1,4 @@
+<img src="https://images.nizu.io/lightweb/apple-touch-icon-precomposed.png">
 # LightWeb 3.0
 
 Light Web is an Open Source framework for light and optimised websites
@@ -17,4 +18,4 @@ Light Web is an Open Source framework for light and optimised websites
 - `/lightweb/pages` *All your page contents without the html headers or footers*
 - `/lightweb/pages/tree.js` *Your website structure and pages properties*
 
-
+<img src="https://img.shields.io/badge/nizu-ready-green">
