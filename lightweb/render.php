@@ -239,7 +239,9 @@ function render_404($lang = "")
     }
     $bodyhtml = file_get_contents(LIGHTWEB_PAGES_PATH . LIGHTWEB_TREE[$page]['path']);
     $footerhtml = file_get_contents(LIGHTWEB_PAGES_FOOTERS_PATH . LIGHTWEB_TREE[$page]['footer']);
-    return ($headerhtml . "\n" . $bodyhtml . "\n" . $footerhtml);
+    $fullpage = $headerhtml . "\n" . $bodyhtml . "\n" . $footerhtml;
+    $fullpage = LoadPlugins($page, $fullpage, $lang);
+    return ($fullpage);
 }
 function minify($buffer)
 {
