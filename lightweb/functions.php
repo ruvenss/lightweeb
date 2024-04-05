@@ -21,7 +21,7 @@ function LoadPlugins($uri, $fullpage, $lang)
             $plugfunction = str_replace(".php", "", $plugfunction);
             include_once ($plugin);
             if (function_exists($plugfunction)) {
-                $fullpage = $plugfunction($fullpage, $lang);
+                $fullpage = $plugfunction($fullpage, $lang, $uri);
             }
         }
     }

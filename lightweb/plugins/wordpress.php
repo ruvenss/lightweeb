@@ -5,7 +5,7 @@
  * @depends LIGHTWEB_DB=true
  */
 // $fullpage = str_replace("{{this_year}}", date("Y"), $fullpage);
-function wordpress($fullpage)
+function wordpress($fullpage, $lang, $uri)
 {
     if (LIGHTWEB_DB) {
         if (str_contains($fullpage, '{{wp_categories}}')) {
