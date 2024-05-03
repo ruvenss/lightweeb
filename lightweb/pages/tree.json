@@ -92,5 +92,18 @@
         "version": "2",
         "type": "page",
         "static": true
+    },
+    "subscribe": {
+        "titlei18n": "subscribe",
+        "descriptioni18n": "subscribedesc",
+        "robots": "Follow",
+        "path": "subscribe\/index.html",
+        "author": "LightWeb",
+        "url": "\/aboutus",
+        "header": "header_common.html",
+        "footer": "footer.html",
+        "version": "2",
+        "type": "page",
+        "static": true
     }
 }

@@ -36,15 +36,16 @@ if (file_exists("../lightweb/config.php")) {
 function getHeaders()
 {
     $headers = scandir(dirname(dirname(__FILE__)) . "/lightweb/headers");
+    $headers_data = [];
     for ($i = 0; $i < sizeof($headers); $i++) {
-        $language = str_replace(".html", "", $headers[$i]);
-        if ($language == ".." || $language == ".") {
+        $header_file = str_replace(".html", "", $headers[$i]);
+        if ($header_file == ".." || $header_file == ".") {
 
         } else {
-            $languages[] = $language;
+            $headers_data[] = $header_file;
         }
     }
-    response(true, ["headers" => $headers]);
+    response(true, ["headers" => $headers_data]);
 }
 function publish()
 {
