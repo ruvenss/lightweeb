@@ -35,11 +35,23 @@ if (file_exists("../lightweb/config.php")) {
 }
 function getHeader()
 {
-    response(true, ["header" => file_get_contents(dirname(dirname(__FILE__)) . "/lightweb/headers/" . DataInput['header'] . ".html")]);
+    $header_file = dirname(dirname(__FILE__)) . "/lightweb/headers/" . DataInput['header'] . ".html";
+    if (file_exists($header_file)) {
+        $headerhtml = file_get_contents($header_file);
+        response(true, ["header" => $headerhtml]);
+    } else {
+        response(false, ["header" => $header_file], 2, "Missing header file");
+    }
 }
 function getFooter()
 {
-    response(true, ["header" => file_get_contents(dirname(dirname(__FILE__)) . "/lightweb/footers/" . DataInput['footer'] . ".html")]);
+    $footer_file = dirname(dirname(__FILE__)) . "/lightweb/footers/" . DataInput['footer'] . ".html";
+    if (file_exists($footer_file)) {
+        $footerhtml = file_get_contents($footer_file);
+        response(true, ["footer" => $footerhtml]);
+    } else {
+        response(false, ["footer" => $footer_file], 2, "Missing footer file");
+    }
 }
 function getPage()
 {
