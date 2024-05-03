@@ -29,9 +29,39 @@ if (file_exists("../lightweb/config.php")) {
         } else {
             response(false, [], 0, "Incorrect Key");
         }
+    } else {
+        response(false, ["error" => "invalid JSON Payload"], 0, "Invalid JSON Payload");
     }
 } else {
     die('{"answer":false,"error":"LightWeb API Key missing in the server"}');
+}
+function SaveHeader()
+{
+    if (isset(DataInput['content_url'])) {
+        if (isset(DataInput['header'])) {
+            $header_file = dirname(dirname(__FILE__)) . "/lightweb/headers/" . DataInput['header'] . ".html";
+            file_put_contents($header_file, file_get_contents(DataInput['content_url']));
+            response(true, []);
+        } else {
+            response(false, ["error" => "Header name can not be empty"], 2, "Missing header name");
+        }
+    } else {
+        response(false, ["error" => "Header content can not be empty"], 2, "Missing header content");
+    }
+}
+function SaveFooter()
+{
+    if (isset(DataInput['content_url'])) {
+        if (isset(DataInput['footer'])) {
+            $footer_file = dirname(dirname(__FILE__)) . "/lightweb/footers/" . DataInput['footer'] . ".html";
+            file_put_contents($footer_file, file_get_contents(DataInput['content_url']));
+            response(true, []);
+        } else {
+            response(false, ["error" => "Footer name can not be empty"], 2, "Missing Footer name");
+        }
+    } else {
+        response(false, ["error" => "Footer content can not be empty"], 2, "Missing Footer content");
+    }
 }
 function getHeader()
 {
