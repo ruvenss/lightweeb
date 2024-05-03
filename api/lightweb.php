@@ -33,6 +33,18 @@ if (file_exists("../lightweb/config.php")) {
 } else {
     die('{"answer":false,"error":"LightWeb API Key missing in the server"}');
 }
+function getHeader()
+{
+    response(true, ["header" => file_get_contents(dirname(dirname(__FILE__)) . "/lightweb/headers/" . DataInput['header'] . ".html")]);
+}
+function getFooter()
+{
+    response(true, ["header" => file_get_contents(dirname(dirname(__FILE__)) . "/lightweb/footers/" . DataInput['footer'] . ".html")]);
+}
+function getPage()
+{
+    response(true, ["header" => file_get_contents(dirname(dirname(__FILE__)) . "/lightweb/footers/" . DataInput['footer'] . ".html")]);
+}
 function getHeaders()
 {
     $headers = scandir(dirname(dirname(__FILE__)) . "/lightweb/headers");
