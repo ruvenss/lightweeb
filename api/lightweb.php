@@ -47,6 +47,20 @@ function getHeaders()
     }
     response(true, ["headers" => $headers_data]);
 }
+function getFooters()
+{
+    $footers = scandir(dirname(dirname(__FILE__)) . "/lightweb/footers");
+    $footers_data = [];
+    for ($i = 0; $i < sizeof($footers); $i++) {
+        $footer_file = str_replace(".html", "", $footers[$i]);
+        if ($footer_file == ".." || $footer_file == ".") {
+
+        } else {
+            $footers_data[] = $footer_file;
+        }
+    }
+    response(true, ["footers" => $footers_data]);
+}
 function publish()
 {
     $e = "cd " . LIGHTWEB_PATH . "lightweb/ && ./ToProduction.sh";
