@@ -8,7 +8,7 @@ define('LIGHTWEB_ENVIRONMENT', 'development');
 define('LIGHTWEB_PRODUCTION', 'mydomain.com');
 define('LIGHTWEB_STAGE', 'stage.mydomain.com');
 define('LIGHTWEB_LANG', 'en');
-define('LIGHTWEB_VERSION', '3.0.23');
+define('LIGHTWEB_VERSION', '3.0.25');
 define('LIGHTWEB_APIKEY', "My_secret_key");
 if (isset($cli)) {
     $path = $path = dirname(dirname(__FILE__));

@@ -360,3 +360,30 @@ function GetLanguages()
         define("locales", $languages);
     }
 }
+function GetConfig()
+{
+    $config = [];
+    $config['LIGHTWEB_ENVIRONMENT'] = LIGHTWEB_ENVIRONMENT;
+    $config['LIGHTWEB_PRODUCTION'] = LIGHTWEB_PRODUCTION;
+    $config['LIGHTWEB_STAGE'] = LIGHTWEB_STAGE;
+    $config['LIGHTWEB_LANG'] = LIGHTWEB_LANG;
+    $config['LIGHTWEB_VERSION'] = LIGHTWEB_VERSION;
+    $config['LIGHTWEB_DEBUG'] = LIGHTWEB_DEBUG;
+    $config['LIGHTWEB_MINIFY'] = LIGHTWEB_MINIFY;
+    $config['LIGHTWEB_DB'] = LIGHTWEB_DB;
+    $config['LIGHTWEB_DB_HOST'] = LIGHTWEB_DB_HOST;
+    $config['LIGHTWEB_DB_USER'] = LIGHTWEB_DB_USER;
+    $config['LIGHTWEB_DB_PASS'] = LIGHTWEB_DB_PASS;
+    $config['LIGHTWEB_DB_NAME'] = LIGHTWEB_DB_NAME;
+    $config['LIGHTWEB_DB_PREFIX'] = LIGHTWEB_DB_PREFIX;
+    $config['LIGHTWEB_DB_PORT'] = LIGHTWEB_DB_PORT;
+    $config['LIGHTWEB_DB_CHARSET'] = LIGHTWEB_DB_CHARSET;
+    $config['LIGHTWEB_DB_COLLATE'] = LIGHTWEB_DB_COLLATE;
+    $config['LIGHTWEB_NIZU_TOKEN'] = LIGHTWEB_NIZU_TOKEN;
+    $config['LIGHTWEB_NIZU_CMS'] = LIGHTWEB_NIZU_CMS;
+    $config['GOOGLE_UA'] = GOOGLE_UA;
+    $config['FACEBOOK_PIXEL_ID'] = FACEBOOK_PIXEL_ID;
+    $config['FACEBOOK_PIXEL_ID'] = FACEBOOK_PIXEL_ID;
+    $siteconfig = json_decode(file_get_contents(LIGHTWEB_PATH . "lightweb/pages/siteconfig.json"));
+    response(true, ["config" => $config, "siteconfig" => $siteconfig]);
+}
