@@ -151,6 +151,32 @@ function update_locales()
         response(false, [], 0, "i18nfiles not defined");
     }
 }
+function add_key_locales()
+{
+    if (isset(DataInput['key'])) {
+        $key = DataInput['key'];
+        $value = DataInput['value'];
+        $arr = [$key => $value];
+    }
+    GetLanguages();
+    if (locales) {
+        if (sizeof(locales)) {
+            for ($i = 0; $i < sizeof(locales); $i++) {
+                $i18npath = LIGHTWEB_LOCALES_PATH . locales[$i] . ".json";
+                if ($i18npath) {
+                    if (file_exists($i18npath)) {
+                        $json_data = json_decode(file_get_contents($i18npath), true);
+                        array_push($json_data, $arr);
+                        file_put_contents($i18npath, json_encode($json_data[0]));
+                    }
+                }
+            }
+        }
+        response(true);
+    } else {
+        response(false, [], 0, "i18nfiles not defined");
+    }
+}
 function get_page()
 {
     if (page_exist(DataInput['id'])) {
