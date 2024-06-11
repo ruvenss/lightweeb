@@ -7,7 +7,6 @@
 
 if (file_exists("../lightweb/config.php")) {
     include_once ("../lightweb/config.php");
-
     GetLanguages();
     if (file_exists("../lightweb/pages/tree.json")) {
         define("tree", json_decode(file_get_contents("../lightweb/pages/tree.json"), true));
@@ -155,27 +154,42 @@ function add_key_locales()
 {
     if (isset(DataInput['key'])) {
         $key = DataInput['key'];
-        $value = DataInput['value'];
-        $arr = [$key => $value];
+        if (isset(DataInput['value'])) {
+            $value = DataInput['value'];
+        } else {
+            response(false, [], 0, "value missing");
+        }
+    } else {
+        response(false, [], 0, "Key missing");
     }
-    GetLanguages();
-    if (locales) {
-        if (sizeof(locales)) {
-            for ($i = 0; $i < sizeof(locales); $i++) {
-                $i18npath = LIGHTWEB_LOCALES_PATH . locales[$i] . ".json";
-                if ($i18npath) {
-                    if (file_exists($i18npath)) {
-                        $json_data = json_decode(file_get_contents($i18npath), true);
-                        array_push($json_data, $arr);
-                        file_put_contents($i18npath, json_encode($json_data[0]));
-                    }
+    if (locales && sizeof(locales)) {
+        $locales_updated = 0;
+        foreach (locales as $locale) {
+            $i18npath = LIGHTWEB_LOCALES_PATH . $locale . ".json";
+            if ($i18npath && file_exists($i18npath)) {
+                $json_data = json_decode(file_get_contents($i18npath), true);
+                if (locales_key_exist($key, $json_data)) {
+                    response(false, [], 0, "Key already exist");
+                } else {
+                    $json_data[$key] = $value;
+                    file_put_contents($i18npath, json_encode($json_data));
+                    $locales_updated++;
                 }
             }
         }
-        response(true);
+        response(true, ["locales_updated" => $locales_updated]);
     } else {
-        response(false, [], 0, "i18nfiles not defined");
+        response(false, [], 0, "i18nfiles " . (empty(locales) ? "not defined" : "missing"));
     }
+}
+function locales_key_exist($key, $locales_data)
+{
+    foreach ($locales_data as $locales_key => $value) {
+        if ($locales_key == $key) {
+            return true;
+        }
+    }
+    return false;
 }
 function get_page()
 {
