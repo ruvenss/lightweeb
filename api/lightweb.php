@@ -34,9 +34,9 @@ if (file_exists(API_LW_PATH . "config.php")) {
 function SaveBody()
 {
     if (isset(DataInput['content_url']) && isset(DataInput['page'])) {
-        $header_file = dirname(dirname(__FILE__)) . "/lightweb/headers/" . DataInput['page'] . ".html";
-        file_put_contents($header_file, file_get_contents(DataInput['content_url']));
-        response(true, []);
+        $page_file = dirname(dirname(__FILE__)) . "/lightweb/pages/" . DataInput['page'] . "/index.html";
+        file_put_contents($page_file, file_get_contents(DataInput['content_url']));
+        response(true, ["page" => DataInput['page'], "downloaded_from" => DataInput['content_url']]);
     } elseif (!isset(DataInput['content_url'])) {
         response(false, ["error" => "Page content can not be empty"], 2, "Missing page content");
     } else {
