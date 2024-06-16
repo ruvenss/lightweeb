@@ -71,6 +71,46 @@ function SaveFooter()
         response(false, ["error" => "Footer content can not be empty"], 2, "Missing Footer content");
     }
 }
+function getAssets()
+{
+    $assets = scandir(dirname(dirname(__FILE__)));
+    $assets_data = scanDirectory(dirname(dirname(__FILE__)));
+    response(true, ["assets" => $assets_data]);
+}
+function scanDirectory($dir)
+{
+    $data = [];
+    $files = scandir($dir);
+    foreach ($files as $file) {
+        if ($file != '.' && $file != '..' && $file != '.htaccess' && $file != '.vscode' && $file != '.git') {
+            $path = $dir . '/' . $file;
+            if (is_dir($path)) {
+                if ($file != 'api' && $file != 'lightweb')
+                    $data[] = ["asset_type" => "folder", "asset_name" => $file, "asset_local" => $path, "assets" => scanDirectory($path)];
+            } else {
+                $data[] = ["asset_type" => "file", "asset_name" => $file, "asset_local" => $path];
+            }
+        }
+    }
+    return $data;
+}
+function assets_scan($assets, $assets_data)
+{
+    for ($i = 0; $i < sizeof($assets); $i++) {
+        $asset_file = $assets[$i];
+        if ($asset_file == ".." || $asset_file == "." || $asset_file == ".htaccess" || $asset_file == ".vscode" || $asset_file == "lightweb" || $asset_file == "api" || $asset_file == "index.php" || $asset_file == "README.md" || $asset_file == "vendor.js") {
+
+        } else {
+            if (is_dir(dirname(dirname(__FILE__)) . "/" . $asset_file)) {
+                $assets_data[] = ["asset_type" => "folder", "asset_name" => $asset_file, "asset_local" => dirname(dirname(__FILE__)) . "/" . $asset_file];
+                //assets_scan($assets, $assets_data);
+            } else {
+                $assets_data[] = ["asset_type" => "file", "asset_name" => $asset_file, "asset_local" => dirname(dirname(__FILE__)) . "/" . $asset_file];
+            }
+        }
+    }
+    return $assets_data;
+}
 function getHeader()
 {
     $header_file = dirname(dirname(__FILE__)) . "/lightweb/headers/" . DataInput['header'] . ".html";
