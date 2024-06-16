@@ -1,4 +1,4 @@
-/* LightWeb 3.0.0 Standard JS Vendors   */
+/* LightWeb 3.0.26 Standard JS Vendors   */
 /* lightweb.js version [ 1710860367 ] */
 var lw_version = 3.0;
 /*

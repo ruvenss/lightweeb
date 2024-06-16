@@ -4,12 +4,12 @@
  * This file won't be copied to production
  * @author Ruvenss G. Wilches <ruvenss@gmail.com>
  */
-
-if (file_exists("../lightweb/config.php")) {
-    include_once ("../lightweb/config.php");
+define("API_LW_PATH", "../lightweb/");
+if (file_exists(API_LW_PATH . "config.php")) {
+    include_once (API_LW_PATH . "config.php");
     GetLanguages();
-    if (file_exists("../lightweb/pages/tree.json")) {
-        define("tree", json_decode(file_get_contents("../lightweb/pages/tree.json"), true));
+    if (file_exists(API_LW_PATH . "pages/tree.json")) {
+        define("tree", json_decode(file_get_contents(API_LW_PATH . "pages/tree.json"), true));
     } else {
         define("tree", []);
     }
@@ -17,13 +17,10 @@ if (file_exists("../lightweb/config.php")) {
     if (json_validator($DataInputRaw)) {
         $Bearer = getAuthorizationHeader();
         if ($Bearer == LIGHTWEB_APIKEY) {
-            define("DataInput", json_decode($DataInputRaw, TRUE));
+            define("DataInput", json_decode($DataInputRaw, true));
             define("request_type", $_SERVER['REQUEST_METHOD']);
-            if (isset(DataInput['a'])) {
-                $ThisFunction = DataInput['a'];
-                if (function_exists($ThisFunction)) {
-                    $ThisFunction();
-                }
+            if (isset(DataInput['a']) && function_exists(DataInput['a'])) {
+                DataInput['a']();
             }
         } else {
             response(false, [], 0, "Incorrect Key");
@@ -33,6 +30,18 @@ if (file_exists("../lightweb/config.php")) {
     }
 } else {
     die('{"answer":false,"error":"LightWeb API Key missing in the server"}');
+}
+function SaveBody()
+{
+    if (isset(DataInput['content_url']) && isset(DataInput['page'])) {
+        $header_file = dirname(dirname(__FILE__)) . "/lightweb/headers/" . DataInput['page'] . ".html";
+        file_put_contents($header_file, file_get_contents(DataInput['content_url']));
+        response(true, []);
+    } elseif (!isset(DataInput['content_url'])) {
+        response(false, ["error" => "Page content can not be empty"], 2, "Missing page content");
+    } else {
+        response(false, ["error" => "Page name can not be empty"], 2, "Missing page name");
+    }
 }
 function SaveHeader()
 {
@@ -234,6 +243,7 @@ function delete_page()
         response(false, [], 0, "Page does not exist, you can't delete something that does not exist.");
     }
 }
+
 function update_page()
 {
     if (verified_payload()) {
