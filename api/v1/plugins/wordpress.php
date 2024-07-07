@@ -1,4 +1,17 @@
 <?php
+function wp_article_update()
+{
+    if (!DataInput == null) {
+        if (isset(DataInput['post_id']) && DataInput['post_id'] > 0 && isset(DataInput['update'])) {
+            $post_id = DataInput['post_id'];
+            response(true, ["post_id" => $post_id]);
+        } else {
+            response(false, ["message" => "No Post ID or Key."], 10, "wp_article_update update also missing");
+        }
+    } else {
+        response(false, ["DataInput" => null]);
+    }
+}
 function wp_search()
 {
     if (LIGHTWEB_DB) {
