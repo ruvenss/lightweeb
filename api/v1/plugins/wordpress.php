@@ -2,15 +2,52 @@
 function wp_article_update()
 {
     if (!DataInput == null) {
+        if (!defined("wp_secret")) {
+            response(false, ["message" => "wp_secret is not defined in my_config."], 10, "wp_secret is not defined in my_config.");
+        }
+        if (!defined("wp_token")) {
+            response(false, ["message" => "wp_token is not defined in my_config."], 10, "wp_token is not defined in my_config.");
+        }
         if (isset(DataInput['post_id']) && DataInput['post_id'] > 0 && isset(DataInput['update'])) {
-            $post_id = DataInput['post_id'];
-            response(true, ["post_id" => $post_id]);
+            if (isset(DataInput['secret'])) {
+                $secret = trim(DataInput['secret']);
+                if ($secret == wp_secret) {
+                    switch (DataInput['post_type']) {
+                        case 'post':
+                        case 'page':
+                            break;
+                        case 'nav_menu_item':
+                            # soon to be done
+                            break;
+                        case 'popup':
+                        case 'popup_theme':
+                            # soon to be done
+                            break;
+                        case 'slide':
+                            # soon to be done
+                            break;
+                        default:
+                            # code...
+                            break;
+                    }
+                    $post_id = DataInput['post_id'];
+                    response(true, ["post_id" => $post_id]);
+                } else {
+                    response(false, ["message" => "WordPress Secret incorrect"], 10, "The WordPress Secret does not match with the local secret");
+                }
+            } else {
+                response(false, ["message" => "WordPress Secret Missing"], 10, "WP secret is missing ");
+            }
         } else {
             response(false, ["message" => "No Post ID or Key."], 10, "wp_article_update update also missing");
         }
     } else {
         response(false, ["DataInput" => null]);
     }
+}
+function wp_get_branch_id($post_id)
+{
+
 }
 function wp_search()
 {
