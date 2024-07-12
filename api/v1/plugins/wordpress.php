@@ -2,6 +2,7 @@
 function wp_article_update()
 {
     if (!DataInput == null) {
+        error_log(json_encode(DataInput, JSON_PRETTY_PRINT), 0);
         if (!defined("wp_secret")) {
             response(false, ["message" => "wp_secret is not defined in my_config."], 10, "wp_secret is not defined in my_config.");
         }
@@ -12,9 +13,29 @@ function wp_article_update()
             if (isset(DataInput['secret'])) {
                 $secret = trim(DataInput['secret']);
                 if ($secret == wp_secret) {
+                    $branch = null;
+                    // Get Stage Tree
+                    if (!defined("LIGHTWEB_TREE")) {
+                        $tree = wp_get_stage_tree();
+                        if (count($tree) > 0) {
+                            define("LIGHTWEB_TREE", $tree);
+                        } else {
+                            response(false, ["message" => "You can only edit stage enviroment"], 10, "You can only edit stage enviroment, tree.json not defined");
+                        }
+                    }
                     switch (DataInput['post_type']) {
                         case 'post':
                         case 'page':
+                            $post_id = DataInput['post_id'];
+                            $branch = wp_get_branch_id($post_id);
+                            $content = wp_clean_content(DataInput['post_content']);
+                            if ($branch == null) {
+                                #new branch
+                            } else {
+                                #update branch
+                                $page_file = dirname(dirname(__FILE__)) . "/lightweb/pages/" . $branch . "/index.html";
+                                file_put_contents($page_file, file_get_contents($content));
+                            }
                             break;
                         case 'nav_menu_item':
                             # soon to be done
@@ -31,7 +52,7 @@ function wp_article_update()
                             break;
                     }
                     $post_id = DataInput['post_id'];
-                    response(true, ["post_id" => $post_id]);
+                    response(true, ["post_id" => $post_id, "branch" => $branch]);
                 } else {
                     response(false, ["message" => "WordPress Secret incorrect"], 10, "The WordPress Secret does not match with the local secret");
                 }
@@ -45,9 +66,43 @@ function wp_article_update()
         response(false, ["DataInput" => null]);
     }
 }
+function wp_clean_content($content)
+{
+    $content = str_replace("€", "&euro;", $content);
+    $content = str_replace("œ", "&oelig;", $content);
+    $content = str_replace("è", "&egrave;", $content);
+    $content = str_replace("È", "&Egrave;", $content);
+    $content = str_replace("Ç", "&Ccedil;", $content);
+    $content = str_replace("ç", "&ccedil;", $content);
+    $content = str_replace("É", "&Eacute;", $content);
+    $content = str_replace("é", "&eacute;", $content);
+    $content = str_replace("Ê", "&Ecirc;", $content);
+    $content = str_replace("À", "&Agrave;", $content);
+    $content = str_replace("à", "&agrave;", $content);
+    $content = str_replace("Â", "&Acirc;", $content);
+    $content = str_replace("â", "&acirc;", $content);
+    return $content;
+}
 function wp_get_branch_id($post_id)
 {
-
+    $branch_id = null;
+    if ($post_id > 0 && defined("LIGHTWEB_TREE")) {
+        foreach (LIGHTWEB_TREE as $branch => $values) {
+            if (isset($values['post_id']) && $values['post_id'] == $post_id) {
+                $branch_id = $branch;
+            }
+        }
+    }
+    return $branch_id;
+}
+function wp_get_stage_tree()
+{
+    $tree = [];
+    $tree_path = getcwd() . "/../../lightweb/pages/tree.json";
+    if (file_exists($tree_path)) {
+        $tree = json_decode(file_get_contents($tree_path), true);
+    }
+    return $tree;
 }
 function wp_search()
 {
