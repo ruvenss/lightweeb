@@ -80,7 +80,7 @@ function wp_create_branch($post_permalink, $title, $description, $featured_image
         "titlei18n" => $titlei18n,
         "descriptioni18n" => $titlei18n . "desc",
         "robots" => "Follow",
-        "path" => $post_permalink . "index.html",
+        "path" => ltrim($post_permalink, "/") . "/index.html",
         "author" => "Light Web",
         "url" => $post_permalink,
         "header" => $header,
@@ -88,19 +88,41 @@ function wp_create_branch($post_permalink, $title, $description, $featured_image
         "featured_image" => $featured_image,
         "version" => "1",
         "type" => "page",
-        "branches" => count($branch_pieces),
         "static" => true
     ];
-    $tree[$post_permalink] = $branch;
+    $tree_branch = ltrim($post_permalink, "/");
+    $tree_branch = rtrim($tree_branch, "/");
+    $tree[$tree_branch] = $branch;
     // rewrite tree
-    // error_log(json_encode($tree, JSON_PRETTY_PRINT), 0);
-    $tree_path = getcwd() . "/../../lightweb/pages/tree.json";
     $pages_path = getcwd() . "/../../lightweb/pages";
-    $index_path = wp_build_branch($pages_path, $branch_pieces);
-    file_put_contents($tree_path, json_encode($tree));
+    wp_build_branch($pages_path, $branch_pieces, $tree);
+    wp_add_branch($tree, $tree_branch, $branch);
     return $tree;
 }
-function wp_build_branch($pages_path, $branch_pieces)
+function wp_add_branch($tree, $tree_branch, $branch_data = [])
+{
+    if ($branch_data == []) {
+        $branch_data = [
+            "titlei18n" => "title",
+            "descriptioni18n" => "description",
+            "robots" => "Follow",
+            "path" => ltrim($tree_branch, "/") . "/index.html",
+            "author" => "Light Web",
+            "url" => $tree_branch,
+            "header" => "",
+            "footer" => "",
+            "featured_image" => "",
+            "version" => "1",
+            "type" => "page",
+            "static" => true
+        ];
+    }
+    $tree[$tree_branch] = $branch_data;
+    // rewrite tree
+    $tree_path = getcwd() . "/../../lightweb/pages/tree.json";
+    file_put_contents($tree_path, json_encode($tree));
+}
+function wp_build_branch($pages_path, $branch_pieces, $tree)
 {
     $branch_log = "";
     if (count($branch_pieces) > 0) {
@@ -109,6 +131,12 @@ function wp_build_branch($pages_path, $branch_pieces)
             if (!file_exists($pages_path . $branch_log)) {
                 mkdir($pages_path . $branch_log);
                 touch($pages_path . $branch_log . "/index.html");
+            }
+            $branch_id = ltrim($branch_log, "/");
+            $branch_id = rtrim($branch_log, "/");
+            if (!isset($tree[$branch_id])) {
+
+                wp_add_branch($tree, $branch_id);
             }
         }
     } else {

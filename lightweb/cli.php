@@ -1,21 +1,21 @@
 <?php
 $cli = true;
-include_once('config.php');
+include_once ('config.php');
 if (LIGHTWEB_ENVIRONMENT == 'development') {
     error_reporting(E_ALL);
     ini_set('display_errors', '1');
 }
-include_once('functions.php');
-include_once('render.php');
-include_once('db.php');
+include_once ('functions.php');
+include_once ('render.php');
+include_once ('db.php');
 GetLanguages();
-include_once('publish.php');
+include_once ('publish.php');
 if ($argc > 1) {
     $param = $argv[1];
     echo "
     *************************
     *     LightWeb CLI      *
-    *        v3.0.0         *
+    *        v3.0.30         *
     *************************
 ";
     switch ($param) {
@@ -32,9 +32,9 @@ if ($argc > 1) {
     echo "
     *************************
     *     LightWeb CLI      *
-    *        v3.0.0         *
+    *        v3.0.30         *
     *************************
-LightWeb CLI 3.0.0 is the new method to publish and generate your websites or web app.
+LightWeb CLI 3.0.30 is the new method to publish and generate your websites or web app.
 Instructions:
 php cli.php publish  
 ";
