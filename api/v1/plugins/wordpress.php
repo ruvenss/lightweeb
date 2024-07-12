@@ -2,7 +2,7 @@
 function wp_article_update()
 {
     if (!DataInput == null) {
-        error_log(json_encode(DataInput, JSON_PRETTY_PRINT), 0);
+        //error_log(json_encode(DataInput, JSON_PRETTY_PRINT), 0);
         if (!defined("wp_secret")) {
             response(false, ["message" => "wp_secret is not defined in my_config."], 10, "wp_secret is not defined in my_config.");
         }
@@ -28,13 +28,18 @@ function wp_article_update()
                         case 'page':
                             $post_id = DataInput['post_id'];
                             $branch = wp_get_branch_id($post_id);
-                            $content = wp_clean_content(DataInput['post_content']);
+                            $content = base64_decode(DataInput['post_content']);
                             if ($branch == null) {
-                                #new branch
+                                $post_permalink = wp_permalink(DataInput['post_permalink']);
+                                $site_url = DataInput['site_url'];
+                                $post_permalink = str_replace($site_url, "", $post_permalink);
+                                $new_tree = wp_create_branch($post_permalink, DataInput['post_title'], DataInput['post_description'], DataInput['featured_image'], DataInput['header'], DataInput['footer']);
+                                $page_file = getcwd() . "/../../lightweb/pages" . $post_permalink . "/index.html";
+                                file_put_contents($page_file, $content);
                             } else {
                                 #update branch
-                                $page_file = dirname(dirname(__FILE__)) . "/lightweb/pages/" . $branch . "/index.html";
-                                file_put_contents($page_file, file_get_contents($content));
+                                $page_file = getcwd() . "/../../lightweb/pages" . $branch . "/index.html";
+                                file_put_contents($page_file, $content);
                             }
                             break;
                         case 'nav_menu_item':
@@ -65,6 +70,84 @@ function wp_article_update()
     } else {
         response(false, ["DataInput" => null]);
     }
+}
+function wp_create_branch($post_permalink, $title, $description, $featured_image, $header, $footer)
+{
+    $tree = LIGHTWEB_TREE;
+    $branch_pieces = explode("/", $post_permalink);
+    $titlei18n = wp_titlei18n($post_permalink);
+    $branch = [
+        "titlei18n" => $titlei18n,
+        "descriptioni18n" => $titlei18n . "desc",
+        "robots" => "Follow",
+        "path" => $post_permalink . "index.html",
+        "author" => "Light Web",
+        "url" => $post_permalink,
+        "header" => $header,
+        "footer" => $footer,
+        "featured_image" => $featured_image,
+        "version" => "1",
+        "type" => "page",
+        "branches" => count($branch_pieces),
+        "static" => true
+    ];
+    $tree[$post_permalink] = $branch;
+    // rewrite tree
+    // error_log(json_encode($tree, JSON_PRETTY_PRINT), 0);
+    $tree_path = getcwd() . "/../../lightweb/pages/tree.json";
+    $pages_path = getcwd() . "/../../lightweb/pages";
+    $index_path = wp_build_branch($pages_path, $branch_pieces);
+    file_put_contents($tree_path, json_encode($tree));
+    return $tree;
+}
+function wp_build_branch($pages_path, $branch_pieces)
+{
+    $branch_log = "";
+    if (count($branch_pieces) > 0) {
+        for ($i = 0; $i < sizeof($branch_pieces); $i++) {
+            $branch_log .= "/" . $branch_pieces[$i];
+            if (!file_exists($pages_path . $branch_log)) {
+                mkdir($pages_path . $branch_log);
+                touch($pages_path . $branch_log . "/index.html");
+            }
+        }
+    } else {
+        if (!file_exists($pages_path . $branch_pieces[0])) {
+            $branch_log .= "/" . $branch_pieces[0];
+            mkdir($pages_path . $branch_log);
+            touch($pages_path . $branch_log . "/index.html");
+        }
+    }
+    return $pages_path . $branch_log;
+}
+function wp_descriptioni18n($description)
+{
+
+}
+function wp_titlei18n($title)
+{
+    $new_title = str_replace([" ", "/", "%", "*", "'", '"', "\n", "\r", "\t", "{", "}", "[", "]", "<", ">", "?", "&", ":", "`"], "-", $title);
+    $new_title = str_replace([" ", "/", "%", "*", "'", '"', "\n", "\r", "\t", "{", "}", "[", "]", "<", ">", "?", "&", ":", "`"], "-", $title);
+    $new_title = str_replace(["-B\\", "\\"], "", $title);
+    $new_title = str_replace(["---", "--"], "-", $title);
+    $new_title = str_replace([" ", "/", "%", "*", "'", '"', "\n", "\r", "\t", "{", "}", "[", "]", "<", ">", "?", "&", ":", "`"], "-", $title);
+    $new_title = rtrim($new_title, '-');
+    $new_title = ltrim($new_title, '-');
+    $new_title = rtrim($new_title, '/');
+    $new_title = ltrim($new_title, '/');
+    $new_title = rtrim($new_title, '\\');
+    $new_title = rtrim($new_title, '//');
+    return trim($new_title);
+}
+function wp_permalink($post_permalink)
+{
+    $post_permalink = rtrim($post_permalink, '-');
+    $post_permalink = ltrim($post_permalink, '-');
+    $post_permalink = rtrim($post_permalink, '/');
+    $post_permalink = ltrim($post_permalink, '/');
+    $post_permalink = rtrim($post_permalink, '\\');
+    $post_permalink = rtrim($post_permalink, '//');
+    return trim($post_permalink);
 }
 function wp_clean_content($content)
 {
