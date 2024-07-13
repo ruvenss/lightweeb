@@ -228,7 +228,7 @@ define('LIGHTWEB_DB_COLLATE', '" . LIGHTWEB_DB_COLLATE . "');
     /* Copy root Content to uncompress */
     $root_files = scandir(getcwd() . '/../', SCANDIR_SORT_ASCENDING);
     //print_r($root_files);
-    $avoid_files = [".", "..", ".git", ".gitignore", ".htaccess", "index.php", "lightweb", "README.md", "api"];
+    $avoid_files = [".", "..", ".vscode", ".git", ".gitignore", ".htaccess", "index.php", "lightweb", "README.md", "api"];
     foreach ($root_files as $file2copy) {
         if (!in_array($file2copy, $avoid_files)) {
             //echo "file2copy: $file2copy\n";
@@ -238,7 +238,7 @@ define('LIGHTWEB_DB_COLLATE', '" . LIGHTWEB_DB_COLLATE . "');
     /* Copy API Content to uncompress */
     $API_path = getcwd() . '/../api/';
     $API_files = scandir($API_path, SCANDIR_SORT_ASCENDING);
-    $avoid_files = [".", "..", ".git", ".gitignore", "lightweb.php", "index.php"];
+    $avoid_files = [".", "..", ".vscode", ".git", ".gitignore", "lightweb.php", "index.php"];
     foreach ($API_files as $file2copy) {
         if (!in_array($file2copy, $avoid_files)) {
             //echo "file2copy: $API_path$file2copy\n";

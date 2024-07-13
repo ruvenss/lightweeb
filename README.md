@@ -20,7 +20,6 @@ Light Web is an Open Source framework for light and optimised websites
 - `/lightweb/pages` *All your page contents without the html headers or footers*
 - `/lightweb/pages/tree.js` *Your website structure and pages properties*
 
-
 # WordPress Official Plugin
 
 <a href="https://github.com/ruvenss/LightWeb-WordPress">https://github.com/ruvenss/LightWeb-WordPress</a>
