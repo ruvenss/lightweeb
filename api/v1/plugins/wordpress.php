@@ -34,8 +34,10 @@ function wp_article_update()
                             $new_tree = wp_create_branch($post_permalink, $post_id, $title, DataInput['post_description'], DataInput['featured_image'], DataInput['header'], DataInput['footer']);
                             $page_file = getcwd() . "/../../lightweb/pages" . $post_permalink . "/index.html";
                             file_put_contents($page_file, $content);
-                            if (isset(DataInput['post_parent']) && DataInput['post_parent'] > 0) {
+                            if (isset(DataInput['post_parent']) && DataInput['post_parent'] > 0 && isset(DataInput['$site_url'])) {
                                 // Get Post Parent Data
+                                $post_data = wp_get_post(DataInput['$site_url'], DataInput['post_parent']);
+                                error_log(json_encode($post_data), 0);
                             }
                             break;
                         case 'nav_menu_item':
@@ -68,6 +70,10 @@ function wp_article_update()
         response(false, ["DataInput" => null]);
     }
 }
+function wp_get_post($site_url, $post_id)
+{
+    return json_decode(file_get_contents($site_url . "/wp-json/wp/v2/posts?include=$post_id"), true);
+}
 function wp_create_branch($post_permalink, $post_id, $title, $description, $featured_image, $header, $footer)
 {
     $tree = wp_get_stage_tree();
@@ -81,7 +87,6 @@ function wp_create_branch($post_permalink, $post_id, $title, $description, $feat
         $version = $tree[$branch_id]['version'] + 1;
     } else {
         $version = 1;
-
     }
     $tree[$branch_id]['version'] = $version;
     $branch = [
