@@ -1,4 +1,57 @@
 <?php
+function wp_category_update()
+{
+    if (!DataInput == null) {
+        if (!defined("wp_secret")) {
+            response(false, ["message" => "wp_secret is not defined in my_config."], 10, "wp_secret is not defined in my_config.");
+        }
+        if (!defined("wp_token")) {
+            response(false, ["message" => "wp_token is not defined in my_config."], 10, "wp_token is not defined in my_config.");
+        }
+        if (isset(DataInput['term_id']) && DataInput['term_id'] > 0) {
+            if (isset(DataInput['secret'])) {
+                $secret = trim(DataInput['secret']);
+                if ($secret == wp_secret) {
+                    $site_url = DataInput['site_url'];
+                    $taxonomies = DataInput['taxonomies'];
+                    if (sizeof($taxonomies) > 0) {
+                        wp_build_tree($site_url, $taxonomies);
+                    }
+                    response(true, []);
+                } else {
+                    response(false, ["message" => "WordPress Secret incorrect"], 10, "The WordPress Secret does not match with the local secret");
+                }
+            } else {
+                response(false, ["message" => "WordPress Secret Missing"], 10, "WP secret is missing ");
+            }
+        } else {
+            response(false, ["message" => "No Term ID or Key."], 10, "wp_article_update update also missing");
+        }
+    }
+}
+function wp_build_tree($site_url, $taxonomies)
+{
+    if (count($taxonomies) > 0) {
+        for ($i = 0; $i < sizeof($taxonomies); $i++) {
+            $branch = $taxonomies[$i];
+            $permalink = base64_decode($branch['permalink']);
+            $permalink = str_replace($site_url, "", $permalink);
+            $pages_path = getcwd() . "/../../lightweb/pages";
+            $tree = wp_get_stage_tree();
+            $title = base64_decode($branch['post_title']);
+            //wp_update_locales_key($key, $value)
+            $branch_pieces = explode("/", $permalink);
+            wp_build_branch($pages_path, $branch_pieces, $tree);
+            if (isset($branch['branch'])) {
+                wp_build_tree($site_url, $branch['branch']);
+            }
+        }
+    }
+}
+function wp_build_taxonomy($site_url, $taxonomies)
+{
+
+}
 function wp_article_update()
 {
     if (!DataInput == null) {
@@ -49,6 +102,9 @@ function wp_article_update()
                             break;
                         case 'slide':
                             # soon to be done
+                            break;
+                        case 'category':
+
                             break;
                         default:
                             # code...
@@ -171,7 +227,7 @@ function wp_add_branch($tree_branch, $branch_data = null)
     wp_write_tree($tree);
     return;
 }
-function wp_build_branch($pages_path, $branch_pieces, $tree)
+function wp_build_branch($pages_path, $branch_pieces, $tree, $titlei18n = "title")
 {
     $branch_log = "";
     if (count($branch_pieces) > 0) {
@@ -187,7 +243,7 @@ function wp_build_branch($pages_path, $branch_pieces, $tree)
             $branch_id = rtrim($branch_id, "/");
             if (!isset($tree[$branch_id]) && strlen($branch_id) > 0) {
                 $tree[$branch_id] = [
-                    "titlei18n" => "title",
+                    "titlei18n" => $titlei18n,
                     "descriptioni18n" => "description",
                     "robots" => "Follow",
                     "path" => $branch_id . "/index.html",

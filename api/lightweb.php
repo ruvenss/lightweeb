@@ -165,12 +165,15 @@ function getFooters()
 }
 function publish()
 {
-    $e = "cd " . LIGHTWEB_PATH . "lightweb/ && ./ToProduction.sh";
-    exec($e);
+    $e = "cd " . LIGHTWEB_PATH . "lightweb; ./ToProduction.sh > /dev/null 2>&1 &";
+    error_log("publishing via API: $e", 0);
+    $result = exec($e);
+    error_log($result, 0);
     if (file_exists("../lightweb/publish/versions.json")) {
         define("versions", json_decode(file_get_contents("../lightweb/publish/versions.json"), true));
     } else {
         define("versions", ["v" => 0]);
+        response(false, ["version" => 0, "zip" => null]);
     }
     response(true, ["zip" => "/lightweb/publish/compress/download.zip", "version" => versions['v']]);
 }
