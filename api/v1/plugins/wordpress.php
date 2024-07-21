@@ -83,6 +83,7 @@ function wp_article_update()
                             include_once (getcwd() . "/../../lightweb/config.php");
                             $content = wp_clean_content($content);
                             $site_url = DataInput['site_url'];
+                            $post_date = DataInput['post_date'];
                             $post_permalink = str_replace($site_url, "", $post_permalink);
                             $new_tree = wp_create_branch($post_permalink, $post_id, $title, DataInput['post_description'], DataInput['featured_image'], DataInput['header'], DataInput['footer']);
                             $page_file = getcwd() . "/../../lightweb/pages" . $post_permalink . "/index.html";
@@ -91,6 +92,9 @@ function wp_article_update()
                                 // Get Post Parent Data
                                 $post_data = wp_get_post(DataInput['$site_url'], DataInput['post_parent']);
                                 error_log(json_encode($post_data), 0);
+                            }
+                            if (function_exists("ollama_add_pos")) {
+                                ollama_add_post($post_permalink, $post_date, DataInput['post_title'], DataInput['post_content']);
                             }
                             break;
                         case 'nav_menu_item':
