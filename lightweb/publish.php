@@ -232,7 +232,7 @@ define('LIGHTWEB_DB_COLLATE', '" . LIGHTWEB_DB_COLLATE . "');
     foreach ($root_files as $file2copy) {
         if (!in_array($file2copy, $avoid_files)) {
             //echo "file2copy: $file2copy\n";
-            exec("cp -rf ../$file2copy publish/uncompress");
+            exec("cp -rfdR ../$file2copy publish/uncompress");
         }
     }
     /* Copy API Content to uncompress */
@@ -242,7 +242,7 @@ define('LIGHTWEB_DB_COLLATE', '" . LIGHTWEB_DB_COLLATE . "');
     foreach ($API_files as $file2copy) {
         if (!in_array($file2copy, $avoid_files)) {
             //echo "file2copy: $API_path$file2copy\n";
-            exec("cp -rf $API_path$file2copy publish/uncompress/api");
+            exec("cp -rfdR $API_path$file2copy publish/uncompress/api");
         }
     }
     /* Copy root autoforwarder */
