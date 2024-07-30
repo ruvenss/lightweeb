@@ -54,7 +54,9 @@ if (!file_exists(LIGHTWEB_PAGES_PATH . 'siteconfig.json')) {
         }
     ],
     "socialmedia": {
+        "github": "",
         "whatsapp": "",
+        "telegram": "",
         "twitter": "",
         "facebook": "",
         "instagram": "",
@@ -81,7 +83,7 @@ define('LIGHTWEB_TREE', json_decode(file_get_contents(LIGHTWEB_PAGES_PATH . 'tre
 define('LIGHTWEB_SITE_CONFIG', json_decode(file_get_contents(LIGHTWEB_PAGES_PATH . 'siteconfig.json'), true));
 define('LIGHTWEB_DEBUG', false);
 define('LIGHTWEB_MINIFY', true);
-define('LIGHTWEB_DB', true);
+define('LIGHTWEB_DB', false);
 define('LIGHTWEB_DB_HOST', 'localhost');
 define('LIGHTWEB_DB_USER', '');
 define('LIGHTWEB_DB_PASS', '');
