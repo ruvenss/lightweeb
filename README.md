@@ -1,7 +1,7 @@
 <img src="https://images.nizu.io/lightweb/apple-touch-icon-precomposed.png">
-# LightWeb 3.0
+# LightWeeb 3.0
 
-Light Web is an Open Source framework for light and optimised websites
+LightWeeb is an Open Source framework for light and optimised websites
 
 # Features
 
@@ -19,6 +19,14 @@ Light Web is an Open Source framework for light and optimised websites
 - `/lightweb/footers` *All your html footers*
 - `/lightweb/pages` *All your page contents without the html headers or footers*
 - `/lightweb/pages/tree.js` *Your website structure and pages properties*
+
+# install LightWeeb
+
+Execute the following line to install and deploy LightWeeb 3.0
+
+```
+wget -q https://raw.githubusercontent.com/ruvenss/install_lightweeb/main/deploy_lightweeb.sh -O deploy_lightweeb.sh; chmod +x deploy_lightweeb.sh; ./deploy_lightweeb.sh
+```
 
 # WordPress Official Plugin
 
