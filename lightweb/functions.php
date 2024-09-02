@@ -19,7 +19,7 @@ function LoadPlugins($uri, $fullpage, $lang)
             $plug_arr = explode("/", $plugin);
             $plugfunction = end($plug_arr);
             $plugfunction = str_replace(".php", "", $plugfunction);
-            include_once ($plugin);
+            include_once($plugin);
             if (function_exists($plugfunction)) {
                 $fullpage = $plugfunction($fullpage, $lang, $uri);
             }
@@ -153,4 +153,47 @@ function buildManifest($lang)
     </msapplication>
 </browserconfig>';
     file_put_contents($manifest_xml, $manifest_xmlcontent);
+}
+function html_elegant_encode($content)
+{
+    $content = str_replace(["´", "'", "’"], "&apos;", $content);
+    $content = str_replace("À", "&Agrave;", $content);
+    $content = str_replace("à", "&agrave;", $content);
+    $content = str_replace("Â", "&Acirc;", $content);
+    $content = str_replace("â", "&acirc;", $content);
+    $content = str_replace("Æ", "&AElig;", $content);
+    $content = str_replace("æ", "&aelig;", $content);
+    $content = str_replace("Ç", "&Ccedil;", $content);
+    $content = str_replace("ç", "&ccedil;", $content);
+    $content = str_replace("È", "&Egrave;", $content);
+    $content = str_replace("è", "&egrave;", $content);
+    $content = str_replace("É", "&Eacute;", $content);
+    $content = str_replace("é", "&eacute;", $content);
+    $content = str_replace("Ê", "&Ecirc;", $content);
+    $content = str_replace("ê", "&ecirc;", $content);
+    $content = str_replace("Ë", "&Euml;", $content);
+    $content = str_replace("ë", "&euml;", $content);
+    $content = str_replace("Î", "&Icirc;", $content);
+    $content = str_replace("î", "&icirc;", $content);
+    $content = str_replace("Ï", "&Iuml;", $content);
+    $content = str_replace("ï", "&iuml;", $content);
+    $content = str_replace("Ô", "&Ocirc;", $content);
+    $content = str_replace("ô", "&ocirc;", $content);
+    $content = str_replace("Œ", "&OElig;", $content);
+    $content = str_replace("œ", "&oelig;", $content);
+    $content = str_replace("Ù", "&Ugrave;", $content);
+    $content = str_replace("ù", "&ugrave;", $content);
+    $content = str_replace("Û", "&Ucirc;", $content);
+    $content = str_replace("û", "&ucirc;", $content);
+    $content = str_replace("Ü", "&Uuml;", $content);
+    $content = str_replace("ü", "&uuml;", $content);
+    $content = str_replace("Ý", "&Yacute;", $content);
+    $content = str_replace("ý", "&yacute;", $content);
+    $content = str_replace("Þ", "&THORN;", $content);
+    $content = str_replace("þ", "&thorn;", $content);
+    $content = str_replace("ß", "&szlig;", $content);
+    $content = str_replace("ÿ", "&yuml;", $content);
+    $content = str_replace("«", "&laquo;", $content);
+    $content = str_replace("»", "&raquo;", $content);
+    return $content;
 }

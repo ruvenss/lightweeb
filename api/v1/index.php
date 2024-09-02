@@ -1,5 +1,5 @@
 <?php
-header("PoweredBy: LightWeb 3.0.31;");
+header("PoweredBy: LightWeb 3.0.32;");
 header("Content-Type: application/json; charset=UTF-8");
 define("errors", json_decode(file_get_contents("../errors.json"), true));
 $DataInputRaw = file_get_contents("php://input");
@@ -10,10 +10,10 @@ $DataInput = json_decode($DataInputRaw, TRUE);
 //die();
 define("DataInput", json_decode($DataInputRaw, TRUE));
 
-include_once ("../xhr_handler.php");
-include_once ("../my_config.php");
-include_once ("../my_functions.php");
-include_once ("../my_init.php");
+include_once("../xhr_handler.php");
+include_once("../my_config.php");
+include_once("../my_functions.php");
+include_once("../my_init.php");
 loadPlugins();
 
 if (isset($_REQUEST['a'])) {
@@ -30,9 +30,9 @@ if (isset($_REQUEST['a'])) {
             $ThisFunction();
             break;
         default:
-            include_once ("../my_config.php");
-            include_once ("../my_functions.php");
-            include_once ("../my_init.php");
+            include_once("../my_config.php");
+            include_once("../my_functions.php");
+            include_once("../my_init.php");
             if (function_exists($ThisFunction)) {
                 $ThisFunction();
             } else {
@@ -72,7 +72,7 @@ function loadPlugins()
         if ($pluginfile == "." || $pluginfile == "..") {
 
         } else {
-            include_once ("plugins/$pluginfile");
+            include_once("plugins/$pluginfile");
         }
     }
 }
