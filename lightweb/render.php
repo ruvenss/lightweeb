@@ -91,9 +91,18 @@ function render_page($page = "home", $lang = "")
             }
             $headerhtml = str_replace("<head>", "<head>\n\t$tagheader", $headerhtml);
             // Insert Manifest for offline
-            $manifesttag = '<link rel="manifest" href="/manifest_' . $lang . '.json" />';
-            buildManifest($lang);
-            $headerhtml = str_replace("<head>", "<head>\n\t$manifesttag", $headerhtml);
+            if (defined("LIGHTWEB_CACHE")) {
+                if (LIGHTWEB_CACHE) {
+                    $manifesttag = '<link rel="manifest" href="/manifest_' . $lang . '.json" />';
+                    buildManifest($lang);
+                    $headerhtml = str_replace("<head>", "<head>\n\t$manifesttag", $headerhtml);
+                }
+            } else {
+                $manifesttag = '<link rel="manifest" href="/manifest_' . $lang . '.json" />';
+                buildManifest($lang);
+                $headerhtml = str_replace("<head>", "<head>\n\t$manifesttag", $headerhtml);
+            }
+
             if (isset(LIGHTWEB_TREE[$page]['featured_image'])) {
                 $headerhtml = str_replace("</head>", ogcard(i18nString(LIGHTWEB_TREE[$page]['titlei18n'], $lang), i18nString(LIGHTWEB_TREE[$page]['descriptioni18n'], $lang), "https://" . LIGHTWEB_PRODUCTION . LIGHTWEB_TREE[$page]['url'], LIGHTWEB_TREE[$page]['featured_image']) . "\n</head>", $headerhtml);
             }

@@ -96,3 +96,4 @@ define('LIGHTWEB_NIZU_TOKEN', "");
 define('LIGHTWEB_NIZU_CMS', "");
 define('GOOGLE_UA', "");
 define('FACEBOOK_PIXEL_ID', "");
+define("LIGHTWEB_CACHE", true);

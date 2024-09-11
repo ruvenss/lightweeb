@@ -193,6 +193,8 @@ function html_elegant_encode($content)
     $content = str_replace("þ", "&thorn;", $content);
     $content = str_replace("ß", "&szlig;", $content);
     $content = str_replace("ÿ", "&yuml;", $content);
+    $content = str_replace("ñ", "&ndash;", $content);
+    $content = str_replace("Ñ", "&Ntilde;", $content);
     $content = str_replace("«", "&laquo;", $content);
     $content = str_replace("»", "&raquo;", $content);
     return $content;
