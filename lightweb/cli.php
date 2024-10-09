@@ -22,7 +22,7 @@ if ($argc > 1) {
     echo "
     *************************
     *     LightWeb CLI      *
-    *        v3.0.32         *
+    *        v3.0.33         *
     *************************
 ";
     switch ($param) {
@@ -39,9 +39,9 @@ if ($argc > 1) {
     echo "
     *************************
     *     LightWeb CLI      *
-    *        v3.0.32         *
+    *        v3.0.33         *
     *************************
-LightWeb CLI 3.0.32 is the new method to publish and generate your websites or web app.
+LightWeb CLI 3.0.33 is the new method to publish and generate your websites or web app.
 Instructions:
 php cli.php publish  
 ";
