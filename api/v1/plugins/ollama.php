@@ -1,4 +1,16 @@
 <?php
+/**
+ * DO NOT INSERT YOUR CODE HERE! THIS FILE WILL BE REWRITE IN THE NEXT UPDATE
+ * USE ONLY FILES THAT BEGIN BY my_
+ * 
+ * @param mixed $post_permalink
+ * @param mixed $post_date
+ * @param mixed $post_title
+ * @param mixed $post_content
+ * @param mixed $author
+ * @return void
+ * @author Ruvenss G. Wilches <ruvenss@gmail.com>
+ */
 function ollama_add_post($post_permalink, $post_date, $post_title, $post_content, $author = null)
 {
     if (defined("ollama_server") && strlen(ollama_server) > 4 && defined("ollama_model")) {

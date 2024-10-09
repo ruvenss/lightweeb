@@ -1,4 +1,11 @@
 <?php
+/**
+ * DO NOT INSERT YOUR CODE HERE! THIS FILE WILL BE REWRITE IN THE NEXT UPDATE
+ * USE ONLY FILES THAT BEGIN BY my_
+ * 
+ * @author Ruvenss G. Wilches <ruvenss@gmail.com>
+ */
+
 header("PoweredBy: LightWeb 3.0;");
 if (LIGHTWEB_DB && !defined("ldb")) {
     $ldb = new mysqli(LIGHTWEB_DB_HOST, LIGHTWEB_DB_USER, LIGHTWEB_DB_PASS, LIGHTWEB_DB_NAME);

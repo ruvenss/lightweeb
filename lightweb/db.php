@@ -1,4 +1,11 @@
 <?php
+/**
+ * DO NOT INSERT YOUR CODE HERE! THIS FILE WILL BE REWRITE IN THE NEXT UPDATE
+ * USE ONLY FILES THAT BEGIN BY my_
+ * 
+ * @author Ruvenss G. Wilches <ruvenss@gmail.com>
+ */
+
 function sqlSanitize($value)
 {
     if (isset($value)) {
@@ -14,7 +21,7 @@ function sqlTableIndex($table)
     $sqlquery = "SHOW INDEX FROM `" . $table . "`";
     $result = ldb->query($sqlquery);
     while ($row = $result->fetch_assoc()) {
-        return($row['Column_name']);
+        return ($row['Column_name']);
     }
 }
 function sqlTableFields($table)
@@ -25,7 +32,7 @@ function sqlTableFields($table)
     while ($row = $result->fetch_assoc()) {
         array_push($arrFields, $row['Field']);
     }
-    return($arrFields);
+    return ($arrFields);
 }
 function sqlInsert($table, $fields = array(), $values = array(), $userid = 1, $logged = false)
 {
@@ -36,7 +43,7 @@ function sqlInsert($table, $fields = array(), $values = array(), $userid = 1, $l
             if ($values[$i] == "NOW()") {
                 $values[$i] = "NOW()";
             } else {
-                $values[$i] = '"' . mysqli_real_escape_string($apidb, $values[$i]) . '"';
+                $values[$i] = '"' . mysqli_real_escape_string(ldb, $values[$i]) . '"';
             }
 
         }
@@ -45,9 +52,9 @@ function sqlInsert($table, $fields = array(), $values = array(), $userid = 1, $l
         //echo $sqlquery . "\n";
         try {
             mysqli_query(ldb, $sqlquery);
-            return(mysqli_insert_id(ldb));
+            return (mysqli_insert_id(ldb));
         } catch (Exception $e) {
-            return(null);
+            return (null);
         }
     } else {
         echo ("\r\n<br>sqlInsert parameters incorrect: size of fileds=" . sizeof($fields) . " size of values=" . sizeof($values));
@@ -68,10 +75,10 @@ function sqlInsertUpdate($table, $fields = [], $values = [], $onupdate = "", $lo
     $sqlquery = "INSERT INTO `$table`($insertFileds) VALUES ($insertValues) ON DUPLICATE KEY UPDATE $onupdate;";
     try {
         mysqli_query(ldb, $sqlquery);
-        return(mysqli_insert_id(ldb));
+        return (mysqli_insert_id(ldb));
     } catch (Exception $e) {
         error_log($sqlquery, 0);
-        return(null);
+        return (null);
     }
 }
 function sqlSelect($table, $field, $where, $orderby = "", $limit = "")
@@ -89,7 +96,7 @@ function sqlSelect($table, $field, $where, $orderby = "", $limit = "")
         }
         $result = ldb->query($sqlquery);
         if (!$result) {
-            return(false);
+            return (false);
         } else {
             while ($row = $result->fetch_assoc()) {
                 return $row[$field];
@@ -110,7 +117,7 @@ function sqlUpdate($table, $fields = [], $values = [], $keyfield = "", $keyvalue
                 $sqlquery .= $v . $fields[$i] . '=NOW()';
             } else {
                 if (strlen($values[$i]) > 0) {
-                    $values[$i] = '"' . mysqli_real_escape_string($apidb, $values[$i]) . '"';
+                    $values[$i] = '"' . mysqli_real_escape_string(ldb, $values[$i]) . '"';
                 } else {
                     $values[$i] = "NULL";
                 }
@@ -123,7 +130,7 @@ function sqlUpdate($table, $fields = [], $values = [], $keyfield = "", $keyvalue
         $sqlquery .= ' WHERE `' . $keyfield . '`="' . $keyvalue . '"';
         //error_log($sqlquery, 0);
         mysqli_query(ldb, $sqlquery);
-        return(true);
+        return (true);
     }
 }
 function sqlSelectRow($table, $fields, $where, $orderby = "")
@@ -163,13 +170,13 @@ function sqlSelectRows($table, $fields, $where, $orderby = "", $limit = "")
         }
         $result = ldb->query($sqlquery);
         if (!$result) {
-            return(null);
+            return (null);
         } else {
             $rows = array();
             while ($row = $result->fetch_assoc()) {
                 array_push($rows, $row);
             }
-            return($rows);
+            return ($rows);
         }
     }
 }
@@ -239,10 +246,10 @@ function sqlTableExist($table, $dbname)
     $apidb = ldb->query($query);
     while (($row = $apidb->fetch_assoc()) !== false) {
         if ($row['EXIST'] == "0" || $row['EXIST'] == "false") {
-            return(false);
+            return (false);
         } else {
-            return(true);
+            return (true);
         }
     }
-    return(false);
+    return (false);
 }

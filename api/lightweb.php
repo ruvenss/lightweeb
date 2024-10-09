@@ -1,12 +1,14 @@
 <?php
 /**
+ * DO NOT INSERT YOUR CODE HERE! THIS FILE WILL BE REWRITE IN THE NEXT UPDATE
+ * USE ONLY FILES THAT BEGIN BY my_
  * LightWeb API Handler 
  * This file won't be copied to production
  * @author Ruvenss G. Wilches <ruvenss@gmail.com>
  */
 define("API_LW_PATH", "../lightweb/");
 if (file_exists(API_LW_PATH . "config.php")) {
-    include_once (API_LW_PATH . "config.php");
+    include_once(API_LW_PATH . "config.php");
     GetLanguages();
     if (file_exists(API_LW_PATH . "pages/tree.json")) {
         define("tree", json_decode(file_get_contents(API_LW_PATH . "pages/tree.json"), true));

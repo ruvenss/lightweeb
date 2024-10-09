@@ -1,4 +1,11 @@
 <?php
+/**
+ * DO NOT INSERT YOUR CODE HERE! THIS FILE WILL BE REWRITE IN THE NEXT UPDATE
+ * USE ONLY FILES THAT BEGIN BY my_
+ * 
+ * @author Ruvenss G. Wilches <ruvenss@gmail.com>
+ */
+
 define("webapp_path", dirname(dirname(__FILE__)));
 define("GITURL", "https://raw.githubusercontent.com/ruvenss/lightweb/master/");
 define("LW_LOCAL", json_decode(file_get_contents("lightweb.json"), true));

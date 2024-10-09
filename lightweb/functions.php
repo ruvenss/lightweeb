@@ -1,4 +1,10 @@
 <?php
+/**
+ * DO NOT INSERT YOUR CODE HERE! THIS FILE WILL BE REWRITE IN THE NEXT UPDATE
+ * USE ONLY FILES THAT BEGIN BY my_
+ * 
+ * @author Ruvenss G. Wilches <ruvenss@gmail.com>
+ */
 function GetLanguages()
 {
     if (!defined("locales")) {

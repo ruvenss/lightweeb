@@ -1,4 +1,11 @@
 <?php
+/**
+ * DO NOT INSERT YOUR CODE HERE! THIS FILE WILL BE REWRITE IN THE NEXT UPDATE
+ * USE ONLY FILES THAT BEGIN BY my_
+ * 
+ * @author Ruvenss G. Wilches <ruvenss@gmail.com>
+ */
+
 function render_page($page = "home", $lang = "")
 {
     if (!defined("LW_CODEVER")) {
