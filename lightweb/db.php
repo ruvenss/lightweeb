@@ -5,7 +5,6 @@
  * 
  * @author Ruvenss G. Wilches <ruvenss@gmail.com>
  */
-
 function sqlSanitize($value)
 {
     if (isset($value)) {

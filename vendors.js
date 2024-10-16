@@ -1,4 +1,4 @@
-/* LightWeb 3.0.32 Standard JS Vendors   */
+/* LightWeb 3.0.33 Standard JS Vendors   */
 /* lightweb.js version [ 1710860367 ] */
 var lw_version = 3.0;
 /*
@@ -124,8 +124,8 @@ nizu_Form("newsletter", "/api/v1/", "MyAlert");
 function MyAlert(message) {
     console.info("Subscribed");
     alert("subscribed");
-}/* zxy_theme.js version [ 1725274755 ] */
-var LW_user_language = "en";
+}/* zxy_theme.js version [ 1728478900 ] */
+var LW_user_language = "{{lang_lc}}";
 var LW_rel_ver = "87";
 if (localStorage.getItem("LW_user_language") === null) {
     localStorage.setItem("LW_user_language", LW_user_language);
@@ -140,7 +140,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
     LighWebInit();
 });
 function LighWebInit() {
-    console.info("LighWebInit DOM Content loaded LightWeb 3.0.32 initiated\nUser Language: " + LW_user_language + "\nVersion: " + LW_rel_ver);
+    console.info("LighWebInit DOM Content loaded LightWeb 3.0.33 initiated\nUser Language: " + LW_user_language + "\nVersion: " + LW_rel_ver);
     /* Theme Code Begins here */
     nizu_GetData("/api/v1/", { a: "onlyhumans", LW_uuid: localStorage.getItem("LW_uuid") }, function (data) {
         console.info(data);

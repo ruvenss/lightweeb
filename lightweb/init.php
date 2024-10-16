@@ -6,7 +6,7 @@
  * @author Ruvenss G. Wilches <ruvenss@gmail.com>
  */
 
-header("PoweredBy: LightWeb 3.0;");
+header("PoweredBy: LightWeeb 3.0.34;");
 if (LIGHTWEB_DB && !defined("ldb")) {
     $ldb = new mysqli(LIGHTWEB_DB_HOST, LIGHTWEB_DB_USER, LIGHTWEB_DB_PASS, LIGHTWEB_DB_NAME);
     define("ldb", $ldb);
