@@ -37,8 +37,13 @@ function SaveBody()
 {
     if (isset(DataInput['content_url']) && isset(DataInput['page'])) {
         $page_file = dirname(dirname(__FILE__)) . "/lightweb/pages/" . DataInput['page'] . "/index.html";
-        file_put_contents($page_file, file_get_contents(DataInput['content_url']));
-        response(true, ["page" => DataInput['page'], "downloaded_from" => DataInput['content_url']]);
+        $page_data = file_get_contents(DataInput['content_url']);
+        if (strlen($page_data)) {
+            file_put_contents($page_file, file_get_contents(DataInput['content_url']));
+            response(true, ["page" => DataInput['page'], "downloaded_from" => DataInput['content_url']]);
+        } else {
+            response(false, ["error" => "Page content can not be empty"], 2, "Missing page content");
+        }
     } elseif (!isset(DataInput['content_url'])) {
         response(false, ["error" => "Page content can not be empty"], 2, "Missing page content");
     } else {
@@ -478,7 +483,9 @@ function GetConfig()
     $config['LIGHTWEB_NIZU_CMS'] = LIGHTWEB_NIZU_CMS;
     $config['GOOGLE_UA'] = GOOGLE_UA;
     $config['FACEBOOK_PIXEL_ID'] = FACEBOOK_PIXEL_ID;
-    $config['FACEBOOK_PIXEL_ID'] = FACEBOOK_PIXEL_ID;
+    if (defined("HUBSPOT_ID")) {
+        $config['HUBSPOT_ID'] = HUBSPOT_ID;
+    }
     $siteconfig = json_decode(file_get_contents(LIGHTWEB_PATH . "lightweb/pages/siteconfig.json"));
     response(true, ["config" => $config, "siteconfig" => $siteconfig]);
 }
