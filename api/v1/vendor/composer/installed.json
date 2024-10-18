@@ -1,0 +1,72 @@
+{
+    "packages": [
+        {
+            "name": "rakibtg/sleekdb",
+            "version": "2.15",
+            "version_normalized": "2.15.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/SleekDB/SleekDB.git",
+                "reference": "957468be56bfc5d23f8f5fa7438e90ede17f9d05"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/SleekDB/SleekDB/zipball/957468be56bfc5d23f8f5fa7438e90ede17f9d05",
+                "reference": "957468be56bfc5d23f8f5fa7438e90ede17f9d05",
+                "shasum": ""
+            },
+            "require": {
+                "ext-json": "*",
+                "ext-mbstring": "*",
+                "php": ">=7.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^6.5",
+                "spatie/phpunit-watcher": "^1.8"
+            },
+            "time": "2022-10-16T17:55:55+00:00",
+            "type": "library",
+            "installation-source": "dist",
+            "autoload": {
+                "psr-4": {
+                    "SleekDB\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "rakibtg",
+                    "email": "rakibtg@gmail.com"
+                }
+            ],
+            "description": "SleekDB - A 30Kb NoSQL Database made using PHP",
+            "keywords": [
+                "SleekDB",
+                "api",
+                "database",
+                "flatfile",
+                "framework",
+                "micro",
+                "nosql",
+                "php",
+                "rest"
+            ],
+            "support": {
+                "issues": "https://github.com/SleekDB/SleekDB/issues",
+                "source": "https://github.com/SleekDB/SleekDB/tree/2.15"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/sleekdb",
+                    "type": "github"
+                }
+            ],
+            "install-path": "../rakibtg/sleekdb"
+        }
+    ],
+    "dev": true,
+    "dev-package-names": []
+}
