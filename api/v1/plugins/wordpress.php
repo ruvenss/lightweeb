@@ -118,7 +118,6 @@ function wp_article_update()
                             break;
                     }
                     $post_id = DataInput['post_id'];
-
                     response(true, ["post_id" => $post_id, "branch" => $branch, "Authorization" => LIGHTWEB_APIKEY]);
                 } else {
                     response(false, ["message" => "WordPress Secret incorrect"], 10, "The WordPress Secret does not match with the local secret");
@@ -180,7 +179,6 @@ function wp_create_branch($categories, $post_date, $tags, $author, $post_permali
     wp_add_branch($tree_branch, $branch);
     return $tree;
 }
-
 function wp_update_locales_key($key, $value)
 {
     $locales_path = getcwd() . "/../../lightweb/locales";
