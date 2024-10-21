@@ -25,6 +25,10 @@ if (LW_LOCAL['version'] === LW_RELEASE['version']) {
         file_put_contents($local_dest, $file_content);
         echo " ✅\n";
     }
+    if (is_dir(webapp_path . "/vendor/composer/LICENSE")) {
+        rmdir(webapp_path . "/vendor/composer/LICENSE");
+        touch(webapp_path . "/vendor/composer/LICENSE");
+    }
     echo "________________________\n";
     echo "|       COMPOSER       |\n";
     echo "|______________________|\n";
