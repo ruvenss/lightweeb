@@ -25,6 +25,12 @@ if (LW_LOCAL['version'] === LW_RELEASE['version']) {
         file_put_contents($local_dest, $file_content);
         echo " ✅\n";
     }
+    echo "________________________\n";
+    echo "|       COMPOSER       |\n";
+    echo "|______________________|\n";
+    define("LW_API_PATH", webapp_path . "/api/v1");
+    exec("cd " . LW_API_PATH . "; composer require rakibtg/sleekdb");
+    echo "\n\nUpdate completed";
 }
 echo "cleaning malware ...\n";
 // Deleting files:
