@@ -5,7 +5,7 @@
  * @author Ruvenss G. Wilches <ruvenss@gmail.com>
  */
 require __DIR__ . '/vendor/autoload.php';
-header("PoweredBy: LightWeeb v3.0.35;");
+header("PoweredBy: LightWeeb v3.0.37;");
 header("Content-Type: application/json; charset=UTF-8");
 define("errors", json_decode(file_get_contents("../errors.json"), true));
 $DataInputRaw = file_get_contents("php://input");

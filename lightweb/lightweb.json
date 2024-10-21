@@ -1,5 +1,5 @@
 {
-    "version": "3.0.36",
+    "version": "3.0.37",
     "last_update": "2024-10-30 22:40:20",
     "release_title": "LightWeeb SpotLight Press",
     "release_notes": "",
@@ -40,6 +40,7 @@
         "\/lightweb\/publish.php",
         "\/lightweb\/render.php",
         "\/lightweb\/ToProduction.sh",
+        "\/lightweb\/autoupdate.php",
         "\/.htaccess",
         "\/index.php"
     ]
