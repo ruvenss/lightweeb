@@ -24,12 +24,12 @@ function render_page($page = "home", $lang = "")
         file_put_contents(LIGHTWEB_PUBLISH_PATH . "versions.json", '{"v":1}');
     }
     $version_data = json_decode(file_get_contents(LIGHTWEB_PUBLISH_PATH . "versions.json"), true);
-    $jsvendors = '<script type="text/javascript" id="lightweb-vendors-js" src="/vendors.js?v=3.0.38"></script>' . "\n</body>";
+    $jsvendors = '<script type="text/javascript" id="lightweb-vendors-js" src="/vendors.js?v=3.0.39"></script>' . "\n</body>";
     $jsvendors_files = scandir(LIGHTWEB_PATH . 'lightweb/jscode', SCANDIR_SORT_ASCENDING);
     $jsvendors_path = dirname(dirname(__FILE__)) . "/vendors.js";
     if (count($jsvendors_files)) {
         $avoid_files = [".", "..", "facebook_pixel.js", "google_ua.js", "service-worker.js"];
-        $jsvendors_code = '/* LightWeb 3.0.38 Standard JS Vendors   */' . "\n";
+        $jsvendors_code = '/* LightWeb 3.0.39 Standard JS Vendors   */' . "\n";
         foreach ($jsvendors_files as $jsvendors_file) {
             if (!in_array($jsvendors_file, $avoid_files)) {
                 $jsvendors_code .= '/* ' . $jsvendors_file . ' version [ ' . filectime(LIGHTWEB_PATH . 'lightweb/jscode/' . $jsvendors_file) . ' ] */' . "\n";
