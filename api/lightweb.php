@@ -201,6 +201,7 @@ function update_locales()
                         $n++;
                     }
                 }
+                copy($i18npath, $i18npath . "." . date("Ymdhis") . ".bak");
                 file_put_contents($i18npath, json_encode($i18nfile_content[0]));
             }
         }
@@ -329,6 +330,7 @@ function update_page()
                     foreach ($payloadi18nkeys as $key => $value) {
                         $currentLocales[$key] = $value;
                     }
+                    copy($locales_path, $locales_path . "." . date("Ymdhis") . ".bak");
                     file_put_contents($locales_path, json_encode($currentLocales));
                 }
             }

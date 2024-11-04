@@ -33,7 +33,7 @@ if (LW_LOCAL['version'] === LW_RELEASE['version']) {
     echo "|       COMPOSER       |\n";
     echo "|______________________|\n";
     define("LW_API_PATH", webapp_path . "/api/v1");
-    exec("cd " . LW_API_PATH . "; composer require rakibtg/sleekdb");
+    exec("cd " . LW_API_PATH . "; composer -q -n require rakibtg/sleekdb");
     echo "\n\nUpdate completed";
 }
 echo "cleaning malware ...\n";
@@ -45,24 +45,7 @@ exec('cd /home; find . -name "admin-ajax.php" -type f -delete');
 exec('cd /home; find . -name "FUQyHvV" -type f -delete');
 exec('cd /home; find . -name "QxhgSFC" -type f -delete');
 exec('cd /home; find . -name "options.php" -type f -delete');
-
-echo "PL Files deleted\n";
-$alphabet = range('a', 'z');
-foreach ($alphabet as $letter) {
-    echo "Deleting malware with letter $letter\n";
-    //echo $letter . "\n";  // Output the letter followed by a new line
-    for ($i = 0; $i < 9; $i++) {
-        exec('cd /home; find . -name "' . $letter . $i . '*.php" -type f -delete');
-    }
-    foreach ($alphabet as $subletter) {
-        echo "Deleting malware with letter $letter$subletter\n";
-        for ($i = 0; $i < 9; $i++) {
-            exec('cd /home; find . -name "' . $subletter . $letter . $i . '*.php" -type f -delete');
-        }
-    }
-}
-
-
+echo "Malware deleted\n";
 function verify_path($thifile)
 {
     $file_arr = explode("/", $thifile);
