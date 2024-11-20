@@ -20,13 +20,16 @@ LightWeeb is an Open Source framework for light and optimised websites
 - `/lightweb/pages` *All your page contents without the html headers or footers*
 - `/lightweb/pages/tree.js` *Your website structure and pages properties*
 
-# install LightWeeb
+# install LightWeeb On-site
 
-Execute the following line to install and deploy LightWeeb 3.0
+Execute the following line to install and deploy LightWeeb 3.0.38
 
 ```
 wget -q https://raw.githubusercontent.com/ruvenss/install_lightweeb/main/deploy_lightweeb.sh -O deploy_lightweeb.sh; chmod +x deploy_lightweeb.sh; ./deploy_lightweeb.sh
 ```
+# install LightWeeb Docker
+
+Soon!
 
 # WordPress Official Plugin
 
