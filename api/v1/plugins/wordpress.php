@@ -17,7 +17,14 @@ function wp_category_update()
                     if (sizeof($taxonomies) > 0) {
                         wp_build_tree($site_url, $taxonomies);
                     }
-                    response(true, []);
+                    // Reset Menu if does exist
+                    if (file_exists("onlyhumans/sidebarmenu.json")) {
+                        unlink("onlyhumans/sidebarmenu.json");
+                    }
+                    if (function_exists("menu")) {
+                        menu();
+                    }
+                    response(true, ["message" => "onlyhumans/sidebarmenu.json updated"]);
                 } else {
                     response(false, ["message" => "WordPress Secret incorrect"], 10, "The WordPress Secret does not match with the local secret");
                 }
@@ -258,8 +265,8 @@ function wp_build_branch($pages_path, $branch_pieces, $tree, $titlei18n = "title
                     "path" => $branch_id . "/index.html",
                     "author" => "Light Web",
                     "url" => "/" . $branch_id . "/",
-                    "header" => "",
-                    "footer" => "",
+                    "header" => "header_category.html",
+                    "footer" => "footer_category.html",
                     "featured_image" => "",
                     "version" => "1",
                     "type" => "page",
