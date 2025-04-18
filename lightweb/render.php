@@ -1,4 +1,5 @@
 <?php
+
 /**
  * DO NOT INSERT YOUR CODE HERE! THIS FILE WILL BE REWRITE IN THE NEXT UPDATE
  * USE ONLY FILES THAT BEGIN BY my_
@@ -11,17 +12,16 @@ function render_page($page = "home", $lang = "")
     if (!defined("LW_CODEVER")) {
         define("LW_CODEVER", json_decode(file_get_contents(LIGHTWEB_PATH . "lightweb/lightweb.json"), true)['version']);
     }
-    if ($page == "") {
-        $page = "home";
+    $page = $page ?: "home";
+    $lang = $lang ?: LIGHTWEB_URI['lang'];
+    $publishDir = LIGHTWEB_PATH . "lightweb/publish";
+    if (!file_exists($publishDir)) {
+        mkdir($publishDir, 0755, true);
     }
-    if ($lang == "") {
-        $lang = LIGHTWEB_URI['lang'];
-    }
-    if (!file_exists(LIGHTWEB_PATH . "lightweb/publish")) {
-        mkdir(LIGHTWEB_PATH . "lightweb/publish");
-    }
-    if (!file_exists(LIGHTWEB_PUBLISH_PATH . "versions.json")) {
-        file_put_contents(LIGHTWEB_PUBLISH_PATH . "versions.json", '{"v":1}');
+    $versionsFilePath = LIGHTWEB_PUBLISH_PATH . "versions.json";
+    if (!file_exists($versionsFilePath)) {
+        $defaultVersionData = json_encode(['v' => 1]);
+        file_put_contents($versionsFilePath, $defaultVersionData);
     }
     $version_data = json_decode(file_get_contents(LIGHTWEB_PUBLISH_PATH . "versions.json"), true);
     $jsvendors = '<script type="text/javascript" id="lightweb-vendors-js" src="/vendors.js?v=3.0.39"></script>' . "\n</body>";
@@ -80,7 +80,7 @@ function render_page($page = "home", $lang = "")
             // Insert BreadCrumbs Snippet
             $headerhtml = str_replace("{{title}}", i18nString(LIGHTWEB_TREE[$page]['titlei18n'], $lang), $headerhtml);
             $headerhtml = str_replace("{{lang_lc}}", i18nString("lang_lc", $lang), $headerhtml);
-            $headerhtml = str_replace("{{author}}", "LightWeb v" . LW_CODEVER, $headerhtml);
+            $headerhtml = str_replace("{{author}}", "LightWeeb v" . LW_CODEVER, $headerhtml);
             $headerhtml = str_replace("{{description}}", i18nString(LIGHTWEB_TREE[$page]['descriptioni18n'], $lang), $headerhtml);
             // Insert Other languages references
             $tagheader = "";
@@ -89,7 +89,6 @@ function render_page($page = "home", $lang = "")
             }
             foreach (locales as $langheader) {
                 if ($langheader === $lang) {
-
                 } else {
                     $tagheader .= '<link rel="alternate" hreflang="' . $langheader . '" href="https://' . LIGHTWEB_PRODUCTION . '/' . $langheader . LIGHTWEB_TREE[$page]['url'] . '">' . "\n";
                 }

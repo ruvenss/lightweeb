@@ -1,4 +1,5 @@
 <?php
+
 /**
  * DO NOT INSERT YOUR CODE HERE! THIS FILE WILL BE REWRITE IN THE NEXT UPDATE
  * USE ONLY FILES THAT BEGIN BY my_
@@ -11,7 +12,7 @@ if (LIGHTWEB_DB && !defined("ldb")) {
     $ldb = new mysqli(LIGHTWEB_DB_HOST, LIGHTWEB_DB_USER, LIGHTWEB_DB_PASS, LIGHTWEB_DB_NAME);
     define("ldb", $ldb);
     if (ldb->connect_errno) {
-        die("LightWeb Failed to connect to DB Server: " . ldb->connect_error);
+        die("LightWeeb Failed to connect to DB Server: " . ldb->connect_error);
     }
 }
 if (!file_exists(dirname(dirname(__FILE__)) . "/api")) {
@@ -26,4 +27,3 @@ if (!file_exists(LIGHTWEB_PAGES_PATH . "tree.json"))
 $uri = uripage();
 $fullpage = render_page($uri);
 echo i18n($fullpage);
-
