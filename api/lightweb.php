@@ -1,4 +1,5 @@
 <?php
+
 /**
  * DO NOT INSERT YOUR CODE HERE! THIS FILE WILL BE REWRITE IN THE NEXT UPDATE
  * USE ONLY FILES THAT BEGIN BY my_
@@ -37,9 +38,9 @@ function SaveBody()
 {
     if (isset(DataInput['content_url']) && isset(DataInput['page'])) {
         $page_file = dirname(dirname(__FILE__)) . "/lightweb/pages/" . DataInput['page'] . "/index.html";
-        $page_data = file_get_contents(DataInput['content_url']);
+        $page_data = file_get_contents(DataInput['content_url']) ?? null;
         if (strlen($page_data)) {
-            file_put_contents($page_file, file_get_contents(DataInput['content_url']));
+            file_put_contents($page_file, $page_data);
             response(true, ["page" => DataInput['page'], "downloaded_from" => DataInput['content_url']]);
         } else {
             response(false, ["error" => "Page content can not be empty"], 2, "Missing page content");
@@ -106,7 +107,6 @@ function assets_scan($assets, $assets_data)
     for ($i = 0; $i < sizeof($assets); $i++) {
         $asset_file = $assets[$i];
         if ($asset_file == ".." || $asset_file == "." || $asset_file == ".htaccess" || $asset_file == ".vscode" || $asset_file == "lightweb" || $asset_file == "api" || $asset_file == "index.php" || $asset_file == "README.md" || $asset_file == "vendor.js") {
-
         } else {
             if (is_dir(dirname(dirname(__FILE__)) . "/" . $asset_file)) {
                 $assets_data[] = ["asset_type" => "folder", "asset_name" => $asset_file, "asset_local" => dirname(dirname(__FILE__)) . "/" . $asset_file];
@@ -149,7 +149,6 @@ function getHeaders()
     for ($i = 0; $i < sizeof($headers); $i++) {
         $header_file = str_replace(".html", "", $headers[$i]);
         if ($header_file == ".." || $header_file == ".") {
-
         } else {
             $headers_data[] = $header_file;
         }
@@ -163,7 +162,6 @@ function getFooters()
     for ($i = 0; $i < sizeof($footers); $i++) {
         $footer_file = str_replace(".html", "", $footers[$i]);
         if ($footer_file == ".." || $footer_file == ".") {
-
         } else {
             $footers_data[] = $footer_file;
         }
@@ -362,7 +360,6 @@ function create_page()
                 mkdir(dirname(dirname(__FILE__)) . "/lightweb/pages" . $fullpath);
                 file_put_contents(dirname(dirname(__FILE__)) . "/lightweb/pages" . $fullpath . "/index.html", "<p></p>");
             }
-
         }
         if (isset(DataInput['htmlcontent']) && strlen(DataInput['htmlcontent']) > 0) {
             file_put_contents(dirname(dirname(__FILE__)) . "/lightweb/pages" . $fullpath . "/index.html", DataInput['htmlcontent']);
@@ -454,7 +451,6 @@ function GetLanguages()
         foreach ($languages_files as $language_file) {
             $language = str_replace(".json", "", $language_file);
             if ($language == ".." || $language == ".") {
-
             } else {
                 $languages[] = $language;
             }

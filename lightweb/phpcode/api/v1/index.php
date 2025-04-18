@@ -1,5 +1,5 @@
 <?php
-header("PoweredBy: LightWeb 3.0;");
+header("PoweredBy: LightWeeb 3.0.39;");
 header("Content-Type: application/json; charset=UTF-8");
 /* This will only act as server to server bridge between the UI and the API Server to avoid CORS problems */
 $currentpath = getcwd();
@@ -18,7 +18,7 @@ $curl = curl_init();
 curl_setopt_array(
     $curl,
     array(
-        CURLOPT_URL => APISERVER,
+        CURLOPT_URL => APISERVER ?? "",
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_ENCODING => '',
         CURLOPT_MAXREDIRS => 10,

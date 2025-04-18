@@ -1,4 +1,5 @@
 <?php
+
 /**
  * DO NOT INSERT YOUR CODE HERE! THIS FILE WILL BE REWRITE IN THE NEXT UPDATE
  * USE ONLY FILES THAT BEGIN BY my_
@@ -12,7 +13,8 @@
  */
 function response($success = false, $arrdata = [], $error = 0, $error_msg = null, $module = null)
 {
-    header('X-Powered-By: NIZU API nizu.io');
+    header('X-Powered-By: LightWeeb 3.0.39;');
+    header('Content-Type: application/json; charset=UTF-8');
     $response = [
         "success" => $success,
         "data" => $arrdata
