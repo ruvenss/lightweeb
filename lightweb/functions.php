@@ -1,4 +1,5 @@
 <?php
+
 /**
  * DO NOT INSERT YOUR CODE HERE! THIS FILE WILL BE REWRITE IN THE NEXT UPDATE
  * USE ONLY FILES THAT BEGIN BY my_
@@ -142,7 +143,9 @@ function buildManifest($lang)
             "icons" => $icons
         ];
         $manifest_json = json_encode($manifest, JSON_PRETTY_PRINT);
-        file_put_contents($manifest_path, $manifest_json);
+        if (is_writable($manifest_path)) {
+            file_put_contents($manifest_path, $manifest_json);
+        }
     }
     /* Microsoft App */
     $manifest_xml = dirname(dirname(__FILE__)) . "/browserconfig.xml";
@@ -158,7 +161,11 @@ function buildManifest($lang)
         </tile>
     </msapplication>
 </browserconfig>';
-    file_put_contents($manifest_xml, $manifest_xmlcontent);
+    if (is_writable($manifest_xml)) {
+        $manifest_xml = str_replace("#ffffff", LIGHTWEB_SITE_CONFIG['background_color'], $manifest_xmlcontent);
+    } else {
+        $manifest_xml = $manifest_xmlcontent;
+    }
 }
 function html_elegant_encode($content)
 {
