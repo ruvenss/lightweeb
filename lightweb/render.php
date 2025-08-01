@@ -43,7 +43,13 @@ function render_page($page = "home", $lang = "")
         if (publishing) {
             file_put_contents(LIGHTWEB_PUBLISH_PATH . "uncompress/vendors.js", $jsvendors_code);
         } else {
-            file_put_contents($jsvendors_path, $jsvendors_code);
+            if (is_writable($jsvendors_path)) {
+                // If the file is writable, write the code to it
+                file_put_contents($jsvendors_path, $jsvendors_code);
+            } else {
+                // If the file is not writable, you might want to handle the error
+                error_log("The file $jsvendors_path is not writable.");
+            }
         }
     }
     if (isset(LIGHTWEB_TREE[$page])) {
