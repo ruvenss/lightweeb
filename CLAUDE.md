@@ -89,6 +89,10 @@ Update `YOURDOMAIN.COM` in `.htaccess` to match the production domain.
 - `lightweb/plugins/*.php` (new plugin files)
 - `lightweb/jscode/*.js` (new JS files)
 
+## Rules
+
+See @.claude/RULES.md for the full list of project dos and don'ts.
+
 ## Version tracking
 
 Framework version is in `lightweb/lightweb.json`. `autoupdate.php` compares this to the GitHub master release and downloads changed files listed in `updatable_files`. The publish version counter (for cache-busting) is in `lightweb/publish/versions.json`.

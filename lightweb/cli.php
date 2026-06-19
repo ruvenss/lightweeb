@@ -1,4 +1,5 @@
 <?php
+
 /**
  * DO NOT INSERT YOUR CODE HERE! THIS FILE WILL BE REWRITE IN THE NEXT UPDATE
  * USE ONLY FILES THAT BEGIN BY my_
@@ -22,7 +23,7 @@ if ($argc > 1) {
     echo "
     *************************
     *    LightWeeb CLI 🆙   *
-    *        v3.0.39        *
+    *        v3.0.40        *
     *************************
 ";
     switch ($param) {
@@ -39,9 +40,9 @@ if ($argc > 1) {
     echo "
     *************************
     *    LightWeeb CLI 🆙   *
-    *        v3.0.39        *
+    *        v3.0.40        *
     *************************
-LightWeb CLI v3.0.39 is the new method to publish and generate your websites or web app.
+LightWeb CLI v3.0.40 is the new method to publish and generate your websites or web app.
 Instructions:
 php cli.php publish  
 ";

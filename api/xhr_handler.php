@@ -13,7 +13,7 @@
  */
 function response($success = false, $arrdata = [], $error = 0, $error_msg = null, $module = null)
 {
-    header('X-Powered-By: LightWeeb 3.0.39;');
+    header('X-Powered-By: LightWeeb 3.0.40;');
     header('Content-Type: application/json; charset=UTF-8');
     $response = [
         "success" => $success,

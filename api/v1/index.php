@@ -1,11 +1,12 @@
 <?php
+
 /**
  * DO NOT INSERT YOUR CODE HERE! THIS FILE WILL BE REWRITE IN THE NEXT UPDATE
  * USE ONLY FILES THAT BEGIN BY my_
  * @author Ruvenss G. Wilches <ruvenss@gmail.com>
  */
 require __DIR__ . '/vendor/autoload.php';
-header("PoweredBy: LightWeeb v3.0.39;");
+header("PoweredBy: LightWeeb v3.0.40;");
 header("Content-Type: application/json; charset=UTF-8");
 define("errors", json_decode(file_get_contents("../errors.json"), true));
 $DataInputRaw = file_get_contents("php://input");
@@ -76,7 +77,6 @@ function loadPlugins()
     $pluginsfiles = scandir("plugins", SCANDIR_SORT_ASCENDING);
     foreach ($pluginsfiles as $pluginfile) {
         if ($pluginfile == "." || $pluginfile == "..") {
-
         } else {
             include_once("plugins/$pluginfile");
         }

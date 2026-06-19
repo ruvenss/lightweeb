@@ -1,5 +1,5 @@
 <?php
-header("PoweredBy: LightWeeb 3.0.39;");
+header("PoweredBy: LightWeeb 3.0.40;");
 header("Content-Type: application/json; charset=UTF-8");
 /* This will only act as server to server bridge between the UI and the API Server to avoid CORS problems */
 $currentpath = getcwd();
