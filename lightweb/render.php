@@ -27,7 +27,7 @@ function render_page($page = "home", $lang = "")
     $jsvendors = '<script type="text/javascript" id="lightweb-vendors-js" src="/vendors.js?v=3.0.40"></script>' . "\n</body>";
     $jsvendors_files = scandir(LIGHTWEB_PATH . 'lightweb/jscode', SCANDIR_SORT_ASCENDING);
     $jsvendors_path = dirname(dirname(__FILE__)) . "/vendors.js";
-    if (count($jsvendors_files)) {
+    if (count($jsvendors_files) && is_writable($jsvendors_path)) {
         $avoid_files = [".", "..", "facebook_pixel.js", "google_ua.js", "service-worker.js"];
         $jsvendors_code = '/* LightWeb 3.0.40 Standard JS Vendors   */' . "\n";
         foreach ($jsvendors_files as $jsvendors_file) {
@@ -51,6 +51,13 @@ function render_page($page = "home", $lang = "")
                 error_log("The file $jsvendors_path is not writable.");
             }
         }
+    }
+    // LLMS Basic Setup it needs to be filled in later by the author or the agents
+    $llms_path = dirname(dirname(__FILE__)) . "/llms.txt";
+    if (!file_exists($llms_path)) {
+        touch($llms_path);
+        $llms_basic_content = "# " . LIGHTWEB_SITE_CONFIG['name'] . "\n\n";
+        file_put_contents($llms_path, $llms_basic_content);
     }
     if (isset(LIGHTWEB_TREE[$page])) {
         $publish_from = LIGHTWEB_TREE[$page]['publish_from'] ?? null;

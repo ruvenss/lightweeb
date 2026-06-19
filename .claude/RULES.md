@@ -26,6 +26,10 @@ Project-specific dos and don'ts for Claude Code when working in this repository.
 - **Check `publishing` constant** (boolean) when writing plugin or rendering code that behaves differently between dev and publish mode
 - **Use `ldb` (the global mysqli instance)** for DB queries — never open a second connection
 
+### LLMS
+
+- Allways include a generated llms.txt at the root of the folder project.
+
 ### Git & deployment
 - **Verify `.gitignore` before staging** — `lightweb/config.php`, all content dirs (`pages/*`, `headers/*`, `footers/*`), generated files (`vendors.js`, manifests, `publish/`), and static asset dirs (`assets`, `js`, `css`, `images`) are intentionally ignored
 - **Run `php lightweb/cli.php publish`** to validate the full build before reporting a feature complete
