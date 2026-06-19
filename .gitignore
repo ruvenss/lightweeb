@@ -27,4 +27,9 @@ manifest_ar.json
 manifest_dk.json
 manifest_de.json
 manifest_es.json
+manifest_zh.json
+manifest_ca.json
+manifest_dk.json
 .qodo
+.DS_Store
+.vscode
